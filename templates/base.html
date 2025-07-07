@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}账单管理{% endblock %}</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+    {% block extra_css %}
+        <link rel="stylesheet" href="{{ url_for('static', filename='css/base.css') }}">
+    {% endblock %}
+</head>
+<body>
+    <nav class="navbar">
+        <div class="container">
+            <a href="{{ url_for('gallery') }}" class="navbar-brand">
+                <i class="logo-icon"></i> 首页
+            </a>
+                    
+            <button class="navbar-toggle" id="navbarToggle">
+                ☰
+            </button>
+            
+            <div class="navbar-menu" id="navbarMenu">
+                <div class="navbar-start">
+                    <a href="{{ url_for('index') }}" class="navbar-item {% if request.endpoint == 'index' %}active{% endif %}">
+                        我的账单
+                    </a>
+                    
+                    {% if current_user.is_authenticated and current_user.is_recipient %}
+                    <div class="navbar-item has-dropdown">
+                        <a href="{{ url_for('recipient_studio') }}" class="navbar-item {% if request.endpoint == 'recipient_studio' %}active{% endif %}">
+                            收款工作室
+                        </a>
+                    </div>
+                    {% endif %}
+                </div>
+                
+                <div class="navbar-end">
+                    {% if current_user.is_authenticated %}
+                    <span class="navbar-text">
+                        欢迎, {{ current_user.username }}
+                    </span>
+                    <a href="{{ url_for('logout') }}" class="navbar-item">
+                        退出
+                    </a>
+                    {% else %}
+                    <a href="{{ url_for('login') }}" class="navbar-item {% if request.endpoint == 'login' %}active{% endif %}">
+                        登录
+                    </a>
+                    <a href="{{ url_for('register') }}" class="navbar-item {% if request.endpoint == 'register' %}active{% endif %}">
+                        注册
+                    </a>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <script>
+    // 导航栏切换
+    document.getElementById('navbarToggle').addEventListener('click', function() {
+        const menu = document.getElementById('navbarMenu');
+        menu.classList.toggle('active');
+        this.setAttribute('aria-expanded', menu.classList.contains('active'));
+        
+        // 关闭所有打开的下拉菜单
+        document.querySelectorAll('.navbar-dropdown').forEach(dropdown => {
+            dropdown.classList.remove('active');
+        });
+    });
+
+    // 移动端下拉菜单支持
+    document.querySelectorAll('.navbar-item.has-dropdown').forEach(item => {
+        item.addEventListener('click', function(e) {
+            if (window.innerWidth <= 768) {
+                e.preventDefault();
+                const dropdown = this.querySelector('.navbar-dropdown');
+                dropdown.classList.toggle('active');
+            }
+        });
+    });
+
+    // 点击外部关闭菜单
+    document.addEventListener('click', function(e) {
+        const navbar = document.querySelector('.navbar');
+        const toggle = document.getElementById('navbarToggle');
+        
+        if (!navbar.contains(e.target) && !toggle.contains(e.target)) {
+            document.getElementById('navbarMenu').classList.remove('active');
+        }
+    });
+
+    // 窗口大小改变时重置菜单状态
+    window.addEventListener('resize', function() {
+        if (window.innerWidth > 768) {
+            document.getElementById('navbarMenu').classList.remove('active');
+        }
+    });
+    </script>
+
+    <main class="container">
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                <div class="alert alert-{{ category }}">
+                    {{ message }}
+                </div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+        
+        {% block content %}{% endblock %}
+    </main>
+
+    <footer class="footer">
+        <div class="container">
+            <p>&copy; {{ now.year }} 转账服务. 版权所有.</p>
+        </div>
+    </footer>
+
+    {% block scripts %}
+        <script>
+        // 显示选择的文件名
+        document.getElementById('qr_code_image').addEventListener('change', function(e) {
+            const fileName = document.getElementById('file-name');
+            if (this.files.length > 0) {
+                fileName.textContent = this.files[0].name;
+                // 清空文本输入
+                document.getElementById('account_info').value = '';
+            } else {
+                fileName.textContent = '';
+            }
+        });
+
+        // 如果用户开始输入文本，则清除文件选择
+        document.getElementById('account_info').addEventListener('input', function() {
+            if (this.value.trim() !== '') {
+                document.getElementById('qr_code_image').value = '';
+                document.getElementById('file-name').textContent = '';
+            }
+        });
+        </script>
+    {% endblock %}
+
+    <!-- 添加到base.html的body结束前 -->
+    <div id="notification-container"></div>
+
+    <script>
+    // 通知系统
+    function showNotification(message, type = 'info', duration = 5000) {
+        const container = document.getElementById('notification-container');
+        const notification = document.createElement('div');
+        notification.className = `notification ${type}`;
+        notification.innerHTML = `
+            <i class="fas fa-${type === 'success' ? 'check-circle' : type === 'warning' ? 'exclamation-triangle' : 'info-circle'}"></i>
+            <span>${message}</span>
+            <span class="notification-close">&times;</span>
+        `;
+        
+        container.appendChild(notification);
+        
+        // 显示通知
+        setTimeout(() => {
+            notification.classList.add('show');
+        }, 100);
+        
+        // 关闭按钮事件
+        notification.querySelector('.notification-close').addEventListener('click', () => {
+            hideNotification(notification);
+        });
+        
+        // 自动关闭
+        if (duration > 0) {
+            setTimeout(() => {
+                hideNotification(notification);
+            }, duration);
+        }
+        
+        return notification;
+    }
+
+    function hideNotification(notification) {
+        notification.classList.remove('show');
+        setTimeout(() => {
+            notification.remove();
+        }, 300);
+    }
+
+    // 显示闪存消息作为通知
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            {% for category, message in messages %}
+                {% if category == 'success' %}
+                    showNotification('{{ message }}', 'success');
+                {% elif category == 'error' %}
+                    showNotification('{{ message }}', 'warning');
+                {% else %}
+                    showNotification('{{ message }}', 'info');
+                {% endif %}
+            {% endfor %}
+        {% endif %}
+    {% endwith %}
+    </script>
+</body>
+</html>

@@ -1,0 +1,115 @@
+{% extends "base.html" %}
+
+{% block title %}交易记录{% endblock %}
+
+{% block extra_css %}
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/transactions.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+{% endblock %}
+
+{% block content %}
+<div class="transactions-container">
+    <div class="transactions-header">
+        <h1><i class="fas fa-exchange-alt"></i> 全部交易记录</h1>
+        <div class="summary">
+            <span class="summary-item">
+                <i class="fas fa-arrow-up text-danger"></i>
+                总支出: RM{{ "%.2f"|format(total_sent) }}
+            </span>
+            <span class="summary-item">
+                <i class="fas fa-arrow-down text-success"></i>
+                总收入: RM{{ "%.2f"|format(total_received) }}
+            </span>
+        </div>
+        <div class="transaction-filters">
+            <form method="GET" action="{{ url_for('transactions') }}">
+                <div class="filter-group">
+                    <label for="search"><i class="fas fa-search"></i></label>
+                    <input type="text" id="search" name="search" 
+                        placeholder="搜索项目或用户..." 
+                        value="{{ request.args.get('search', '') }}">
+                </div>
+                <div class="filter-group">
+                    <label for="type">类型:</label>
+                    <select id="type" name="type">
+                        <option value="">全部交易</option>
+                        <option value="outgoing" {% if request.args.get('type') == 'outgoing' %}selected{% endif %}>
+                            我的支出
+                        </option>
+                    </select>
+                </div>
+                <button type="submit" class="btn btn-primary">筛选</button>
+                <a href="{{ url_for('transactions') }}" class="btn btn-secondary">重置</a>
+            </form>
+        </div>
+    </div>
+    
+    <div class="transaction-list">
+        {% for trans in transactions %}
+        <div class="transaction {% if trans.payer_id == current_user.id %}outgoing{% else %}incoming{% endif %}">
+            <div class="transaction-icon">
+                {% if trans.payer_id == current_user.id %}
+                <i class="fas fa-arrow-up"></i>
+                {% else %}
+                <i class="fas fa-arrow-down"></i>
+                {% endif %}
+            </div>
+            
+            <div class="transaction-details">
+                <div class="transaction-main">
+                    {% if trans.payer_id == current_user.id %}
+                    <span class="transaction-type sent">支出</span>
+                    <span class="transaction-party">收款: {{ trans.recipient.username }}</span>
+                    {% else %}
+                    <span class="transaction-type received">收入</span>
+                    <span class="transaction-party">来自: {{ trans.payer.username }}</span>
+                    {% endif %}
+                    
+                    <span class="transaction-amount {% if trans.payer_id == current_user.id %}negative{% else %}positive{% endif %}">
+                        {% if trans.payer_id == current_user.id %}-{% else %}+{% endif %}RM{{ "%.2f"|format(trans.amount) }}
+                    </span>
+                </div>
+                
+                <div class="transaction-meta">
+                    {% if trans.payment_item %}
+                    <span class="transaction-project">
+                        <i class="fas fa-project-diagram"></i> {{ trans.payment_item.title }}
+                    </span>
+                    {% endif %}
+                    <span class="transaction-date">
+                        <i class="far fa-clock"></i> {{ trans.created_at.strftime('%Y-%m-%d %H:%M') }}
+                    </span>
+                    {% if trans.note %}
+                    <span class="transaction-note">
+                        <i class="far fa-comment"></i> {{ trans.note }}
+                    </span>
+                    {% endif %}
+                    {% if trans.payment_method %}
+                    <span class="transaction-method">
+                        <i class="fas fa-wallet"></i> 
+                        {% if trans.payment_method.method_type == 'duitnow' %}DuitNow
+                        {% elif trans.payment_method.method_type == 'bank' %}银行账号
+                        {% else %}支付宝{% endif %}
+                    </span>
+                    {% endif %}
+                    {% if trans.refund_status %}
+                    <span class="refund-badge {{ trans.refund_status }}">
+                        <i class="fas fa-undo"></i> 
+                        {{ '已退款' if trans.refund_status == 'refunded' else '已取消' }}
+                        {% if trans.refund_at %}
+                        ({{ trans.refund_at.strftime('%Y-%m-%d') }})
+                        {% endif %}
+                    </span>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        {% else %}
+        <div class="empty-state">
+            <i class="fas fa-receipt"></i>
+            <p>暂无交易记录</p>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}

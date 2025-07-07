@@ -1,0 +1,251 @@
+{% extends "base.html" %}
+
+{% block title %}收款工作室{% endblock %}
+
+{% block extra_css %}
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/recipient_studio.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+{% endblock %}
+
+{% block content %}
+<div class="studio-container">
+    <h1><i class="fas fa-store"></i> 收款工作室</h1>
+    
+    <section class="payment-items">
+        <h2>我的收款项目</h2>
+        <form method="POST" action="{{ url_for('add_payment_item') }}" enctype="multipart/form-data">
+            <div class="form-group">
+                <label for="title">项目标题</label>
+                <input type="text" id="title" name="title" required>
+            </div>
+            <div class="form-group">
+                <label for="description">项目描述</label>
+                <textarea id="description" name="description"></textarea>
+            </div>
+            <div class="form-group">
+                <label for="amount">总金额（RM）</label>
+                <input type="number" id="amount" name="amount" min="0.01" step="0.01" required>
+            </div>
+            <div class="form-group">
+                <label for="participant_count">付款人数（包括自己）</label>
+                <input type="number" id="participant_count" name="participant_count" min="1" value="1" required>
+            </div>
+            <div class="form-group">
+                <label for="image">项目图片（JPG/PNG）</label>
+                <input type="file" id="image" name="image" accept="image/*">
+            </div>
+            <button type="submit" class="btn">添加项目</button>
+
+            <!-- 在表单提交后添加 -->
+            <script>
+            document.querySelector('form').addEventListener('submit', function(e) {
+                // 这里可以添加表单验证
+                // 成功后会自动显示通知，因为后端会返回flash消息
+            });
+            </script>
+        </form>
+        
+        <div class="item-list">
+            {% for item in payment_items %}
+            <!-- 修改项目显示部分 -->
+            <div class="payment-item">
+                <div class="item-header">
+                    <h3>{{ item.title }}</h3>
+                    <span class="status-badge {% if item.status == 'completed' %}completed{% elif item.status == 'cancelled' %}cancelled{% else %}active{% endif %}">
+                        {% if item.status == 'completed' %}已完成
+                        {% elif item.status == 'cancelled' %}已取消
+                        {% else %}进行中{% endif %}
+                    </span>
+                </div>
+                <p class="item-description">{{ item.description|default("暂无描述", true) }}</p>
+                <div class="item-footer">
+                    <div class="progress-container">
+                        <div class="progress-bar">
+                            <div class="progress" style="width: {{ (item.amount_received/item.amount)*100 }}%"></div>
+                        </div>
+                        <div class="progress-text">
+                            <span>已收: RM{{ "%.2f"|format(item.amount_received) }}</span>
+                            <span>目标: RM{{ "%.2f"|format(item.amount) }}</span>
+                            <span>{{ "%.0f"|format((item.amount_received/item.amount)*100) }}%</span>
+                        </div>
+                    </div>
+                    
+                    <div class="participant-info">
+                        <span><i class="fas fa-users"></i> {{ item.participant_count }}人参与</span>
+                        <span><i class="fas fa-user-check"></i> {{ (item.amount_received/(item.amount/item.participant_count))|round(0) }}人已支付</span>
+                    </div>
+                    
+                    <!-- 添加操作按钮 -->
+                    <div class="item-actions">
+                        {% if item.status == 'active' %}
+                        <form method="POST" action="{{ url_for('update_payment_item_status', item_id=item.id) }}">
+                            <input type="hidden" name="status" value="completed">
+                            <button type="submit" class="btn btn-small btn-success">
+                                <i class="fas fa-check"></i> 标记完成
+                            </button>
+                        </form>
+                        <form method="POST" action="{{ url_for('update_payment_item_status', item_id=item.id) }}">
+                            <input type="hidden" name="status" value="cancelled">
+                            <button type="submit" class="btn btn-small btn-danger">
+                                <i class="fas fa-times"></i> 取消项目
+                            </button>
+                        </form>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+            {% else %}
+            <div class="empty-state">
+                <i class="fas fa-box-open"></i>
+                <p>暂无进行中的收款项目</p>
+            </div>
+            {% endfor %}
+        </div>
+    </section>
+    
+    <!-- New version with link to full page -->
+    <!-- 历史项目部分 -->
+    <section class="history-items">
+        <div class="section-header">
+            <h2><i class="fas fa-history"></i> 历史项目</h2>
+            <a href="{{ url_for('history_items') }}" class="view-all">
+                查看全部 <i class="fas fa-arrow-right"></i>
+            </a>
+        </div>
+        
+        <div class="item-list">
+            {% for item in history_items %}
+            <div class="payment-item history">
+                <div class="item-header">
+                    <h3>{{ item.title }}</h3>
+                    <span class="status-badge {{ item.status }}">
+                        {{ '已完成' if item.status == 'completed' else '已取消' }}
+                    </span>
+                </div>
+                <p class="item-description">{{ item.description|default("暂无描述", true) }}</p>
+                <div class="item-footer">
+                    <span class="amount">¥{{ "%.2f"|format(item.amount) }}</span>
+                    <span class="date">{{ item.created_at.strftime('%Y-%m-%d') }}</span>
+                    <form method="POST" action="{{ url_for('delete_payment_item', item_id=item.id) }}"
+                        onsubmit="return confirm('确定要永久删除此项目吗？');" class="delete-form">
+                        <button type="submit" class="btn btn-small btn-danger">
+                            <i class="fas fa-trash"></i> 删除
+                        </button>
+                    </form>
+                </div>
+            </div>
+            {% else %}
+            <div class="empty-state">
+                <i class="fas fa-box-open"></i>
+                <p>暂无历史项目</p>
+            </div>
+            {% endfor %}
+        </div>
+    </section>
+
+    <section class="payment-methods">
+        <h2>我的收款方式</h2>
+        <form method="POST" action="{{ url_for('add_payment_method') }}" enctype="multipart/form-data">
+            <div class="form-group">
+                <label for="method_type">收款方式类型</label>
+                <select id="method_type" name="method_type" required>
+                    <option value="">选择收款方式</option>
+                    <option value="duitnow">DuitNow</option>
+                    <option value="bank">银行账号</option>
+                    <option value="alipay">支付宝</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="account_info">账号信息（请注明银行名称）</label>
+                <input type="text" id="account_info" name="account_info" 
+                    placeholder="如果上传二维码图片，可不填写">
+            </div>
+            <div class="form-group">
+                <label for="qr_code_image">二维码图片（可选）</label>
+                <input type="file" id="qr_code_image" name="qr_code_image" accept="image/*">
+            </div>
+            <div class="form-group">
+                <label for="is_default">
+                    <input type="checkbox" id="is_default" name="is_default">
+                    设为默认收款方式
+                </label>
+            </div>
+            <button type="submit" class="btn">添加收款方式</button>
+        </form>
+        
+        <div class="method-list">
+            {% for method in payment_methods %}
+            <div class="payment-method">
+                <div class="method-info">
+                    <h3>
+                        {% if method.method_type == 'duitnow' %}DuitNow
+                        {% elif method.method_type == 'bank' %}银行账号
+                        {% else %}支付宝{% endif %}
+                    </h3>
+                    
+                    {% if method.qr_code_image %}
+                    <div class="qr-code-container">
+                        <img src="{{ method.qr_code_image }}" alt="付款二维码" class="qr-code-image">
+                        <p>扫码支付</p>
+                    </div>
+                    {% else %}
+                    <p class="account-info">{{ method.account_info }}</p>
+                    {% endif %}
+                    
+                    {% if method.is_default %}
+                    <span class="default-badge">默认</span>
+                    {% endif %}
+                </div>
+                
+                <form method="POST" action="{{ url_for('delete_payment_method', method_id=method.id) }}"
+                    onsubmit="return confirm('确定要删除此付款方式吗？');">
+                    <button type="submit" class="btn btn-small btn-danger">删除</button>
+                </form>
+            </div>
+            {% endfor %}
+        </div>
+    </section>
+    
+    <!-- 收款记录部分 -->
+    <section class="transactions">
+        <div class="section-header">
+            <h2><i class="fas fa-exchange-alt"></i> 收款记录</h2>
+            <a href="{{ url_for('transactions') }}" class="view-all">查看全部 <i class="fas fa-arrow-right"></i></a>
+        </div>
+        
+        <div class="transaction-list">
+            {% for trans in transactions %}
+            <div class="transaction incoming">
+                <div class="transaction-icon">
+                    <i class="fas fa-arrow-down"></i>
+                </div>
+                <div class="transaction-details">
+                    <div class="transaction-header">
+                        <span class="transaction-party">来自 {{ trans.payer.username }}</span>
+                        <span class="transaction-amount positive">
+                            +RM{{ "%.2f"|format(trans.amount) }}
+                        </span>
+                    </div>
+                    <div class="transaction-footer">
+                        <span class="transaction-date">
+                            <i class="far fa-clock"></i> {{ trans.created_at.strftime('%Y-%m-%d %H:%M') }}
+                        </span>
+                        {% if trans.payment_method %}
+                        <span class="transaction-method">
+                            <i class="fas fa-wallet"></i> 
+                            {{ trans.payment_method.method_type }}
+                        </span>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+            {% else %}
+            <div class="empty-state">
+                <i class="fas fa-receipt"></i>
+                <p>暂无收款记录</p>
+            </div>
+            {% endfor %}
+        </div>
+    </section>
+</div>
+{% endblock %}

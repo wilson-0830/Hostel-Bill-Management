@@ -1,0 +1,94 @@
+{% extends "base.html" %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/gallery.css') }}">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+{% endblock %}
+
+{% block content %}
+<section class="gallery-hero {% if is_authenticated %}authenticated{% endif %}">
+  <div class="hero-content">
+    <div class="hero-text">
+      {% if is_authenticated %}
+        <h1>
+            <span class="welcome-back" style="color: #4cc9f0; font-weight: 600;">欢迎回来，</span>
+            <span class="username" style="color: #4cc9f0; font-weight: 600;">{{ current_user.username }}</span>
+        </h1>
+      <p class="subtitle">您已成功登录，可以访问所有高级功能。</p>
+      {% else %}
+      <h1><span class="main-title">新一代数字金融服务</span></h1>
+      <p class="subtitle">加入 <span class="highlight">{{ stats.total_users|default('1000+', true) }}</span> 用户的行列，体验安全便捷的资产管理。</p>
+      {% endif %}
+
+      <div class="cta-buttons">
+        {% if is_authenticated %}
+        <a href="{{ url_for('index') }}" class="btn btn-primary">
+          <i class="fas fa-arrow-right"></i> 进入控制台
+        </a>
+        <a href="{{ url_for('transactions') }}" class="btn btn-outline">
+          <i class="fas fa-chart-bar"></i> 财务分析
+        </a>
+        {% else %}
+        <a href="{{ url_for('login') }}" class="btn btn-primary">
+          <i class="fas fa-fingerprint"></i> 安全登录
+        </a>
+        <a href="{{ url_for('register') }}" class="btn btn-gradient">
+          <i class="fas fa-rocket"></i> 立即注册
+        </a>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+
+  <div class="hero-visual">
+    <img 
+        src="{{ url_for('static', filename='uploads/gallery.jpg') }}" 
+        alt="THE ARC: B-13-03"
+        class="hero-image"
+        onerror="this.onerror=null; this.src='{{ url_for('static', filename='images/default-hero.svg') }}'"
+    >
+    {% if not is_authenticated %}
+    <div class="stats-overlay">
+      <div class="stat-item">
+        <div class="stat-number">{{ stats.total_users|default('1000+', true) }}</div>
+        <div class="stat-label">注册用户</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-number">{{ stats.total_transactions|default('5000+', true) }}</div>
+        <div class="stat-label">交易次数</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-number">{{ stats.active_projects|default('100+', true) }}</div>
+        <div class="stat-label">活跃项目</div>
+      </div>
+    </div>
+    {% endif %}
+  </div>
+</section>
+
+<!-- 快速通道部分不再包裹在 if not is_authenticated 中 -->
+<section class="quick-access">
+  <div class="section-header">
+    <h2>快速通道</h2>
+    <p>一键直达您需要的服务</p>
+  </div>
+  <div class="quick-links">
+    <a href="{% if is_authenticated %}{{ url_for('index') }}{% else %}{{ url_for('login', next=url_for('index')) }}{% endif %}" class="quick-link">
+      <div class="quick-icon"><i class="fas fa-tachometer-alt"></i></div>
+      <h3><span style="color: #a0e7ff; text-shadow: 0 1px 3px rgba(0,0,0,0.3);">控制面板</span></h3>
+      <p>全面掌控您的账单余额</p>
+    </a>
+    <a href="{% if is_authenticated %}{{ url_for('transactions') }}{% else %}{{ url_for('login', next=url_for('transactions')) }}{% endif %}" class="quick-link">
+      <div class="quick-icon"><i class="fas fa-exchange-alt"></i></div>
+      <h3><span style="color: #a0e7ff; text-shadow: 0 1px 3px rgba(0,0,0,0.3);">交易中心</span></h3>
+      <p style="color: rgba(255,255,255,0.9);">查看所有转账记录</p>
+    </a>
+    <a href="{% if is_authenticated %}{{ url_for('recipient_studio') }}{% else %}{{ url_for('login', next=url_for('recipient_studio')) }}{% endif %}" class="quick-link">
+      <div class="quick-icon"><i class="fas fa-briefcase"></i></div>
+      <h3><span style="color: #a0e7ff; text-shadow: 0 1px 3px rgba(0,0,0,0.3);">项目管理</span></h3>
+      <p>方便管理您的所有项目</p>
+    </a>
+  </div>
+</section>
+{% endblock %}

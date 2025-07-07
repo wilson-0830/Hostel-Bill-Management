@@ -1,0 +1,23 @@
+.login-form {
+    max-width: 400px;
+    margin: 2rem auto;
+    padding: 2rem;
+    background: white;
+    border-radius: var(--radius-md);
+    box-shadow: var(--shadow-md);
+}
+
+.login-form h2 {
+    text-align: center;
+    margin-bottom: 1.5rem;
+    color: var(--dark-color);
+}
+
+.login-form .form-group:last-child {
+    margin-bottom: 0;
+}
+
+.login-form .btn {
+    width: 100%;
+    margin-top: 1rem;
+}

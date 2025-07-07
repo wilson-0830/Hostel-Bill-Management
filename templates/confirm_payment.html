@@ -1,0 +1,74 @@
+{% extends "base.html" %}
+
+{% block extra_css %}
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/confirm_payment.css') }}">
+{% endblock %}
+
+{% block content %}
+<section class="payment-confirmation">
+    <h2>确认支付</h2>
+    <div class="payment-details">
+        <h3>{{ payment_item.title }}</h3>
+        <p>项目描述: {{ payment_item.description|default("暂无描述", true) }}</p>
+        <p>应付金额: RM{{ amount }}</p>
+        <p>收款方: {{ payment_item.recipient.username }}</p>
+        <p>参与人数: {{ payment_item.participant_count }}人</p>
+        <div class="progress-container">
+            <div class="progress-bar">
+                <div class="progress" style="width: {{ (payment_item.amount_received/payment_item.amount)*100 }}%"></div>
+            </div>
+            <div class="progress-text">
+                <span>已筹: RM{{ "%.2f"|format(payment_item.amount_received) }}</span>
+                <span>目标: RM{{ "%.2f"|format(payment_item.amount) }}</span>
+            </div>
+        </div>
+        {% if payment_item.status != 'active' %}
+        <div class="alert alert-warning">
+            该项目已{{ '完成' if payment_item.status == 'completed' else '取消' }}，无法支付
+        </div>
+        {% endif %}
+    </div>
+    
+    <form method="POST" action="{{ url_for('transfer') }}">
+        <input type="hidden" name="payment_item_id" value="{{ payment_item.id }}">
+        <input type="hidden" name="recipient_id" value="{{ payment_item.recipient.id }}">
+        <input type="hidden" name="amount" value="{{ amount }}">
+        <input type="hidden" name="payment_method_id" value="{{ request.form.payment_method_id }}">
+        
+        <div class="form-group">
+            <label>选择支付方式</label>
+            {% for method in payment_methods %}
+            <div class="payment-method-option">
+                <input type="radio" id="method_{{ method.id }}" name="payment_method_id" 
+                    value="{{ method.id }}" required {% if method.is_default %}checked{% endif %}>
+                <label for="method_{{ method.id }}">
+                    <strong>
+                        {% if method.method_type == 'duitnow' %}DuitNow
+                        {% elif method.method_type == 'bank' %}银行账号
+                        {% else %}支付宝{% endif %}
+                    </strong>
+                    
+                    {% if method.qr_code_image %}
+                    <div class="qr-code-preview">
+                        <img src="{{ method.qr_code_image }}" alt="付款二维码">
+                        <p>请扫码支付</p>
+                    </div>
+                    {% else %}
+                    <p class="account-info">{{ method.account_info }}</p>
+                    {% endif %}
+                </label>
+            </div>
+            {% endfor %}
+        </div>
+        
+        <div class="form-actions">
+            <button type="submit" class="btn btn-confirm">
+                <i class="fas fa-check-circle"></i> 确认支付
+            </button>
+            <a href="{{ url_for('index') }}" class="btn btn-cancel">
+                <i class="fas fa-times-circle"></i> 取消支付
+            </a>
+        </div>
+    </form>
+</section>
+{% endblock %}
