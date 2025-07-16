@@ -128,3 +128,51 @@
 .auth-footer a:hover {
     text-decoration: underline;
 }
+
+/* Add these styles to your auth.css */
+.auth-form .form-group {
+    margin-bottom: 1rem;
+}
+
+.auth-form label {
+    display: block;
+    margin-bottom: 0.5rem;
+    font-weight: 500;
+}
+
+.auth-form input[type="email"],
+.auth-form input[type="password"] {
+    width: 100%;
+    padding: 0.5rem;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+}
+
+.auth-footer {
+    margin-top: 1.5rem;
+    text-align: center;
+}
+
+.auth-footer a {
+    color: var(--primary-color);
+    text-decoration: none;
+}
+
+.auth-footer a:hover {
+    text-decoration: underline;
+}
+
+/* Add to the end of c_pass.css */
+.verified-message {
+    text-align: center;
+    padding: 1rem 2rem;
+    background-color: #f0f8ff;
+    margin: 0 -2rem 1rem;
+    border-bottom: 1px solid #d0e3ff;
+}
+
+.verified-message p {
+    font-weight: 500;
+    color: var(--primary-color);
+    margin: 0;
+}

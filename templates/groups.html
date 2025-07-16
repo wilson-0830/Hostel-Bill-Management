@@ -1,0 +1,72 @@
+{% extends "base.html" %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/groups.css') }}">
+{% endblock %}
+
+{% block extra_js %}
+{% endblock %}
+
+{% block title %}我的群组{% endblock %}
+
+{% block content %}
+<div class="groups-container">
+    <div class="back-button-container">
+        <a href="{{ url_for('recipient_studio') }}" class="btn btn-back">
+            <i class="fas fa-arrow-left"></i> 返回收款工作室
+        </a>
+    </div>
+    
+    <h1><i class="fas fa-users"></i> 我的群组</h1>
+    
+    <form method="POST" action="{{ url_for('create_group') }}" class="group-form">
+        <div class="form-group">
+            <input type="text" name="name" placeholder="新群组名称" required>
+            <button type="submit" class="btn">创建群组</button>
+        </div>
+    </form>
+    
+    <div class="group-list">
+        {% for group in groups %}
+        <div class="group-card">
+            <div class="group-header">
+                <h2>{{ group.name }}</h2>
+                <span class="member-count">{{ group.members|length }} 成员</span>
+            </div>
+            
+            <div class="member-list">
+                {% for member in group.members %}
+                <span class="member-badge">{{ member.username }}</span>
+                {% endfor %}
+            </div>
+            
+            <form method="POST" action="{{ url_for('add_to_group', group_id=group.id) }}" class="add-member-form">
+                <select name="user_id" required>
+                    <option value="" disabled selected>选择要添加的成员</option>
+                    {% for user in all_users %}
+                    {% if user not in group.members %}
+                    <option value="{{ user.id }}">{{ user.username }}</option>
+                    {% endif %}
+                    {% endfor %}
+                </select>
+                <button type="submit" class="btn btn-small">添加成员</button>
+            </form>
+            
+            {% if group.creator_id == current_user.id %}
+            <form method="POST" action="{{ url_for('delete_group', group_id=group.id) }}" onsubmit="return confirm('确定要删除这个群组吗？');">
+                <button type="submit" class="delete-group-btn">
+                    <i class="fas fa-trash"></i> 删除群组
+                </button>
+            </form>
+            {% endif %}
+        </div>
+        {% else %}
+        <div class="empty-state">
+            <i class="fas fa-users-slash"></i>
+            <p>您还没有加入任何群组</p>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}

@@ -1,7 +1,7 @@
-from flask import Flask, render_template, redirect, url_for, flash, request
+from flask import Flask, render_template, redirect, url_for, flash, request, session, abort
 from flask_login import LoginManager, current_user, login_user, logout_user, login_required
 from flask_sqlalchemy import SQLAlchemy
-from models import db, User, Recipient, PaymentItem, PaymentMethod, Transaction
+from models import db, User, Recipient, PaymentItem, PaymentMethod, Transaction, Group
 from datetime import datetime
 import os
 from werkzeug.utils import secure_filename
@@ -187,6 +187,63 @@ def logout():
     logout_user()
     return redirect(url_for('index'))
 
+@app.route('/change_password', methods=['GET', 'POST'])
+def change_password():
+    if request.method == 'POST':
+        # First step: verify email
+        if 'verify_email' in request.form:
+            email = request.form.get('email')
+            user = User.query.filter_by(email=email).first()
+            
+            if not user:
+                flash('该邮箱地址未注册', 'error')
+            else:
+                # Store user email in session for verification
+                session['password_reset_email'] = email
+                flash(f'验证成功！请为 {user.username} 设置新密码', 'success')
+            
+            return redirect(url_for('change_password'))
+        
+        # Second step: change password
+        elif 'change_password' in request.form:
+            if 'password_reset_email' not in session:
+                flash('请先验证邮箱', 'error')
+                return redirect(url_for('change_password'))
+                
+            new_password = request.form.get('new_password', '')
+            confirm_password = request.form.get('confirm_password', '')
+
+            if new_password != confirm_password:
+                flash('新密码不匹配', 'error')
+            elif len(new_password) < 6:
+                flash('密码至少需要6个字符', 'error')
+
+
+            else:
+                # Update password
+                user = User.query.filter_by(email=session['password_reset_email']).first()
+                if user:
+                    user.set_password(new_password)
+                    db.session.commit()
+                    session.pop('password_reset_email', None)
+                    flash(f'用户 {user.username} 的密码已成功更新', 'success')
+                    return redirect(url_for('login'))
+                
+                flash('验证已过期，请重新验证邮箱', 'error')
+    
+    # Check if email is verified
+    email_verified = False
+    username = None
+    if 'password_reset_email' in session:
+        user = User.query.filter_by(email=session['password_reset_email']).first()
+        if user:
+            email_verified = True
+            username = user.username
+    
+    return render_template('c_pass.html',
+                         email_verified=email_verified,
+                         username=username)
+
 # app.py 中 gallery 路由优化
 @app.route('/gallery')
 def gallery():
@@ -306,13 +363,16 @@ def recipient_studio():
         flash('您没有访问此页面的权限', 'error')
         return redirect(url_for('index'))
     
-    # 获取活跃的收款项目（最多5个）
+    # Get all users except current user for individual assignments
+    all_users = User.query.filter(User.id != current_user.id).all()
+    
+    # Get active payment items (max 5)
     payment_items = PaymentItem.query.filter_by(
         recipient_id=current_user.id,
         status='active'
     ).order_by(PaymentItem.created_at.desc()).limit(5).all()
     
-    # 获取历史项目（非活跃状态，最多3个预览）
+    # Get history items (non-active, max 3 preview)
     history_items = PaymentItem.query.filter(
         PaymentItem.recipient_id == current_user.id,
         PaymentItem.status != 'active'
@@ -320,7 +380,7 @@ def recipient_studio():
     
     payment_methods = PaymentMethod.query.filter_by(recipient_id=current_user.id).all()
     
-    # 获取收款记录（他人支付，最多5个预览）
+    # Get transactions (others' payments, max 5 preview)
     transactions = Transaction.query.filter(
         Transaction.recipient_id == current_user.id,
         Transaction.payer_id != current_user.id
@@ -330,7 +390,9 @@ def recipient_studio():
                          payment_items=payment_items,
                          history_items=history_items,
                          payment_methods=payment_methods,
-                         transactions=transactions)
+                         transactions=transactions,
+                         all_users=all_users,  # Pass all users to template
+                         groups=current_user.groups)  # Pass user's groups to template
 
 # 添加删除支付方式功能
 # 保留这个更完整的版本，删除其他重复定义
@@ -408,29 +470,46 @@ def add_payment_item():
         flash('您没有访问此页面的权限', 'error')
         return redirect(url_for('index'))
     
+    # 获取基本数据
     title = request.form.get('title')
     description = request.form.get('description')
     amount_str = request.form.get('amount')
+    split_mode = request.form.get('split_mode', 'average')
+    
     try:
         amount = Decimal(amount_str)
     except (InvalidOperation, ValueError, TypeError):
         flash("请输入有效的金额", "error")
         return redirect(url_for('recipient_studio'))
-    participant_count = int(request.form.get('participant_count', 1))  # 默认值为1
+
+    # 处理不同分摊模式
+    participant_count = 1
+    assigned_users = None
+    group_id = None
     
-    # 确保participant_count至少为1
-    if participant_count < 1:
-        participant_count = 1
+    if split_mode == 'average':
+        participant_count = int(request.form.get('participant_count', 1))
+    elif split_mode == 'individual':
+        # 处理指定用户
+        user_ids = request.form.getlist('assigned_user_id')
+        amounts = request.form.getlist('assigned_amount')
+        assigned_users = {}
+        for uid, amt in zip(user_ids, amounts):
+            try:
+                assigned_users[int(uid)] = Decimal(amt)
+            except (ValueError, InvalidOperation):
+                flash(f"用户 {uid} 的金额无效", "error")
+                return redirect(url_for('recipient_studio'))
+        participant_count = len(assigned_users)
+    elif split_mode == 'group':
+        group_id = request.form.get('group_id')
+        group = Group.query.get(group_id)
+        if not group or current_user not in group.members:
+            flash("无效的群组选择", "error")
+            return redirect(url_for('recipient_studio'))
+        participant_count = len(group.members)
     
-    # 处理文件上传
-    image_url = None
-    if 'image' in request.files:
-        file = request.files['image']
-        if file and allowed_file(file.filename, app.config['ALLOWED_EXTENSIONS']):  # 修改这里
-            filename = secure_filename(file.filename)
-            file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
-            image_url = url_for('static', filename=f'uploads/{filename}')
-    
+    # 创建支付项目
     payment_item = PaymentItem(
         recipient_id=current_user.id,
         title=title,
@@ -439,22 +518,13 @@ def add_payment_item():
         image_url=image_url,
         participant_count=participant_count,
         status='active',
-        amount_received=amount/participant_count  # 创建者自动支付自己部分
+        split_mode=split_mode,
+        assigned_users=assigned_users,
+        group_id=group_id
     )
     
+    # 保存到数据库
     db.session.add(payment_item)
-    
-    # 创建创建者的自动支付记录
-    transaction = Transaction(
-        payment_item=payment_item,
-        payer_id=current_user.id,
-        recipient_id=current_user.id,
-        amount=amount/participant_count,
-        status='completed',
-        note='创建者自动支付'
-    )
-    
-    db.session.add(transaction)
     db.session.commit()
     
     flash('收款项目添加成功', 'success')
@@ -647,6 +717,66 @@ def transactions():
                          transactions=transactions,
                          total_sent=total_sent,
                          total_received=total_received)
+
+@app.route('/groups')
+@login_required
+def list_groups():
+    groups = Group.query.filter(Group.members.any(id=current_user.id)).all()
+    all_users = User.query.filter(User.id != current_user.id).all()  # Get all users except current user
+    return render_template('groups.html', groups=groups, all_users=all_users)
+
+@app.route('/create_group', methods=['POST'])
+@login_required
+def create_group():
+    name = request.form.get('name')
+    group = Group(name=name, creator_id=current_user.id)
+    group.members.append(current_user)  # 创建者自动加入
+    db.session.add(group)
+    db.session.commit()
+    flash('群组创建成功', 'success')
+    return redirect(url_for('list_groups'))
+
+@app.route('/add_to_group/<int:group_id>', methods=['POST'])
+@login_required
+def add_to_group(group_id):
+    group = Group.query.get_or_404(group_id)
+    user_id = request.form.get('user_id')
+    user = User.query.get(user_id)
+    if user not in group.members:
+        group.members.append(user)
+        db.session.commit()
+    return redirect(url_for('list_groups'))
+
+# 更新计算支付金额的函数
+def calculate_payments(payment_item):
+    if payment_item.split_mode == 'average':
+        # 传统AA平摊
+        return {user.id: payment_item.amount / payment_item.participant_count 
+                for user in payment_item.recipient.members}
+    elif payment_item.split_mode == 'individual':
+        # 各付各的
+        return payment_item.assigned_users
+    elif payment_item.split_mode == 'group':
+        # 群组AA
+        group_members = payment_item.group.members
+        return {user.id: payment_item.amount / len(group_members) 
+                for user in group_members}
+    
+# Add this route to app.py
+@app.route('/delete_group/<int:group_id>', methods=['POST'])
+@login_required
+def delete_group(group_id):
+    group = Group.query.get_or_404(group_id)
+    
+    # Only creator can delete the group
+    if group.creator_id != current_user.id:
+        flash('只有群组创建者可以删除群组', 'error')
+        return redirect(url_for('list_groups'))
+    
+    db.session.delete(group)
+    db.session.commit()
+    flash('群组已成功删除', 'success')
+    return redirect(url_for('list_groups'))
 
 # 在 if __name__ == '__main__': 前添加
 print("已注册路由：")

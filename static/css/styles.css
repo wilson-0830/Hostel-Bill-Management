@@ -1,25 +1,58 @@
-/* ===== 基础样式重置 ===== */
+/* ===== 现代化全局变量 ===== */
 :root {
-    --primary-color: #3498db;
-    --primary-hover: #2980b9;
-    --danger-color: #e74c3c;
-    --danger-hover: #c0392b;
-    --success-color: #2ecc71;
-    --success-hover: #27ae60;
-    --warning-color: #f39c12;
-    --dark-color: #2c3e50;
-    --light-color: #f5f5f5;
-    --text-color: #333;
+    /* 主色调 */
+    --primary-color: #4361ee;
+    --primary-hover: #3a56d4;
+    --accent-color: #4cc9f0;
+    --danger-color: #f72585;
+    --danger-hover: #d90429;
+    --success-color: #2ec4b6;
+    --success-hover: #1b9aaa;
+    --warning-color: #ff9f1c;
+    
+    /* 文本颜色 */
+    --text-dark: #2b2d42;
+    --text-light: #f8f9fa;
     --text-muted: #777;
-    --border-color: #ddd;
+    
+    /* 背景色 */
+    --bg-dark: #1a1a2e;
+    --bg-light: #f8f9fa;
+    --bg-white: #ffffff;
+    
+    /* 渐变 */
+    --gradient-primary: linear-gradient(135deg, #4361ee 0%, #4cc9f0 100%);
+    --gradient-dark: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+    
+    /* 阴影 */
     --shadow-sm: 0 1px 3px rgba(0,0,0,0.1);
-    --shadow-md: 0 4px 6px rgba(0,0,0,0.1);
-    --shadow-lg: 0 10px 15px rgba(0,0,0,0.1);
-    --radius-sm: 4px;
-    --radius-md: 8px;
-    --transition: all 0.3s ease;
+    --shadow-md: 0 4px 20px rgba(0,0,0,0.12);
+    --shadow-lg: 0 15px 30px rgba(0,0,0,0.15);
+    
+    /* 圆角 */
+    --radius-sm: 8px;
+    --radius-md: 12px;
+    --radius-lg: 16px;
+    
+    /* 过渡效果 */
+    --transition: all 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
+    
+    /* 边框 */
+    --border-light: 1px solid rgba(255,255,255,0.1);
+    --border-dark: 1px solid rgba(0,0,0,0.1);
+    
+    /* 导航栏 */
+    --navbar-height: 80px;
+    --navbar-bg: var(--bg-dark);
+    --navbar-text: rgba(255, 255, 255, 0.9);
+    --navbar-text-hover: white;
+    --navbar-active: var(--accent-color);
+    --navbar-dropdown-bg: var(--bg-white);
+    --navbar-dropdown-text: var(--text-dark);
+    --navbar-dropdown-hover: #f8f9fa;
 }
 
+/* ===== 基础重置 ===== */
 * {
     margin: 0;
     padding: 0;
@@ -28,40 +61,29 @@
 
 html {
     scroll-behavior: smooth;
+    font-size: 16px;
 }
 
 body {
-    font-family: 'Arial', sans-serif;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
     line-height: 1.6;
-    color: var(--text-color);
-    background-color: var(--light-color);
+    color: var(--text-dark);
+    background-color: var(--bg-light);
     min-height: 100vh;
     display: flex;
     flex-direction: column;
-}
-
-/* ===== 布局容器 ===== */
-.container {
-    width: 90%;
-    max-width: 1200px;
-    margin: 0 auto;
-    padding: 20px;
-}
-
-.main-container {
-    flex: 1;
-    padding: 2rem 0;
+    overflow-x: hidden;
 }
 
 /* ===== 排版 ===== */
 h1, h2, h3, h4, h5, h6 {
-    color: var(--dark-color);
+    color: var(--text-dark);
     margin-bottom: 1rem;
     line-height: 1.2;
 }
 
-h1 { font-size: 2rem; }
-h2 { font-size: 1.75rem; }
+h1 { font-size: 2.2rem; }
+h2 { font-size: 1.8rem; }
 h3 { font-size: 1.5rem; }
 h4 { font-size: 1.25rem; }
 
@@ -81,6 +103,19 @@ a:hover {
     text-decoration: underline;
 }
 
+/* ===== 布局容器 ===== */
+.container {
+    width: 90%;
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+.main-container {
+    flex: 1;
+    padding: 2rem 0;
+}
+
 /* ===== 表单元素 ===== */
 .form-group {
     margin-bottom: 1.5rem;
@@ -90,7 +125,7 @@ label {
     display: block;
     margin-bottom: 0.5rem;
     font-weight: 500;
-    color: var(--text-color);
+    color: var(--text-dark);
 }
 
 input[type="text"],
@@ -101,8 +136,8 @@ input[type="date"],
 textarea,
 select {
     width: 100%;
-    padding: 0.75rem;
-    border: 1px solid var(--border-color);
+    padding: 0.85rem;
+    border: 1px solid #ddd;
     border-radius: var(--radius-sm);
     font-size: 1rem;
     transition: var(--transition);
@@ -111,35 +146,38 @@ select {
 input:focus,
 textarea:focus,
 select:focus {
-    border-color: var(--primary-color);
+    border-color: var(--accent-color);
     outline: none;
-    box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.2);
+    box-shadow: 0 0 0 3px rgba(76, 201, 240, 0.2);
 }
 
 textarea {
-    min-height: 100px;
+    min-height: 120px;
     resize: vertical;
 }
 
 /* ===== 按钮 ===== */
 .btn {
-    display: inline-block;
-    background-color: var(--primary-color);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    background: var(--primary-color);
     color: white;
     border: none;
-    padding: 0.75rem 1.5rem;
+    padding: 0.8rem 1.5rem;
     border-radius: var(--radius-sm);
-    cursor: pointer;
     font-size: 1rem;
-    font-weight: 500;
-    text-align: center;
+    font-weight: 600;
+    cursor: pointer;
     transition: var(--transition);
+    text-align: center;
 }
 
 .btn:hover {
-    background-color: var(--primary-hover);
+    background: var(--primary-hover);
     transform: translateY(-2px);
-    box-shadow: var(--shadow-sm);
+    box-shadow: 0 4px 12px rgba(67, 97, 238, 0.3);
 }
 
 .btn-block {
@@ -148,30 +186,30 @@ textarea {
 }
 
 .btn-outline {
-    background-color: transparent;
-    border: 1px solid var(--primary-color);
+    background: transparent;
+    border: 2px solid var(--primary-color);
     color: var(--primary-color);
 }
 
 .btn-outline:hover {
-    background-color: var(--primary-color);
+    background: var(--primary-color);
     color: white;
 }
 
 .btn-danger {
-    background-color: var(--danger-color);
+    background: var(--danger-color);
 }
 
 .btn-danger:hover {
-    background-color: var(--danger-hover);
+    background: var(--danger-hover);
 }
 
 .btn-success {
-    background-color: var(--success-color);
+    background: var(--success-color);
 }
 
 .btn-success:hover {
-    background-color: var(--success-hover);
+    background: var(--success-hover);
 }
 
 .btn[disabled] {
@@ -185,13 +223,77 @@ textarea {
     background: white;
     border-radius: var(--radius-md);
     box-shadow: var(--shadow-sm);
-    padding: 1.5rem;
+    padding: 1.8rem;
     margin-bottom: 2rem;
     transition: var(--transition);
+    border: var(--border-dark);
 }
 
 .card:hover {
     box-shadow: var(--shadow-md);
+    transform: translateY(-3px);
+}
+
+/* ===== 通知系统 ===== */
+.notification {
+    position: fixed;
+    bottom: 1.5rem;
+    right: 1.5rem;
+    padding: 1rem 1.5rem;
+    border-radius: var(--radius-md);
+    box-shadow: var(--shadow-lg);
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    z-index: 1000;
+    transform: translateY(100px);
+    opacity: 0;
+    transition: all 0.3s ease;
+    max-width: 350px;
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    background: rgba(255, 255, 255, 0.95);
+}
+
+.notification.show {
+    transform: translateY(0);
+    opacity: 1;
+}
+
+.notification.success {
+    background: rgba(46, 213, 115, 0.95);
+    color: white;
+}
+
+.notification.info {
+    background: rgba(52, 152, 219, 0.95);
+    color: white;
+}
+
+.notification.warning {
+    background: rgba(241, 196, 15, 0.95);
+    color: white;
+}
+
+.notification.error {
+    background: rgba(231, 76, 60, 0.95);
+    color: white;
+}
+
+.notification i {
+    font-size: 1.5rem;
+}
+
+.notification-close {
+    margin-left: auto;
+    cursor: pointer;
+    opacity: 0.8;
+    transition: var(--transition);
+}
+
+.notification-close:hover {
+    opacity: 1;
+    transform: scale(1.1);
 }
 
 /* ===== 工具类 ===== */
@@ -234,253 +336,15 @@ textarea {
         padding: 15px;
     }
     
-    h1 { font-size: 1.75rem; }
+    h1 { font-size: 1.8rem; }
     h2 { font-size: 1.5rem; }
+    h3 { font-size: 1.3rem; }
     
     .d-flex {
         flex-direction: column;
     }
-}
-
-/* ===== 导航栏增强样式 ===== */
-
-/* 下拉菜单支持 */
-.navbar-item.has-dropdown {
-    position: relative;
-}
-
-.navbar-dropdown {
-    position: absolute;
-    top: 100%;
-    left: 0;
-    background: white;
-    min-width: 200px;
-    border-radius: 0 0 var(--radius-md) var(--radius-md);
-    box-shadow: var(--shadow-lg);
-    opacity: 0;
-    visibility: hidden;
-    transform: translateY(-10px);
-    transition: all 0.3s ease;
-    z-index: 100;
-}
-
-.navbar-item.has-dropdown:hover .navbar-dropdown {
-    opacity: 1;
-    visibility: visible;
-    transform: translateY(0);
-}
-
-.navbar-dropdown .navbar-item {
-    color: var(--text-color);
-    padding: 0.75rem 1.5rem;
-    border-bottom: 1px solid var(--border-color);
-}
-
-.navbar-dropdown .navbar-item:last-child {
-    border-bottom: none;
-}
-
-.navbar-dropdown .navbar-item:hover {
-    background-color: #f8f9fa;
-    color: var(--primary-color);
-}
-
-/* 响应式设计 - 移动端 */
-@media (max-width: 768px) {
-    .navbar-menu {
-        position: fixed;
-        top: 60px;
-        left: 0;
-        right: 0;
-        background: var(--dark-color);
-        flex-direction: column;
-        align-items: stretch;
-        padding: 1rem 0;
-        max-height: 0;
-        overflow: hidden;
-        transition: max-height 0.3s ease;
-        box-shadow: inset 0 4px 6px rgba(0, 0, 0, 0.1);
-    }
     
-    .navbar-menu.active {
-        max-height: 500px;
+    .card {
+        padding: 1.5rem;
     }
-    
-    .navbar-item {
-        padding: 1rem 1.5rem;
-        border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-    }
-    
-    .navbar-item.active::after {
-        display: none;
-    }
-    
-    .navbar-toggle {
-        display: block;
-    }
-    
-    .navbar-brand {
-        padding: 1rem 0;
-    }
-    
-    /* 移动端下拉菜单 */
-    .navbar-dropdown {
-        position: static;
-        box-shadow: none;
-        border-radius: 0;
-        opacity: 1;
-        visibility: visible;
-        transform: none;
-        max-height: 0;
-        overflow: hidden;
-        transition: max-height 0.3s ease;
-        background: rgba(0, 0, 0, 0.1);
-    }
-    
-    .navbar-item.has-dropdown:hover .navbar-dropdown {
-        max-height: 500px;
-    }
-}
-
-/* 添加一些动画效果 */
-@keyframes fadeIn {
-    from { opacity: 0; transform: translateY(-5px); }
-    to { opacity: 1; transform: translateY(0); }
-}
-
-.navbar-item {
-    animation: fadeIn 0.3s ease forwards;
-}
-
-/* 为不同导航项添加延迟动画 */
-.navbar-start .navbar-item:nth-child(1) { animation-delay: 0.1s; }
-.navbar-start .navbar-item:nth-child(2) { animation-delay: 0.2s; }
-.navbar-end .navbar-item:nth-child(1) { animation-delay: 0.3s; }
-.navbar-end .navbar-item:nth-child(2) { animation-delay: 0.4s; }
-
-/* Add these to your base styles.css */
-/* Consistent card styling */
-.card {
-    background: white;
-    border-radius: var(--radius-md);
-    box-shadow: var(--shadow-sm);
-    padding: 1.5rem;
-    margin-bottom: 2rem;
-    transition: var(--transition);
-}
-
-.card:hover {
-    box-shadow: var(--shadow-md);
-}
-
-/* Consistent section headers */
-.section-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 1.5rem;
-    padding-bottom: 0.75rem;
-    border-bottom: 1px solid var(--border-color);
-}
-
-.section-header h2 {
-    font-size: 1.4rem;
-    display: flex;
-    align-items: center;
-    gap: 0.75rem;
-    color: var(--dark-color);
-}
-
-/* Consistent empty states */
-.empty-state {
-    text-align: center;
-    padding: 3rem 1rem;
-    color: var(--text-muted);
-    background: white;
-    border-radius: var(--radius-md);
-    box-shadow: var(--shadow-sm);
-}
-
-.empty-state i {
-    font-size: 3rem;
-    margin-bottom: 1rem;
-    opacity: 0.5;
-}
-
-.empty-state p {
-    margin-bottom: 1.5rem;
-}
-
-/* Consistent buttons */
-.btn {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.5rem;
-    padding: 0.75rem 1.5rem;
-    font-weight: 500;
-}
-
-/* Consistent form elements */
-.form-group {
-    margin-bottom: 1.5rem;
-}
-
-input, textarea, select {
-    width: 100%;
-    padding: 0.75rem;
-    border: 1px solid var(--border-color);
-    border-radius: var(--radius-sm);
-}
-
-/* 添加在index.css文件底部 */
-/* ===== 通知样式 ===== */
-.notification {
-    position: fixed;
-    bottom: 1.5rem;
-    right: 1.5rem;
-    padding: 1rem 1.5rem;
-    border-radius: var(--radius-md);
-    box-shadow: var(--shadow-lg);
-    display: flex;
-    align-items: center;
-    gap: 1rem;
-    z-index: 1000;
-    transform: translateY(100px);
-    opacity: 0;
-    transition: all 0.3s ease;
-    max-width: 350px;
-}
-
-.notification.show {
-    transform: translateY(0);
-    opacity: 1;
-}
-
-.notification.success {
-    background: var(--success-color);
-    color: white;
-}
-
-.notification.info {
-    background: var(--primary-color);
-    color: white;
-}
-
-.notification.warning {
-    background: var(--warning-color);
-    color: white;
-}
-
-.notification i {
-    font-size: 1.5rem;
-}
-
-.notification-close {
-    margin-left: auto;
-    cursor: pointer;
-    opacity: 0.8;
-}
-
-.notification-close:hover {
-    opacity: 1;
 }

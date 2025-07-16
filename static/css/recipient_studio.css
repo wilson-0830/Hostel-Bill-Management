@@ -412,3 +412,69 @@ textarea {
     justify-content: center;
   }
 }
+
+/* 添加分摊模式相关样式 */
+.assigned-user-row {
+    display: flex;
+    gap: 0.5rem;
+    margin-bottom: 0.5rem;
+    align-items: center;
+}
+
+.assigned-user-row select {
+    flex: 2;
+}
+
+.assigned-user-row input {
+    flex: 1;
+}
+
+.split-details {
+    background: #f8f9fa;
+    padding: 1rem;
+    border-radius: 6px;
+    margin: 1rem 0;
+}
+
+.split-details h4 {
+    margin-top: 0;
+    color: #444;
+}
+
+/* Assigned users styling */
+.assigned-user-row {
+    display: flex;
+    gap: 0.8rem;
+    margin-bottom: 0.8rem;
+    align-items: center;
+}
+
+.assigned-user-row select {
+    flex: 2;
+    padding: 0.6rem;
+    border-radius: 4px;
+    border: 1px solid #ddd;
+}
+
+.assigned-user-row input {
+    flex: 1;
+    padding: 0.6rem;
+    border-radius: 4px;
+    border: 1px solid #ddd;
+}
+
+.assigned-user-row button {
+    padding: 0.5rem;
+    border-radius: 4px;
+}
+
+/* Group selection styling */
+#group_field .text-muted {
+    font-size: 0.9rem;
+    margin-top: 0.5rem;
+}
+
+#group_field .text-muted a {
+    color: var(--primary-color);
+    font-weight: 500;
+}

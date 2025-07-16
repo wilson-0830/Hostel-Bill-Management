@@ -26,28 +26,62 @@
                 <label for="amount">总金额（RM）</label>
                 <input type="number" id="amount" name="amount" min="0.01" step="0.01" required>
             </div>
+            
+            <!-- New split mode selection -->
             <div class="form-group">
-                <label for="participant_count">付款人数（包括自己）</label>
-                <input type="number" id="participant_count" name="participant_count" min="1" value="1" required>
+                <label for="split_mode">分摊模式</label>
+                <select id="split_mode" name="split_mode" required onchange="updateFormFields()">
+                    <option value="average">传统AA (平均分摊)</option>
+                    <option value="individual">指定用户 (各付各的)</option>
+                    <option value="group">群组AA</option>
+                </select>
             </div>
+
+            <!-- Group selection (hidden by default) -->
+            <div class="form-group" id="group_field" style="display:none">
+                <label for="group_id">选择群组</label>
+                
+                {% if groups %}
+                <select id="group_id" name="group_id" required>
+                    <option value="">选择群组</option>
+                    {% for group in groups %}
+                    <option value="{{ group.id }}">{{ group.name }}</option>
+                    {% endfor %}
+                </select>
+                <p class="text-muted">
+                    <a href="{{ url_for('list_groups') }}">查看群组</a>
+                </p>
+                {% else %}
+                <select disabled>
+                    <option value="" disabled>您还没有创建任何群组</option>
+                </select>
+                <p class="text-muted">
+                    请先<a href="{{ url_for('list_groups') }}">创建群组</a>
+                </p>
+                {% endif %}
+            </div>
+
+
+            <!-- Assigned users field (hidden by default) -->
+            <div class="form-group" id="assigned_users_field" style="display:none">
+                <label>指定用户及金额</label>
+                <div id="assigned_users_container">
+                    <!-- Dynamic user inputs will be added here -->
+                </div>
+                <button type="button" class="btn btn-small" onclick="addUserField()">
+                    <i class="fas fa-plus"></i> 添加用户
+                </button>
+            </div>
+
             <div class="form-group">
                 <label for="image">项目图片（JPG/PNG）</label>
                 <input type="file" id="image" name="image" accept="image/*">
             </div>
             <button type="submit" class="btn">添加项目</button>
-
-            <!-- 在表单提交后添加 -->
-            <script>
-            document.querySelector('form').addEventListener('submit', function(e) {
-                // 这里可以添加表单验证
-                // 成功后会自动显示通知，因为后端会返回flash消息
-            });
-            </script>
         </form>
         
         <div class="item-list">
             {% for item in payment_items %}
-            <!-- 修改项目显示部分 -->
             <div class="payment-item">
                 <div class="item-header">
                     <h3>{{ item.title }}</h3>
@@ -75,7 +109,6 @@
                         <span><i class="fas fa-user-check"></i> {{ (item.amount_received/(item.amount/item.participant_count))|round(0) }}人已支付</span>
                     </div>
                     
-                    <!-- 添加操作按钮 -->
                     <div class="item-actions">
                         {% if item.status == 'active' %}
                         <form method="POST" action="{{ url_for('update_payment_item_status', item_id=item.id) }}">
@@ -103,8 +136,6 @@
         </div>
     </section>
     
-    <!-- New version with link to full page -->
-    <!-- 历史项目部分 -->
     <section class="history-items">
         <div class="section-header">
             <h2><i class="fas fa-history"></i> 历史项目</h2>
@@ -206,7 +237,6 @@
         </div>
     </section>
     
-    <!-- 收款记录部分 -->
     <section class="transactions">
         <div class="section-header">
             <h2><i class="fas fa-exchange-alt"></i> 收款记录</h2>
@@ -248,4 +278,49 @@
         </div>
     </section>
 </div>
+
+<script>
+function updateFormFields() {
+    const mode = document.getElementById('split_mode').value;
+    document.getElementById('group_field').style.display = 
+        mode === 'group' ? 'block' : 'none';
+    document.getElementById('assigned_users_field').style.display = 
+        mode === 'individual' ? 'block' : 'none';
+    
+    // Clear fields when switching modes
+    if (mode !== 'individual') {
+        document.getElementById('assigned_users_container').innerHTML = '';
+    }
+}
+
+function addUserField() {
+    const container = document.getElementById('assigned_users_container');
+    const div = document.createElement('div');
+    div.className = 'assigned-user-row';
+    div.innerHTML = `
+        <select name="assigned_user_id" required>
+            <option value="">选择用户</option>
+            {% for user in all_users %}
+            <option value="{{ user.id }}">{{ user.username }}</option>
+            {% endfor %}
+        </select>
+        <input type="number" name="assigned_amount" min="0.01" step="0.01" placeholder="金额" required>
+        <button type="button" class="btn btn-small btn-danger" onclick="this.parentNode.remove()">
+            <i class="fas fa-times"></i>
+        </button>
+    `;
+    container.appendChild(div);
+}
+
+// Initialize form fields on page load
+document.addEventListener('DOMContentLoaded', function() {
+    updateFormFields();
+    
+    // Add a default user field if individual mode is selected
+    const splitMode = document.getElementById('split_mode').value;
+    if (splitMode === 'individual') {
+        addUserField();
+    }
+});
+</script>
 {% endblock %}

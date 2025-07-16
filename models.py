@@ -9,7 +9,7 @@ db = SQLAlchemy()
 
 class User(db.Model, UserMixin):
     __tablename__ = 'users'
-    
+
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(50), unique=True, nullable=False)
     email = db.Column(db.String(100), unique=True, nullable=False)
@@ -17,16 +17,24 @@ class User(db.Model, UserMixin):
     balance = db.Column(db.Numeric(12, 2), default=Decimal('0.00'))
     is_recipient = db.Column(db.Boolean, default=False)
     created_at = db.Column(db.DateTime, default=db.func.current_timestamp())
-    
+
     recipient_profile = db.relationship('Recipient', backref='user', uselist=False)
     payment_items = db.relationship('PaymentItem', backref='recipient')
     payment_methods = db.relationship('PaymentMethod', backref='recipient')
+    groups = db.relationship('Group', secondary='group_members', back_populates='members')
 
     def set_password(self, password):
         self.password_hash = generate_password_hash(password)
-    
+
     def check_password(self, password):
         return check_password_hash(self.password_hash, password)
+
+
+# 群组成员关联表（多对多）
+group_members = db.Table('group_members',
+    db.Column('group_id', db.Integer, db.ForeignKey('groups.id')),
+    db.Column('user_id', db.Integer, db.ForeignKey('users.id'))
+)
 
 class Recipient(db.Model):
     __tablename__ = 'recipients'
@@ -51,6 +59,13 @@ class PaymentItem(db.Model):
     currency = db.Column(db.String(3), default='CNY')
     created_at = db.Column(db.DateTime, default=db.func.current_timestamp())
 
+    split_mode = db.Column(db.String(20), default='average')  # 'average'/'individual'/'group'
+    assigned_users = db.Column(db.JSON)  # 格式: {user_id: amount}
+    group_id = db.Column(db.Integer, db.ForeignKey('groups.id'))
+
+    group = db.relationship('Group', foreign_keys=[group_id])
+
+
 class PaymentMethod(db.Model):
     __tablename__ = 'payment_methods'
 
@@ -58,8 +73,9 @@ class PaymentMethod(db.Model):
     recipient_id = db.Column(db.Integer, db.ForeignKey('users.id'))
     method_type = db.Column(db.String(20), nullable=False)  # 微信/支付宝/银行卡
     account_info = db.Column(db.String(255))
-    qr_code_image = db.Column(db.String(255))  # 图片路径
+    qr_code_image = db.Column(db.String(255))
     is_default = db.Column(db.Boolean, default=False)
+
 
 class Transaction(db.Model):
     __tablename__ = 'transactions'
@@ -83,6 +99,16 @@ class Transaction(db.Model):
     payer = db.relationship('User', foreign_keys=[payer_id])
     recipient = db.relationship('User', foreign_keys=[recipient_id])
     payment_method = db.relationship('PaymentMethod', foreign_keys=[payment_method_id])
+
+class Group(db.Model):
+    __tablename__ = 'groups'
+    
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(100), nullable=False)
+    creator_id = db.Column(db.Integer, db.ForeignKey('users.id'))
+    created_at = db.Column(db.DateTime, default=db.func.current_timestamp())
+    
+    members = db.relationship('User', secondary='group_members', back_populates='groups')
 
 # -------------------------------
 # 自动删除上传图片（封面图、二维码）
