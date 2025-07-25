@@ -348,11 +348,14 @@ def confirm_payment():
         return redirect(url_for('index'))
     recipient = payment_item.recipient
     payment_methods = recipient.payment_methods
+
+    total_users = User.query.count()
     
     return render_template('confirm_payment.html',
                          payment_item=payment_item,
                          amount=amount,
-                         payment_methods=payment_methods)
+                         payment_methods=payment_methods,
+                         total_users=total_users)
 
 # 收款工作室
 # app.py 中修改收款工作室相关路由
@@ -385,6 +388,8 @@ def recipient_studio():
         Transaction.recipient_id == current_user.id,
         Transaction.payer_id != current_user.id
     ).order_by(Transaction.created_at.desc()).limit(5).all()
+
+    total_users = User.query.count()
     
     return render_template('recipient_studio.html',
                          payment_items=payment_items,
@@ -392,7 +397,8 @@ def recipient_studio():
                          payment_methods=payment_methods,
                          transactions=transactions,
                          all_users=all_users,  # Pass all users to template
-                         groups=current_user.groups)  # Pass user's groups to template
+                         groups=current_user.groups,
+                         total_users=total_users)  # Pass user's groups to template
 
 # 添加删除支付方式功能
 # 保留这个更完整的版本，删除其他重复定义
@@ -505,7 +511,7 @@ def add_payment_item():
     
     if split_mode == 'average':
         # 传统AA：获取参与者数量（包括自己）
-        participant_count = int(request.form.get('participant_count', 1))
+        participant_count = User.query.count()
     
     elif split_mode == 'individual':
         # 处理指定用户
@@ -571,10 +577,32 @@ def add_payment_item():
     
     # 保存到数据库
     db.session.add(payment_item)
-    db.session.commit()
-    
+    db.session.commit()  # 需要先提交以获取item.id
+
+    # 自动为收款者创建支付记录（仅限传统AA模式）
+    if split_mode == 'average':
+        # 计算每个用户的应付金额
+        per_user_amount = amount / Decimal(participant_count)
+        
+        # 创建交易记录
+        transaction = Transaction(
+            payment_item_id=payment_item.id,
+            payer_id=current_user.id,
+            recipient_id=current_user.id,
+            amount=per_user_amount,
+            status='completed',
+            is_personal_payment=True,
+            note='项目发起者自动支付'
+        )
+        db.session.add(transaction)
+        
+        # 更新项目的已收金额
+        payment_item.amount_received = per_user_amount
+        db.session.commit()  # 提交更新后的金额
+
     flash('收款项目添加成功', 'success')
     return redirect(url_for('recipient_studio'))
+
 
 # 添加付款方式
 @app.route('/add_payment_method', methods=['POST'])

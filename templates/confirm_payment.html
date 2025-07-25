@@ -12,7 +12,13 @@
         <p>项目描述: {{ payment_item.description|default("暂无描述", true) }}</p>
         <p>应付金额: RM{{ amount }}</p>
         <p>收款方: {{ payment_item.recipient.username }}</p>
-        <p>参与人数: {{ payment_item.participant_count }}人</p>
+        <p>参与人数: 
+            {% if payment_item.split_mode == 'average' %}
+                {{ total_users }}人
+            {% else %}
+                {{ payment_item.participant_count }}人
+            {% endif %}
+        </p>
         <div class="progress-container">
             <div class="progress-bar">
                 <div class="progress" style="width: {{ (payment_item.amount_received/payment_item.amount)*100 }}%"></div>

@@ -96,7 +96,8 @@ class PaymentItem(db.Model):
         """计算特定用户的应付金额"""
         if self.split_mode == 'average':
             # 传统AA：平均分摊（包括自己）
-            return self.amount / Decimal(self.participant_count)
+            total_users = User.query.count()
+            return self.amount / Decimal(total_users)
         
         elif self.split_mode == 'individual':
             # 指定用户：返回该用户被分配的金额
@@ -112,10 +113,13 @@ class PaymentItem(db.Model):
     
     def calculate_own_amount(self):
         """计算收款者自身应付金额"""
-        total_assigned = Decimal('0.00')
+        if self.split_mode == 'average':
+            # 传统AA：使用总用户数计算分摊金额
+            return self.amount / Decimal(self.participant_count)
         
-        if self.split_mode == 'individual':
+        elif self.split_mode == 'individual':
             # 指定用户模式：总金额 - 其他用户指定金额
+            total_assigned = Decimal('0.00')
             for user_id, amount in self.assigned_users.items():
                 if user_id != self.recipient_id:
                     total_assigned += amount
@@ -125,10 +129,6 @@ class PaymentItem(db.Model):
             # 群组模式：平均分摊（包括自己）
             member_count = len(self.group.members)
             return self.amount / Decimal(member_count)
-        
-        elif self.split_mode == 'average':
-            # 传统AA：平均分摊（包括自己）
-            return self.amount / Decimal(self.participant_count)
         
         return Decimal('0.00')
 
