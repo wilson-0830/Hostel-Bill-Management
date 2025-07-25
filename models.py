@@ -132,6 +132,16 @@ class PaymentItem(db.Model):
             return self.amount / Decimal(member_count)
         
         return Decimal('0.00')
+    
+    def has_payer_paid(self, payer_id):
+        """检查指定用户是否已支付"""
+        return db.session.query(
+            Transaction.query.filter_by(
+                payment_item_id=self.id,
+                payer_id=payer_id,
+                is_personal_payment=True
+            ).exists()
+        ).scalar()
 
 class PaymentMethod(db.Model):
     __tablename__ = 'payment_methods'

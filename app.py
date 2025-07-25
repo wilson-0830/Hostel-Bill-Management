@@ -577,17 +577,6 @@ def add_payment_item():
         except (ValueError, InvalidOperation) as e:
             flash(f"金额格式错误: {str(e)}", "error")
             return redirect(url_for('recipient_studio'))
-        
-        # 自动添加当前用户（收款者）并计算其金额
-        # 总金额 - 其他用户金额和 = 自己的金额
-        other_users_total = sum(assigned_users.values())
-        own_amount = amount - other_users_total
-        if own_amount < 0:
-            flash("其他用户金额总和不能超过总金额", "error")
-            return redirect(url_for('recipient_studio'))
-        
-        assigned_users[current_user.id] = own_amount
-        participant_count = len(assigned_users)
     
     elif split_mode == 'group':
         group_id = request.form.get('group_id')
@@ -617,21 +606,27 @@ def add_payment_item():
     db.session.add(payment_item)
     db.session.commit()  # 需要先提交以获取item.id
 
-    # 自动为收款者创建支付记录（仅限传统AA模式）
+    # 计算当前用户的应付金额
     if split_mode == 'average':
-        # 计算每个用户的应付金额
         per_user_amount = amount / Decimal(participant_count)
-        
+    elif split_mode == 'individual':
+        # 从之前计算的assigned_users字典中获取当前用户的金额
+        per_user_amount = assigned_users.get(current_user.id, Decimal('0.00'))
+    elif split_mode == 'group':
+        per_user_amount = amount / Decimal(participant_count)
+
+    # 确保金额大于0才创建支付记录
+    if per_user_amount > Decimal('0.00'):
         # 创建交易记录
         transaction = Transaction(
             payment_item_id=payment_item.id,
             payer_id=current_user.id,
-            recipient_id=current_user.id,
+            recipient_id=current_user.id,  # 收款工作室主人
             amount=per_user_amount,
             status='completed',
             is_personal_payment=True,
             note='项目发起者自动支付',
-            created_at=datetime.now(timezone.utc)  # 确保时间是UTC格式
+            created_at=datetime.now(timezone.utc)
         )
         db.session.add(transaction)
         

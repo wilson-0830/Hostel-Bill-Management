@@ -107,22 +107,30 @@
                     <div class="own-payment-info">
                         <i class="fas fa-user"></i> 
                         我的应付金额: RM{{ "%.2f"|format(item.calculate_own_amount()) }}
-                        <span class="badge badge-success">已支付</span>
+                        {% if item.transactions|selectattr('payer_id', 'equalto', current_user.id)|list %}
+                            <span class="badge badge-success">已支付</span>
+                        {% else %}
+                            <span class="badge badge-warning">待支付</span>
+                        {% endif %}
                     </div>
                     
                     <div class="participant-info">
                         <span><i class="fas fa-users"></i> 
                             {% if item.split_mode == 'average' %}
                                 {{ total_users }}人参与
+                            {% elif item.split_mode == 'group' %}
+                                {{ item.group.members|length }}人参与
                             {% else %}
-                                {{ item.participant_count }}人参与
+                                {{ item.assigned_users|length }}人参与
                             {% endif %}
                         </span>
                         <span><i class="fas fa-user-check"></i> 
                             {% if item.split_mode == 'average' %}
                                 {{ (item.amount_received/(item.amount/total_users))|round(0) }}人已支付
+                            {% elif item.split_mode == 'group' %}
+                                {{ (item.amount_received/(item.amount/item.group.members|length))|round(0) }}人已支付
                             {% else %}
-                                {{ (item.amount_received/(item.amount/item.participant_count))|round(0) }}人已支付
+                                {{ (item.amount_received/(item.amount/item.assigned_users|length))|round(0) }}人已支付
                             {% endif %}
                         </span>
                     </div>
