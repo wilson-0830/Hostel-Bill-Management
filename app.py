@@ -2,7 +2,8 @@ from flask import Flask, render_template, redirect, url_for, flash, request, ses
 from flask_login import LoginManager, current_user, login_user, logout_user, login_required
 from flask_sqlalchemy import SQLAlchemy
 from models import db, User, Recipient, PaymentItem, PaymentMethod, Transaction, Group
-from datetime import datetime
+from datetime import datetime, timezone, timedelta
+from flask_moment import Moment
 import os
 from werkzeug.utils import secure_filename
 from decimal import Decimal, InvalidOperation
@@ -24,6 +25,14 @@ db.init_app(app)
 migrate = Migrate(app, db)  # 添加这行
 login_manager = LoginManager(app)
 login_manager.login_view = 'login'
+moment = Moment(app)
+
+
+def to_local_time(utc_time):
+    """将UTC时间转换为UTC+8时区时间"""
+    if utc_time is None:
+        return None
+    return utc_time.replace(tzinfo=timezone.utc).astimezone(timezone(timedelta(hours=12)))
 
 
 def save_gallery_image(file):
@@ -117,9 +126,18 @@ def index():
         (Transaction.recipient_id == current_user.id)
     ).order_by(Transaction.created_at.desc()).limit(5).all()
     
+    # 获取最近交易并转换时区
+    transactions = Transaction.query.filter(
+        (Transaction.payer_id == current_user.id) | 
+        (Transaction.recipient_id == current_user.id)
+    ).order_by(Transaction.created_at.desc()).limit(5).all()
+    
+    for trans in transactions:
+        trans.created_at = to_local_time(trans.created_at)
+    
     return render_template('index.html',
                          payment_items=payment_items,
-                         user_payments=user_payments,  # 传递用户支付状态
+                         user_payments=user_payments,
                          pending_payments=pending_payments,
                          paid_amount=paid_amount,
                          transactions=transactions)
@@ -389,6 +407,10 @@ def recipient_studio():
         Transaction.payer_id != current_user.id
     ).order_by(Transaction.created_at.desc()).limit(5).all()
 
+    # 转换时间为本地时区
+    for trans in transactions:
+        trans.created_at = to_local_time(trans.created_at)
+
     total_users = User.query.count()
     
     return render_template('recipient_studio.html',
@@ -434,14 +456,19 @@ def history_items():
         flash('您没有访问此页面的权限', 'error')
         return redirect(url_for('index'))
     
-    # Make sure this query returns PaymentItem objects
     history_items = PaymentItem.query.filter(
         PaymentItem.recipient_id == current_user.id,
         PaymentItem.status != 'active'
     ).order_by(PaymentItem.created_at.desc()).all()
     
+    # 转换时间为本地时区
+    for item in history_items:
+        item.created_at = to_local_time(item.created_at)
+        if item.updated_at:
+            item.updated_at = to_local_time(item.updated_at)
+    
     return render_template('history_items.html', 
-                         history_items=history_items)  # Passing the list correctly
+                         history_items=history_items)
 
 # 删除项目
 @app.route('/delete_payment_item/<int:item_id>', methods=['POST'])
@@ -592,7 +619,8 @@ def add_payment_item():
             amount=per_user_amount,
             status='completed',
             is_personal_payment=True,
-            note='项目发起者自动支付'
+            note='项目发起者自动支付',
+            created_at=datetime.now(timezone.utc)  # 确保时间是UTC格式
         )
         db.session.add(transaction)
         
@@ -786,6 +814,12 @@ def transactions():
         Transaction.recipient_id == current_user.id,
         Transaction.status == 'completed'
     ).scalar() or Decimal('0.00')
+    
+    # 转换时间为本地时区
+    for trans in transactions:
+        trans.created_at = to_local_time(trans.created_at)
+        if trans.refund_at:
+            trans.refund_at = to_local_time(trans.refund_at)
     
     return render_template('transactions.html',
                          transactions=transactions,

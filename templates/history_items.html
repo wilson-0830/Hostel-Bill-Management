@@ -48,11 +48,11 @@
                             </div>
                             <div class="col-md-6 text-right">
                                 <p class="text-muted">
-                                    <small>创建时间: {{ item.created_at.strftime('%Y-%m-%d %H:%M') }}</small>
+                                    <small>创建时间: {{ moment(item.created_at).format('YYYY-MM-DD HH:mm') }}</small>
                                 </p>
                                 {% if item.updated_at %}
                                 <p class="text-muted">
-                                    <small>最后更新: {{ item.updated_at.strftime('%Y-%m-%d %H:%M') }}</small>
+                                    <small>最后更新: {{ moment(item.updated_at).format('YYYY-MM-DD HH:mm') }}</small>
                                 </p>
                                 {% endif %}
                             </div>

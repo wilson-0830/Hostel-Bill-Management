@@ -174,7 +174,9 @@
                 <p class="item-description">{{ item.description|default("暂无描述", true) }}</p>
                 <div class="item-footer">
                     <span class="amount">¥{{ "%.2f"|format(item.amount) }}</span>
-                    <span class="date">{{ item.created_at.strftime('%Y-%m-%d') }}</span>
+                    <span class="transaction-date">
+                        <i class="far fa-clock"></i> {{ moment(trans.created_at).format('YYYY-MM-DD HH:mm') }}
+                    </span>
                     <form method="POST" action="{{ url_for('delete_payment_item', item_id=item.id) }}"
                         onsubmit="return confirm('确定要永久删除此项目吗？');" class="delete-form">
                         <button type="submit" class="btn btn-small btn-danger">

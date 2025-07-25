@@ -1,4 +1,5 @@
 from decimal import Decimal
+from datetime import datetime, timezone
 from flask_sqlalchemy import SQLAlchemy
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_login import UserMixin
@@ -155,7 +156,7 @@ class Transaction(db.Model):
     status = db.Column(db.String(20), default='pending')
     note = db.Column(db.Text)
     proof_image = db.Column(db.String(255))
-    created_at = db.Column(db.DateTime, default=db.func.current_timestamp())
+    created_at = db.Column(db.DateTime, default=lambda: datetime.now(timezone.utc))
     completed_at = db.Column(db.DateTime)
     is_personal_payment = db.Column(db.Boolean, default=False)
     refund_status = db.Column(db.String(20))  # refunded/cancelled

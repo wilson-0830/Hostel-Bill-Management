@@ -8,6 +8,8 @@
     {% block extra_css %}
         <link rel="stylesheet" href="{{ url_for('static', filename='css/base.css') }}">
     {% endblock %}
+    {{ moment.include_moment() }}
+    {{ moment.locale('zh-cn') }}
 </head>
 <body>
     <nav class="navbar">
@@ -130,6 +132,8 @@
             }
         });
         </script>
+        {{ moment.include_moment() }}
+        {{ moment.locale('zh-cn') }}  
     {% endblock %}
 
     <!-- 添加到base.html的body结束前 -->
