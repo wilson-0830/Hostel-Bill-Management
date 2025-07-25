@@ -41,8 +41,8 @@
                                         <div class="progress" style="width: {{ (item.amount_received/item.amount)*100 }}%"></div>
                                     </div>
                                     <div class="progress-text">
-                                        <span>已收: ¥{{ "%.2f"|format(item.amount_received) }}</span>
-                                        <span>目标: ¥{{ "%.2f"|format(item.amount) }}</span>
+                                        <span>已收: RM{{ "%.2f"|format(item.amount_received) }}</span>
+                                        <span>目标: RM{{ "%.2f"|format(item.amount) }}</span>
                                     </div>
                                 </div>
                             </div>
@@ -51,9 +51,9 @@
                                     <small>创建时间: {{ moment(item.created_at).format('YYYY-MM-DD HH:mm') }}</small>
                                 </p>
                                 {% if item.updated_at %}
-                                <p class="text-muted">
-                                    <small>最后更新: {{ moment(item.updated_at).format('YYYY-MM-DD HH:mm') }}</small>
-                                </p>
+                                    <p class="text-muted">
+                                        <small>最后更新: {{ moment(item.updated_at).format('YYYY-MM-DD HH:mm') }}</small>
+                                    </p>
                                 {% endif %}
                             </div>
                         </div>

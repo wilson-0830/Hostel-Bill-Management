@@ -464,7 +464,7 @@ def history_items():
     # 转换时间为本地时区
     for item in history_items:
         item.created_at = to_local_time(item.created_at)
-        if item.updated_at:
+        if hasattr(item, 'updated_at') and item.updated_at:
             item.updated_at = to_local_time(item.updated_at)
     
     return render_template('history_items.html', 
@@ -729,21 +729,17 @@ def debug_payment_items():
     return {"broken_items": broken_items}
 
 
-@app.route('/fix_payment_items')
-def fix_payment_items():
-    from decimal import Decimal, InvalidOperation
-    fixed = 0
-    for item in PaymentItem.query.all():
-        try:
-            if isinstance(item.amount, str):
-                item.amount = Decimal(item.amount)
-            if isinstance(item.amount_received, str):
-                item.amount_received = Decimal(item.amount_received)
-            fixed += 1
-        except InvalidOperation:
-            db.session.delete(item)  # optional: remove corrupted rows
-    db.session.commit()
-    return f"Fixed {fixed} payment items."
+@app.route('/fix_payment_methods')
+def fix_payment_methods():
+    from sqlalchemy import text
+    try:
+        # For SQLite
+        db.session.execute(text('ALTER TABLE payment_methods ADD COLUMN updated_at DATETIME'))
+        db.session.commit()
+        return 'Added updated_at column to payment_methods'
+    except Exception as e:
+        db.session.rollback()
+        return f'Error: {str(e)}'
 
 
 @app.route('/transactions')

@@ -142,6 +142,7 @@ class PaymentMethod(db.Model):
     account_info = db.Column(db.String(255))
     qr_code_image = db.Column(db.String(255))
     is_default = db.Column(db.Boolean, default=False)
+    updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
 
 
 class Transaction(db.Model):
