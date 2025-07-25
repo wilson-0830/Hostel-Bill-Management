@@ -81,9 +81,16 @@
                             <i class="fas fa-users"></i>
                             <span>{{ item.participant_count }}人</span>
                         </div>
+                        <!-- 修改点1: 显示当前用户应付金额 -->
                         <div class="meta-item">
                             <i class="fas fa-money-bill-alt"></i>
-                            <span>RM{{ "%.2f"|format(item.amount/item.participant_count) }}/人</span>
+                            <span>
+                                {% if item.id in user_payments %}
+                                    已支付: RM{{ "%.2f"|format(user_payments[item.id].amount) }}
+                                {% else %}
+                                    应付金额: RM{{ "%.2f"|format(item.calculate_user_amount(current_user.id)) }}
+                                {% endif %}
+                            </span>
                         </div>
                     </div>
                     
@@ -98,7 +105,8 @@
                     </div>
                     
                     <div class="item-actions">
-                        <a href="{{ url_for('confirm_payment', payment_item_id=item.id, amount=item.amount/item.participant_count) }}" 
+                        <!-- 修改点2: 使用 calculate_user_amount 计算支付金额 -->
+                        <a href="{{ url_for('confirm_payment', payment_item_id=item.id, amount=item.calculate_user_amount(current_user.id)) }}" 
                         class="btn-pay 
                         {% if item.amount_received >= item.amount %}completed
                         {% elif current_user.id == item.recipient_id %}creator
@@ -115,7 +123,7 @@
                         {% elif item.id in user_payments %}
                             <i class="fas fa-user-check"></i> 您已支付
                         {% else %}
-                            <i class="fas fa-money-bill-wave"></i> 支付 RM{{ "%.2f"|format(item.amount/item.participant_count) }}
+                            <i class="fas fa-money-bill-wave"></i> 支付 RM{{ "%.2f"|format(item.calculate_user_amount(current_user.id)) }}
                         {% endif %}
                         </a>
                     </div>

@@ -3,9 +3,33 @@ from flask_sqlalchemy import SQLAlchemy
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_login import UserMixin
 from sqlalchemy import event
-import os
+import os, json
 
 db = SQLAlchemy()
+
+class JSONEncodedDict(db.TypeDecorator):
+    """Enables JSON storage by encoding and decoding on the fly."""
+    impl = db.Text
+
+    def process_bind_param(self, value, dialect):
+        if value is not None:
+            # Convert Decimal to string for JSON serialization
+            if isinstance(value, dict):
+                value = {k: str(v) if isinstance(v, Decimal) else v 
+                         for k, v in value.items()}
+            return json.dumps(value)
+        return None
+
+    def process_result_value(self, value, dialect):
+        if value is not None:
+            # Convert string back to Decimal when loading from DB
+            loaded = json.loads(value)
+            if isinstance(loaded, dict):
+                loaded = {int(k): Decimal(v) if isinstance(v, str) and v.replace('.', '', 1).isdigit() else v 
+                          for k, v in loaded.items()}
+            return loaded
+        return None
+
 
 class User(db.Model, UserMixin):
     __tablename__ = 'users'
@@ -58,13 +82,55 @@ class PaymentItem(db.Model):
     status = db.Column(db.String(20), default='active')  # active/completed/cancelled
     currency = db.Column(db.String(3), default='CNY')
     created_at = db.Column(db.DateTime, default=db.func.current_timestamp())
-
+    
+    # 修改这里：只保留一个 assigned_users 定义
+    assigned_users = db.Column(JSONEncodedDict)  # 使用自定义类型处理 Decimal
+    
     split_mode = db.Column(db.String(20), default='average')  # 'average'/'individual'/'group'
-    assigned_users = db.Column(db.JSON)  # 格式: {user_id: amount}
     group_id = db.Column(db.Integer, db.ForeignKey('groups.id'))
 
     group = db.relationship('Group', foreign_keys=[group_id])
-
+    
+    # 确保方法在类内部正确缩进
+    def calculate_user_amount(self, user_id):
+        """计算特定用户的应付金额"""
+        if self.split_mode == 'average':
+            # 传统AA：平均分摊（包括自己）
+            return self.amount / Decimal(self.participant_count)
+        
+        elif self.split_mode == 'individual':
+            # 指定用户：返回该用户被分配的金额
+            if user_id in self.assigned_users:
+                return self.assigned_users[user_id]
+        
+        elif self.split_mode == 'group' and self.group:
+            # 群组AA：平均分摊给所有成员
+            member_count = len(self.group.members)
+            return self.amount / Decimal(member_count)
+        
+        return Decimal('0.00')
+    
+    def calculate_own_amount(self):
+        """计算收款者自身应付金额"""
+        total_assigned = Decimal('0.00')
+        
+        if self.split_mode == 'individual':
+            # 指定用户模式：总金额 - 其他用户指定金额
+            for user_id, amount in self.assigned_users.items():
+                if user_id != self.recipient_id:
+                    total_assigned += amount
+            return self.amount - total_assigned
+        
+        elif self.split_mode == 'group' and self.group:
+            # 群组模式：平均分摊（包括自己）
+            member_count = len(self.group.members)
+            return self.amount / Decimal(member_count)
+        
+        elif self.split_mode == 'average':
+            # 传统AA：平均分摊（包括自己）
+            return self.amount / Decimal(self.participant_count)
+        
+        return Decimal('0.00')
 
 class PaymentMethod(db.Model):
     __tablename__ = 'payment_methods'

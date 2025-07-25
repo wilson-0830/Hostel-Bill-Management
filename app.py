@@ -482,31 +482,77 @@ def add_payment_item():
         flash("请输入有效的金额", "error")
         return redirect(url_for('recipient_studio'))
 
+    # 处理图片上传
+    image_url = None
+    if 'image' in request.files:
+        file = request.files['image']
+        if file and allowed_file(file.filename, app.config['ALLOWED_EXTENSIONS']):
+            # 确保上传目录存在
+            os.makedirs(app.config['UPLOAD_FOLDER'], exist_ok=True)
+            
+            # 生成唯一文件名
+            filename = secure_filename(f"{current_user.id}_{datetime.now().timestamp()}_{file.filename}")
+            file_path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
+            file.save(file_path)
+            
+            # 使用url_for生成正确的URL
+            image_url = url_for('static', filename=f'uploads/{filename}')
+
     # 处理不同分摊模式
-    participant_count = 1
+    participant_count = 1  # 默认包括自己
     assigned_users = None
     group_id = None
     
     if split_mode == 'average':
+        # 传统AA：获取参与者数量（包括自己）
         participant_count = int(request.form.get('participant_count', 1))
+    
     elif split_mode == 'individual':
         # 处理指定用户
         user_ids = request.form.getlist('assigned_user_id')
         amounts = request.form.getlist('assigned_amount')
         assigned_users = {}
-        for uid, amt in zip(user_ids, amounts):
-            try:
+        
+        try:
+            # 确保金额是 Decimal 类型
+            for uid, amt in zip(user_ids, amounts):
                 assigned_users[int(uid)] = Decimal(amt)
-            except (ValueError, InvalidOperation):
-                flash(f"用户 {uid} 的金额无效", "error")
+            
+            # 计算自己的金额
+            other_users_total = sum(assigned_users.values())
+            own_amount = amount - other_users_total
+            
+            if own_amount < 0:
+                flash("其他用户金额总和不能超过总金额", "error")
                 return redirect(url_for('recipient_studio'))
+            
+            # 添加当前用户（收款者）的应付金额
+            assigned_users[current_user.id] = own_amount
+            participant_count = len(assigned_users)
+            
+        except (ValueError, InvalidOperation) as e:
+            flash(f"金额格式错误: {str(e)}", "error")
+            return redirect(url_for('recipient_studio'))
+        
+        # 自动添加当前用户（收款者）并计算其金额
+        # 总金额 - 其他用户金额和 = 自己的金额
+        other_users_total = sum(assigned_users.values())
+        own_amount = amount - other_users_total
+        if own_amount < 0:
+            flash("其他用户金额总和不能超过总金额", "error")
+            return redirect(url_for('recipient_studio'))
+        
+        assigned_users[current_user.id] = own_amount
         participant_count = len(assigned_users)
+    
     elif split_mode == 'group':
         group_id = request.form.get('group_id')
         group = Group.query.get(group_id)
         if not group or current_user not in group.members:
             flash("无效的群组选择", "error")
             return redirect(url_for('recipient_studio'))
+        
+        # 参与者数量 = 群组成员数（包括自己）
         participant_count = len(group.members)
     
     # 创建支付项目

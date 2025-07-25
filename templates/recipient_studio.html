@@ -103,6 +103,12 @@
                             <span>{{ "%.0f"|format((item.amount_received/item.amount)*100) }}%</span>
                         </div>
                     </div>
+
+                    <div class="own-payment-info">
+                        <i class="fas fa-user"></i> 
+                        我的应付金额: RM{{ "%.2f"|format(item.calculate_own_amount()) }}
+                        <span class="badge badge-success">已支付</span>
+                    </div>
                     
                     <div class="participant-info">
                         <span><i class="fas fa-users"></i> {{ item.participant_count }}人参与</span>
