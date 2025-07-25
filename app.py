@@ -1,3 +1,6 @@
+import eventlet
+eventlet.monkey_patch()  # 必须放在最前面
+
 from flask import Flask, render_template, redirect, url_for, flash, request, session, abort
 from flask_login import LoginManager, current_user, login_user, logout_user, login_required
 from flask_sqlalchemy import SQLAlchemy
@@ -9,6 +12,8 @@ from werkzeug.utils import secure_filename
 from decimal import Decimal, InvalidOperation
 from flask_migrate import Migrate
 from sqlalchemy import or_
+from flask_socketio import SocketIO, emit
+
 
 # 初始化应用
 app = Flask(__name__)
@@ -340,7 +345,13 @@ def transfer():
     db.session.add(transaction)
     db.session.commit()
 
-    flash(f'成功向{recipient.username}转账RM{amount:.2f}', 'success')
+    flash(f'支付成功！已向{recipient.username}转账RM{amount:.2f}，页面将在3秒后刷新...', 'success')
+    socketio.emit('refresh_page', {
+        'message': 'payment_completed',
+        'item_id': payment_item.id,
+        'recipient_id': recipient.id,
+        'payer_id': current_user.id
+    }, namespace='/')
     return redirect(url_for('index'))
 
 # 新增确认支付页面路由
@@ -628,6 +639,14 @@ def add_payment_item():
         payment_item.amount_received = per_user_amount
         db.session.commit()  # 提交更新后的金额
 
+    # 添加日志记录
+    app.logger.info(f"Emitting refresh_page event for item {payment_item.id}")
+    socketio.emit('refresh_page', {
+        'message': 'item_created',
+        'item_id': payment_item.id,
+        'recipient_id': current_user.id,
+        'payer_id': None
+    }, namespace='/')
     flash('收款项目添加成功', 'success')
     return redirect(url_for('recipient_studio'))
 
@@ -712,7 +731,18 @@ def update_payment_item_status(item_id):
                 trans.note = f"项目取消自动退款 - {trans.note or ''}"
         
         db.session.commit()
-        flash(f'项目状态已更新为{new_status}', 'success')
+
+    # 获取所有相关用户ID（付款人+收款人）
+    affected_users = list(set([t.payer_id for t in item.transactions] + [item.recipient_id]))
+    
+    # 发送刷新事件给所有相关用户
+    socketio.emit('refresh_page', {
+        'message': 'status_changed',
+        'item_id': item.id,
+        'affected_users': affected_users  # 明确传递受影响的用户列表
+    }, namespace='/')
+
+    flash(f'项目状态已更新为{new_status}', 'success')
     
     return redirect(url_for('recipient_studio'))
 
@@ -883,9 +913,8 @@ def delete_group(group_id):
     return redirect(url_for('list_groups'))
 
 # 在 if __name__ == '__main__': 前添加
-print("已注册路由：")
-for rule in app.url_map.iter_rules():
-    print(f"{rule.endpoint}: {rule}")
+# 初始化 SocketIO（放在这里确保 app 已完全定义）
+socketio = SocketIO(app, cors_allowed_origins="*")
 
 if __name__ == '__main__':
     # 确保上传文件夹存在
@@ -901,21 +930,38 @@ if __name__ == '__main__':
         except Exception as e:
             print(f"无法创建目录 {folder}: {e}")
 
-    # 配置服务器参数
-    host = '0.0.0.0'
-    port = 8080
-    
+    # 打印所有注册路由
     print("\n已注册路由：")
     for rule in app.url_map.iter_rules():
         print(f"{rule.endpoint}: {rule}")
+
+    # 获取本地IP地址
+    import socket
+    from contextlib import suppress
     
+    host = '0.0.0.0'
+    port = 8080
+    local_ip = 'localhost'
+    
+    try:
+        # Try multiple methods to get local IP
+        hostname = socket.gethostname()
+        with suppress(Exception):
+            local_ip = socket.gethostbyname(hostname)
+        
+        # Alternative method using network connections
+        if local_ip == 'localhost':
+            with suppress(Exception):
+                s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+                s.connect(("8.8.8.8", 80))
+                local_ip = s.getsockname()[0]
+                s.close()
+    except Exception as e:
+        print(f"Could not determine local IP: {e}")
+        local_ip = 'localhost'
+
     print(f"\n服务器将在 {host}:{port} 运行")
-    print(f"在手机浏览器中访问: http://<电脑的IP地址>:{port}\n")
+    print(f"在本地访问: http://localhost:{port}")
+    print(f"在局域网内其他设备访问: http://{local_ip}:{port}\n")
     
-    # 单进程运行，避免需要关闭两次
-    app.run(
-        host=host,
-        port=port,
-        debug=True,          # 保留调试信息但禁用重新加载器
-        use_reloader=False   # 这是关键 - 禁用重新加载器
-    )
+    socketio.run(app, host='0.0.0.0', port=8080, debug=True)

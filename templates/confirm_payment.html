@@ -75,6 +75,9 @@
                 <i class="fas fa-times-circle"></i> 取消支付
             </a>
         </div>
+        <input type="hidden" name="payment_item_id" value="{{ payment_item.id }}">
+        <input type="hidden" name="recipient_id" value="{{ payment_item.recipient.id }}">
+        <input type="hidden" name="amount" value="{{ amount }}">
     </form>
 </section>
 {% endblock %}
