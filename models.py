@@ -16,7 +16,7 @@ class JSONEncodedDict(db.TypeDecorator):
         if value is not None:
             # Convert Decimal to string for JSON serialization
             if isinstance(value, dict):
-                value = {k: str(v) if isinstance(v, Decimal) else v 
+                value = {str(k): str(v) if isinstance(v, Decimal) else v 
                          for k, v in value.items()}
             return json.dumps(value)
         return None
@@ -30,7 +30,6 @@ class JSONEncodedDict(db.TypeDecorator):
                           for k, v in loaded.items()}
             return loaded
         return None
-
 
 class User(db.Model, UserMixin):
     __tablename__ = 'users'
@@ -113,25 +112,33 @@ class PaymentItem(db.Model):
         return Decimal('0.00')
     
     def calculate_own_amount(self):
-        """计算收款者自身应付金额"""
-        if self.split_mode == 'average':
-            # 传统AA：使用总用户数计算分摊金额
-            return self.amount / Decimal(self.participant_count)
-        
-        elif self.split_mode == 'individual':
-            # 指定用户模式：总金额 - 其他用户指定金额
-            total_assigned = Decimal('0.00')
-            for user_id, amount in self.assigned_users.items():
-                if user_id != self.recipient_id:
-                    total_assigned += amount
-            return self.amount - total_assigned
-        
-        elif self.split_mode == 'group' and self.group:
-            # 群组模式：平均分摊（包括自己）
-            member_count = len(self.group.members)
-            return self.amount / Decimal(member_count)
-        
-        return Decimal('0.00')
+            """计算收款者自身应付金额"""
+            from decimal import Decimal
+            
+            if self.split_mode == 'average':
+                return Decimal(self.amount) / Decimal(self.participant_count or 1)
+
+            
+            elif self.split_mode == 'individual':
+                # 指定用户模式：总金额 - 其他用户指定金额
+                total_assigned = Decimal('0.00')
+                if self.assigned_users:  # Check if assigned_users exists
+                    for user_id, amount in self.assigned_users.items():
+                        if user_id != self.recipient_id:
+                            # Convert amount to Decimal if it's not already
+                            try:
+                                amount_decimal = Decimal(str(amount)) if not isinstance(amount, Decimal) else amount
+                                total_assigned += amount_decimal
+                            except (InvalidOperation, TypeError):
+                                continue  # Skip invalid amounts
+                return Decimal(self.amount) - total_assigned
+            
+            elif self.split_mode == 'group' and self.group:
+                # 群组模式：平均分摊（包括自己）
+                member_count = len(self.group.members)
+                return Decimal(self.amount) / Decimal(member_count)
+            
+            return Decimal('0.00')
     
     def has_payer_paid(self, payer_id):
         """检查指定用户是否已支付"""
