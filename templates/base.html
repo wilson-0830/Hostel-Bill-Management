@@ -10,7 +10,9 @@
     {% endblock %}
     {{ moment.include_moment() }}
     {{ moment.locale('zh-cn') }}
+    {% if socketio_available %}
     <script src="https://cdn.socket.io/4.0.1/socket.io.min.js"></script>
+    {% endif %}
 </head>
 
 <body>
