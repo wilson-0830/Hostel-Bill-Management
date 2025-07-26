@@ -1,529 +1,741 @@
-/* ===== 仪表盘全局样式 ===== */
+/* ===== 现代化仪表板设计 ===== */
+.dashboard-container {
+    padding: 2rem 0;
+    position: relative;
+}
+
 .dashboard-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 2rem;
+    text-align: center;
+    margin-bottom: 3rem;
+    animation: slideDown 0.8s ease-out;
 }
 
-.dashboard-header h1 {
-    font-size: 1.8rem;
-    color: var(--dark-color);
-    display: flex;
-    align-items: center;
-    gap: 0.75rem;
+.dashboard-title {
+    font-size: 2.5rem;
+    font-weight: 700;
+    background: linear-gradient(135deg, var(--accent-light), white);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    margin-bottom: 0.5rem;
 }
 
-.header-actions {
-    display: flex;
-    gap: 1rem;
+.dashboard-subtitle {
+    color: var(--text-secondary);
+    font-size: 1.1rem;
 }
 
-/* ===== 卡片样式增强 ===== */
-.card {
-    background: white;
-    border-radius: var(--radius-md);
-    box-shadow: var(--shadow-sm);
-    padding: 1.5rem;
-    margin-bottom: 2rem;
+/* ===== 统计卡片网格 ===== */
+.stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 2rem;
+    margin-bottom: 3rem;
+}
+
+.stat-card {
+    background: var(--bg-glass);
+    backdrop-filter: blur(20px);
+    border-radius: var(--radius-xl);
+    border: var(--border-light);
+    padding: 2rem;
+    position: relative;
+    overflow: hidden;
+    transition: var(--transition);
+    animation: techBounce 0.8s ease-out backwards;
+}
+
+.stat-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 3px;
+    background: var(--gradient-primary);
+    opacity: 0;
     transition: var(--transition);
 }
 
-.card:hover {
-    box-shadow: var(--shadow-md);
+.stat-card:hover {
+    transform: translateY(-8px);
+    background: var(--bg-glass-hover);
+    box-shadow: var(--shadow-xl), var(--glow-tech);
+    border-color: rgba(76, 201, 240, 0.3);
+}
+
+.stat-card:hover::before {
+    opacity: 1;
+}
+
+.stat-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 1.5rem;
+}
+
+.stat-icon {
+    width: 60px;
+    height: 60px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--gradient-primary);
+    border-radius: var(--radius-lg);
+    color: white;
+    font-size: 1.5rem;
+    box-shadow: var(--glow-primary);
+    animation: techGlow 3s ease-in-out infinite;
+}
+
+.stat-value {
+    font-size: 2.5rem;
+    font-weight: 700;
+    background: linear-gradient(135deg, var(--accent-light), white);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    margin-bottom: 0.5rem;
+}
+
+.stat-label {
+    color: var(--text-secondary);
+    font-size: 1rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    font-weight: 500;
+}
+
+.stat-change {
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+    font-size: 0.9rem;
+    margin-top: 0.5rem;
+}
+
+.change-positive {
+    color: var(--success-color);
+}
+
+.change-negative {
+    color: var(--danger-color);
+}
+
+/* ===== 内容网格 ===== */
+.content-grid {
+    display: grid;
+    grid-template-columns: 2fr 1fr;
+    gap: 2rem;
+    margin-bottom: 3rem;
+}
+
+/* ===== 支付项目列表 ===== */
+.payment-items-section {
+    background: var(--bg-glass);
+    backdrop-filter: blur(20px);
+    border-radius: var(--radius-xl);
+    border: var(--border-light);
+    padding: 2rem;
+    position: relative;
+    overflow: hidden;
+    animation: slideInLeft 0.8s ease-out;
 }
 
 .section-header {
     display: flex;
-    justify-content: space-between;
     align-items: center;
-    margin-bottom: 1.5rem;
-    padding-bottom: 0.75rem;
-    border-bottom: 1px solid var(--border-color);
+    justify-content: space-between;
+    margin-bottom: 2rem;
+    padding-bottom: 1rem;
+    border-bottom: var(--border-light);
 }
 
-.section-header h2 {
-    font-size: 1.4rem;
+.section-title {
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: var(--accent-light);
     display: flex;
     align-items: center;
     gap: 0.75rem;
-    color: var(--dark-color);
 }
 
-.badge {
-    background: var(--light-color);
-    color: var(--text-muted);
-    padding: 0.25rem 0.75rem;
-    border-radius: 1rem;
-    font-size: 0.85rem;
-    font-weight: 500;
-}
-
-/* ===== 余额卡片 ===== */
-.balance-cards {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-    gap: 1.5rem;
-}
-
-.balance-card {
-    display: flex;
-    align-items: center;
-    padding: 1.5rem;
-    border-radius: var(--radius-md);
-    background: #f9f9f9;
-    transition: var(--transition);
-}
-
-.balance-card:hover {
-    transform: translateY(-3px);
-    box-shadow: var(--shadow-sm);
-}
-
-.balance-card.pending {
-    border-left: 4px solid var(--warning-color);
-}
-
-.balance-card.paid {
-    border-left: 4px solid var(--success-color);
-}
-
-.balance-icon {
-    width: 3rem;
-    height: 3rem;
-    border-radius: 50%;
-    background: rgba(255, 255, 255, 0.9);
+.section-icon {
+    width: 40px;
+    height: 40px;
     display: flex;
     align-items: center;
     justify-content: center;
-    margin-right: 1.25rem;
-    font-size: 1.25rem;
+    background: var(--gradient-secondary);
+    border-radius: var(--radius-md);
+    color: white;
+    font-size: 1.2rem;
 }
 
-.balance-card.pending .balance-icon {
-    color: var(--warning-color);
+.payment-item {
+    background: var(--bg-glass-hover);
+    border-radius: var(--radius-lg);
+    border: var(--border-light);
+    padding: 1.5rem;
+    margin-bottom: 1rem;
+    transition: var(--transition);
+    position: relative;
+    overflow: hidden;
 }
 
-.balance-card.paid .balance-icon {
-    color: var(--success-color);
+.payment-item::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    width: 4px;
+    background: var(--gradient-primary);
+    opacity: 0;
+    transition: var(--transition);
 }
 
-.balance-info {
+.payment-item:hover {
+    transform: translateX(8px);
+    background: rgba(67, 97, 238, 0.1);
+    box-shadow: var(--shadow-lg);
+}
+
+.payment-item:hover::before {
+    opacity: 1;
+}
+
+.payment-header {
     display: flex;
-    flex-direction: column;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 1rem;
 }
 
-.balance-label {
+.payment-title {
+    font-size: 1.2rem;
+    font-weight: 600;
+    color: var(--text-light);
+    margin-bottom: 0.5rem;
+}
+
+.payment-amount {
+    font-size: 1.4rem;
+    font-weight: 700;
+    color: var(--accent-color);
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+}
+
+.payment-description {
+    color: var(--text-secondary);
+    font-size: 0.95rem;
+    line-height: 1.6;
+    margin-bottom: 1rem;
+}
+
+.payment-meta {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
     font-size: 0.9rem;
     color: var(--text-muted);
+}
+
+.payment-progress {
+    flex: 1;
+    margin-right: 1rem;
+}
+
+.progress-bar-wrapper {
+    background: var(--bg-glass);
+    border-radius: var(--radius-lg);
+    height: 6px;
+    overflow: hidden;
+    position: relative;
+    margin-bottom: 0.5rem;
+}
+
+.progress-bar {
+    height: 100%;
+    background: var(--gradient-primary);
+    transition: var(--transition);
+    position: relative;
+}
+
+.progress-bar::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+    animation: shimmer 2s infinite;
+}
+
+.progress-text {
+    font-size: 0.85rem;
+    color: var(--text-secondary);
+}
+
+/* ===== 快速操作侧边栏 ===== */
+.quick-actions {
+    background: var(--bg-glass);
+    backdrop-filter: blur(20px);
+    border-radius: var(--radius-xl);
+    border: var(--border-light);
+    padding: 2rem;
+    height: fit-content;
+    position: sticky;
+    top: calc(var(--navbar-height) + 2rem);
+    animation: slideInRight 0.8s ease-out;
+}
+
+.action-button {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 1rem;
+    background: var(--bg-glass-hover);
+    border: var(--border-light);
+    border-radius: var(--radius-lg);
+    color: var(--text-light);
+    text-decoration: none;
+    transition: var(--transition);
+    margin-bottom: 1rem;
+    position: relative;
+    overflow: hidden;
+}
+
+.action-button::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: var(--gradient-primary);
+    transition: var(--transition);
+    z-index: -1;
+}
+
+.action-button:hover {
+    transform: translateY(-3px);
+    box-shadow: var(--shadow-lg);
+    color: white;
+}
+
+.action-button:hover::before {
+    left: 0;
+}
+
+.action-icon {
+    width: 45px;
+    height: 45px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--gradient-secondary);
+    border-radius: var(--radius-md);
+    color: white;
+    font-size: 1.1rem;
+    flex-shrink: 0;
+}
+
+.action-content h4 {
+    font-size: 1rem;
+    font-weight: 600;
     margin-bottom: 0.25rem;
 }
 
-.balance-amount {
-    font-size: 1.5rem;
+.action-content p {
+    font-size: 0.85rem;
+    color: var(--text-muted);
+    margin: 0;
+}
+
+/* ===== 最近交易 ===== */
+.recent-transactions {
+    grid-column: 1 / -1;
+    background: var(--bg-glass);
+    backdrop-filter: blur(20px);
+    border-radius: var(--radius-xl);
+    border: var(--border-light);
+    padding: 2rem;
+    animation: slideUp 0.8s ease-out;
+}
+
+.transaction-list {
+    display: grid;
+    gap: 1rem;
+}
+
+.transaction-item {
+    display: flex;
+    align-items: center;
+    padding: 1.5rem;
+    background: var(--bg-glass-hover);
+    border-radius: var(--radius-lg);
+    border: var(--border-light);
+    transition: var(--transition);
+    position: relative;
+    overflow: hidden;
+}
+
+.transaction-item::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    width: 4px;
+    background: var(--accent-color);
+    opacity: 0;
+    transition: var(--transition);
+}
+
+.transaction-item:hover {
+    background: rgba(76, 201, 240, 0.1);
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-md);
+}
+
+.transaction-item:hover::before {
+    opacity: 1;
+}
+
+.transaction-icon {
+    width: 50px;
+    height: 50px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--gradient-primary);
+    border-radius: 50%;
+    color: white;
+    margin-right: 1rem;
+    flex-shrink: 0;
+}
+
+.transaction-content {
+    flex: 1;
+}
+
+.transaction-title {
+    font-weight: 600;
+    color: var(--text-light);
+    margin-bottom: 0.25rem;
+}
+
+.transaction-details {
+    color: var(--text-secondary);
+    font-size: 0.9rem;
+}
+
+.transaction-amount {
+    font-size: 1.2rem;
     font-weight: 700;
+    text-align: right;
 }
 
-.balance-card.pending .balance-amount {
-    color: var(--warning-color);
-    /* 添加马来西亚风格 */
-    font-family: 'Segoe UI', Roboto, sans-serif;
-}
-
-.balance-card.paid .balance-amount {
+.amount-positive {
     color: var(--success-color);
-    /* 添加马来西亚风格 */
-    font-family: 'Segoe UI', Roboto, sans-serif;
 }
 
-/* ===== 支付项目网格 ===== */
+.amount-negative {
+    color: var(--danger-color);
+}
+
+.transaction-date {
+    font-size: 0.8rem;
+    color: var(--text-muted);
+    text-align: right;
+}
+
+/* ===== 空状态 ===== */
+.empty-state {
+    text-align: center;
+    padding: 3rem 2rem;
+    color: var(--text-muted);
+}
+
+.empty-icon {
+    width: 80px;
+    height: 80px;
+    background: var(--bg-glass);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 1.5rem;
+    font-size: 2rem;
+    opacity: 0.5;
+}
+
+.empty-title {
+    font-size: 1.2rem;
+    color: var(--text-secondary);
+    margin-bottom: 0.5rem;
+}
+
+.empty-description {
+    color: var(--text-muted);
+    line-height: 1.6;
+}
+
+/* ===== 状态指示器 ===== */
+.status-indicator {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.5rem 1rem;
+    border-radius: var(--radius-lg);
+    font-size: 0.85rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.status-paid {
+    background: rgba(46, 196, 182, 0.2);
+    color: var(--success-color);
+    border: 1px solid var(--success-color);
+}
+
+.status-pending {
+    background: rgba(255, 159, 28, 0.2);
+    color: var(--warning-color);
+    border: 1px solid var(--warning-color);
+}
+
+.status-overdue {
+    background: rgba(247, 37, 133, 0.2);
+    color: var(--danger-color);
+    border: 1px solid var(--danger-color);
+}
+
+/* ===== 动画效果 ===== */
+@keyframes slideDown {
+    from {
+        opacity: 0;
+        transform: translateY(-30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes slideInLeft {
+    from {
+        opacity: 0;
+        transform: translateX(-50px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+@keyframes slideInRight {
+    from {
+        opacity: 0;
+        transform: translateX(50px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+@keyframes slideUp {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes shimmer {
+    0% { transform: translateX(-100%); }
+    100% { transform: translateX(200%); }
+}
+
+/* 延迟动画 */
+.stat-card:nth-child(1) { animation-delay: 0.1s; }
+.stat-card:nth-child(2) { animation-delay: 0.2s; }
+.stat-card:nth-child(3) { animation-delay: 0.3s; }
+.stat-card:nth-child(4) { animation-delay: 0.4s; }
+
+/* ===== 响应式设计 ===== */
+@media (max-width: 1200px) {
+    .content-grid {
+        grid-template-columns: 1fr;
+        gap: 2rem;
+    }
+    
+    .quick-actions {
+        position: static;
+        margin-top: 2rem;
+    }
+    
+    .stats-grid {
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    }
+}
+
+@media (max-width: 768px) {
+    .dashboard-container {
+        padding: 1rem 0;
+    }
+    
+    .dashboard-title {
+        font-size: 2rem;
+    }
+    
+    .stats-grid {
+        grid-template-columns: 1fr;
+        gap: 1.5rem;
+    }
+    
+    .stat-card,
+    .payment-items-section,
+    .quick-actions,
+    .recent-transactions {
+        padding: 1.5rem;
+    }
+    
+    .payment-header,
+    .transaction-item {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 1rem;
+    }
+    
+    .payment-amount,
+    .transaction-amount {
+        align-self: flex-end;
+    }
+    
+    .action-button {
+        padding: 1rem 0.75rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .dashboard-title {
+        font-size: 1.75rem;
+    }
+    
+    .stat-value {
+        font-size: 2rem;
+    }
+    
+    .section-title {
+        font-size: 1.25rem;
+    }
+    
+    .payment-title {
+        font-size: 1.1rem;
+    }
+    
+    .payment-amount {
+        font-size: 1.2rem;
+    }
+    
+    .stat-card,
+    .payment-items-section,
+    .quick-actions,
+    .recent-transactions {
+        padding: 1rem;
+    }
+}
+
+/* ===== 高级视觉效果 ===== */
+.floating-elements {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    pointer-events: none;
+    overflow: hidden;
+    z-index: -1;
+}
+
+.floating-element {
+    position: absolute;
+    width: 6px;
+    height: 6px;
+    background: var(--accent-color);
+    border-radius: 50%;
+    opacity: 0.2;
+    animation: float 8s ease-in-out infinite;
+}
+
+@keyframes float {
+    0%, 100% {
+        transform: translateY(0) rotate(0deg);
+        opacity: 0.1;
+    }
+    50% {
+        transform: translateY(-200px) rotate(180deg);
+        opacity: 0.4;
+    }
+}
+
+.floating-element:nth-child(1) { left: 10%; animation-delay: 0s; }
+.floating-element:nth-child(2) { left: 20%; animation-delay: 2s; }
+.floating-element:nth-child(3) { left: 30%; animation-delay: 4s; }
+.floating-element:nth-child(4) { left: 40%; animation-delay: 1s; }
+.floating-element:nth-child(5) { left: 50%; animation-delay: 3s; }
+.floating-element:nth-child(6) { left: 60%; animation-delay: 5s; }
+.floating-element:nth-child(7) { left: 70%; animation-delay: 1.5s; }
+.floating-element:nth-child(8) { left: 80%; animation-delay: 3.5s; }
+.floating-element:nth-child(9) { left: 90%; animation-delay: 2.5s; }
+
+/* 数字计数动画 */
+.counter {
+    animation: countUp 2s ease-out;
+}
+
+@keyframes countUp {
+    from {
+        opacity: 0;
+        transform: scale(0.5);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+/* 账单概览卡片响应式优化 */
+@media (max-width: 768px) {
+    .balance-cards {
+        flex-direction: column;
+        gap: 1rem;
+    }
+    
+    .balance-card {
+        width: 100%;
+    }
+}
+
+/* 支付项目网格优化 */
 .item-grid {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
     gap: 1.5rem;
 }
 
-.payment-item {
-    border: 1px solid var(--border-color);
-    border-radius: var(--radius-md);
-    overflow: hidden;
-    transition: var(--transition);
-    display: flex;
-    flex-direction: column;
-    position: relative;
-}
-
-.payment-item:hover {
-    transform: translateY(-5px);
-    box-shadow: var(--shadow-md);
-}
-
-.item-badge {
-    position: absolute;
-    top: 0.75rem;
-    right: 0.75rem;
-    background: rgba(0, 0, 0, 0.7);
-    color: white;
-    padding: 0.25rem 0.75rem;
-    border-radius: 1rem;
-    font-size: 0.85rem;
-    font-weight: 500;
-    z-index: 1;
-}
-
-.item-image-container {
-    height: 180px;
-    overflow: hidden;
-}
-
-.item-image {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    transition: transform 0.3s ease;
-}
-
-.payment-item:hover .item-image {
-    transform: scale(1.05);
-}
-
-.item-content {
-    padding: 1.25rem;
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-}
-
-.item-header {
-    margin-bottom: 0.75rem;
-}
-
-.item-header h3 {
-    font-size: 1.1rem;
-    margin-bottom: 0.25rem;
-    color: var(--dark-color);
-}
-
-.item-creator {
-    font-size: 0.85rem;
-    color: var(--text-muted);
-    display: flex;
-    align-items: center;
-    gap: 0.25rem;
-}
-
-.item-description {
-    color: var(--text-muted);
-    font-size: 0.9rem;
-    margin-bottom: 1rem;
-    flex: 1;
-}
-
-.item-meta {
-    display: flex;
-    gap: 1rem;
-    margin-bottom: 1rem;
-    font-size: 0.9rem;
-}
-
-.meta-item {
-    display: flex;
-    align-items: center;
-    gap: 0.25rem;
-    color: var(--text-muted);
-}
-
-.progress-container {
-    margin-bottom: 1.25rem;
-}
-
-.progress-bar {
-    height: 6px;
-    background: #eee;
-    border-radius: 3px;
-    margin-bottom: 0.5rem;
-}
-
-.progress {
-    height: 100%;
-    background: var(--primary-color);
-    border-radius: 3px;
-    transition: width 0.6s ease;
-}
-
-.progress-text {
-    display: flex;
-    justify-content: space-between;
-    font-size: 0.8rem;
-    color: var(--text-muted);
-}
-
-.btn-pay {
-    width: 100%;
-    padding: 0.75rem;
-    font-weight: 500;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 0.5rem;
-    border: none;
-    border-radius: var(--radius-sm);
-    cursor: pointer;
-    transition: var(--transition);
-}
-
-.btn-pay.active {
-    background-color: var(--primary-color);
-    color: white;
-}
-
-.btn-pay.active:hover {
-    background-color: var(--primary-hover);
-    transform: translateY(-2px);
-}
-
-.btn-pay.completed {
-    background-color: var(--success-color);
-    color: white;
-    cursor: default;
-}
-
-.btn-pay.creator {
-    background-color: #e0e0e0;
-    color: var(--text-muted);
-    cursor: default;
-}
-
-/* ===== 交易列表 ===== */
-.transaction-list {
-    display: flex;
-    flex-direction: column;
-    gap: 0.75rem;
-}
-
-.transaction {
-    display: flex;
-    align-items: center;
-    padding: 1rem;
-    border-radius: var(--radius-sm);
-    background: #f9f9f9;
-    transition: var(--transition);
-    gap: 1rem;
-}
-
-.transaction:hover {
-    background: #f0f0f0;
-}
-
-.transaction-icon {
-    width: 2.5rem;
-    height: 2.5rem;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 1rem;
-}
-
-.transaction.incoming .transaction-icon {
-    background: rgba(46, 204, 113, 0.1);
-    color: var(--success-color);
-}
-
-.transaction.outgoing .transaction-icon {
-    background: rgba(231, 76, 60, 0.1);
-    color: var(--danger-color);
-}
-
-.transaction-details {
-    flex: 1;
-}
-
-.transaction-header {
-    display: flex;
-    justify-content: space-between;
-    margin-bottom: 0.25rem;
-}
-
-.transaction-party {
-    font-weight: 500;
-}
-
-.transaction-amount {
-    font-weight: 600;
-}
-
-.transaction-amount.positive {
-    color: var(--success-color);
-    /* 马来西亚货币样式 */
-    &::before {
-        content: "RM";
-        font-size: 0.9em;
-    }
-}
-
-.transaction-amount.negative {
-    color: var(--danger-color);
-    /* 马来西亚货币样式 */
-    &::before {
-        content: "RM";
-        font-size: 0.9em;
-    }
-}
-
-.transaction-footer {
-    display: flex;
-    gap: 1rem;
-    font-size: 0.85rem;
-    color: var(--text-muted);
-}
-
-.transaction-date, .transaction-note {
-    display: flex;
-    align-items: center;
-    gap: 0.25rem;
-}
-
-/* ===== 空状态 ===== */
-.empty-state {
-    padding: 3rem 1rem;
-    text-align: center;
-    color: var(--text-muted);
-}
-
-.empty-state i {
-    font-size: 3rem;
-    margin-bottom: 1rem;
-    opacity: 0.5;
-}
-
-.empty-state p {
-    margin-bottom: 1.5rem;
-}
-
-/* ===== 响应式设计 ===== */
 @media (max-width: 768px) {
-    .dashboard-header {
-        flex-direction: column;
-        align-items: flex-start;
-        gap: 1rem;
-    }
-    
     .item-grid {
         grid-template-columns: 1fr;
     }
-    
-    .balance-cards {
-        grid-template-columns: 1fr;
-    }
-    
-    .transaction-footer {
-        flex-direction: column;
-        gap: 0.25rem;
-    }
-}
-
-/* 在index.css中添加/修改以下按钮样式 */
-.btn-pay {
-    width: 100%;
-    padding: 0.75rem;
-    font-weight: 500;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 0.5rem;
-    border: none;
-    border-radius: var(--radius-sm);
-    cursor: pointer;
-    transition: var(--transition);
-    font-size: 0.95rem;
-}
-
-.btn-pay.active {
-    background-color: var(--primary-color);
-    color: white;
-}
-
-.btn-pay.active:hover {
-    background-color: var(--primary-hover);
-    transform: translateY(-2px);
-}
-
-.btn-pay.completed {
-    background-color: #e0e0e0;
-    color: #757575;
-    cursor: not-allowed;
-    box-shadow: none;
-}
-
-.btn-pay.completed:hover {
-    transform: none;
-    background-color: #e0e0e0;
-}
-
-.btn-pay.creator {
-    background-color: #e0e0e0;
-    color: var(--text-muted);
-    cursor: not-allowed;
-}
-
-/* 用户已支付状态 */
-.btn-pay.user-paid {
-    background-color: #e8f5e9;
-    color: #2e7d32;
-    border: 1px solid #c8e6c9;
-    cursor: not-allowed;
-}
-
-.btn-pay.user-paid:hover {
-    background-color: #e8f5e9;
-    transform: none;
-}
-
-.btn-pay.user-paid i {
-    color: #2e7d32;
-}
-
-/* 支付按钮状态样式 */
-.btn-pay {
-    display: block;
-    padding: 0.75rem;
-    text-align: center;
-    border-radius: 4px;
-    font-weight: 500;
-    transition: all 0.2s;
-}
-
-.btn-pay.active {
-    background-color: #4CAF50;
-    color: white;
-}
-
-.btn-pay.completed {
-    background-color: #9E9E9E;
-    color: white;
-    cursor: not-allowed;
-}
-
-.btn-pay.creator {
-    background-color: #FFC107;
-    color: #333;
-    cursor: not-allowed;
-}
-
-.btn-pay.user-paid {
-    background-color: #2196F3;
-    color: white;
-    cursor: not-allowed;
-}
-
-/* 禁用状态样式 */
-.btn-pay[disabled] {
-    opacity: 0.7;
-    pointer-events: none;
-    text-decoration: none;
-}
-
-.transaction-amount::before {
-  content: none !important;
 }
