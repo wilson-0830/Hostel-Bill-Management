@@ -1,18 +1,32 @@
-import eventlet
-eventlet.monkey_patch()  # 必须放在最前面
+try:
+    import eventlet
+    eventlet.monkey_patch()  # 必须放在最前面
+    EVENTLET_AVAILABLE = True
+except ImportError:
+    EVENTLET_AVAILABLE = False
 
 from flask import Flask, render_template, redirect, url_for, flash, request, session, abort
 from flask_login import LoginManager, current_user, login_user, logout_user, login_required
 from flask_sqlalchemy import SQLAlchemy
 from models import db, User, Recipient, PaymentItem, PaymentMethod, Transaction, Group
 from datetime import datetime, timezone, timedelta
-from flask_moment import Moment
 import os
 from werkzeug.utils import secure_filename
 from decimal import Decimal, InvalidOperation
 from flask_migrate import Migrate
 from sqlalchemy import or_
-from flask_socketio import SocketIO, emit
+
+try:
+    from flask_moment import Moment
+    MOMENT_AVAILABLE = True
+except ImportError:
+    MOMENT_AVAILABLE = False
+
+try:
+    from flask_socketio import SocketIO, emit
+    SOCKETIO_AVAILABLE = True
+except ImportError:
+    SOCKETIO_AVAILABLE = False
 
 
 # 初始化应用
@@ -105,7 +119,7 @@ def index():
     else:
         payment_items = PaymentItem.query.filter_by(status='active').limit(5).all()
     
-    # 获取当前用户的所有个人支付记录
+    # 获取当前用户的所��个人支付记录
     user_payments = {
         t.payment_item_id: t 
         for t in Transaction.query.filter_by(
@@ -781,7 +795,7 @@ def fix_payment_methods():
 @app.route('/transactions')
 @login_required
 def transactions():
-    # 自动清理旧交易(保留最近15条)
+    # 自动清理旧交易(���留最近15条)
     user_transactions = Transaction.query.filter(
         (Transaction.payer_id == current_user.id) | 
         (Transaction.recipient_id == current_user.id)
