@@ -172,8 +172,10 @@ body::before {
 
 .btn-outline:hover {
     background: var(--accent-light);
-    color: var(--bg-dark);
+    color: var(--bg-darker) !important;
     transform: translateY(-5px);
+    text-shadow: none;
+    font-weight: 600;
 }
 
 .btn-gradient {
