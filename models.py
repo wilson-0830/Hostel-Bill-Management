@@ -48,10 +48,14 @@ class User(db.Model, UserMixin):
     groups = db.relationship('Group', secondary='group_members', back_populates='members')
 
     def set_password(self, password):
-        self.password_hash = generate_password_hash(password)
+        self.password_hash = generate_password_hash(password, method='pbkdf2:sha256')
 
     def check_password(self, password):
-        return check_password_hash(self.password_hash, password)
+        try:
+            return check_password_hash(self.password_hash, password)
+        except Exception:
+            # Fallback for legacy hashes or compatibility issues
+            return generate_password_hash(password, method='pbkdf2:sha256') == self.password_hash
 
 
 # 群组成员关联表（多对多）
