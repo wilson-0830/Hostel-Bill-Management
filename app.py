@@ -44,7 +44,17 @@ db.init_app(app)
 migrate = Migrate(app, db)  # 添加这行
 login_manager = LoginManager(app)
 login_manager.login_view = 'login'
-moment = Moment(app)
+
+# 条件初始化可选扩展
+if MOMENT_AVAILABLE:
+    moment = Moment(app)
+else:
+    moment = None
+
+if SOCKETIO_AVAILABLE:
+    socketio = SocketIO(app)
+else:
+    socketio = None
 
 
 def to_local_time(utc_time):
@@ -101,7 +111,7 @@ def load_user(user_id):
 with app.app_context():
     db.create_all()
 
-# 确保这个上下文处理器存在
+# 确保这个上下文处理���存在
 @app.context_processor
 def inject_now():
     return {'now': datetime.now()}
@@ -119,7 +129,7 @@ def index():
     else:
         payment_items = PaymentItem.query.filter_by(status='active').limit(5).all()
     
-    # 获取当前用户的所��个人支付记录
+    # 获取当前用户的所有个人支付记录
     user_payments = {
         t.payment_item_id: t 
         for t in Transaction.query.filter_by(
@@ -676,7 +686,7 @@ def add_payment_item():
 @login_required
 def add_payment_method():
     if not current_user.is_recipient:
-        flash('您没有访问此页面的权限', 'error')
+        flash('您没有访问此页面���权限', 'error')
         return redirect(url_for('index'))
     
     method_type = request.form.get('method_type')
@@ -795,7 +805,7 @@ def fix_payment_methods():
 @app.route('/transactions')
 @login_required
 def transactions():
-    # 自动清理旧交易(���留最近15条)
+    # 自动清理旧交易(保留最近15条)
     user_transactions = Transaction.query.filter(
         (Transaction.payer_id == current_user.id) | 
         (Transaction.recipient_id == current_user.id)
