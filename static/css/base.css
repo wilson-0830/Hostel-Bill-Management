@@ -498,7 +498,7 @@ body::after {
     transform: rotate(-45deg) translate(7px, -6px);
 }
 
-/* ===== ���内容区域 ===== */
+/* ===== 主内容区域 ===== */
 .main-content {
     min-height: calc(100vh - var(--navbar-height));
     padding-top: var(--navbar-height);
@@ -652,14 +652,14 @@ body::after {
     color: var(--text-muted);
 }
 
-/* ===== 页脚现代化设计 ===== */
+/* ===== 现代化页脚设计 ===== */
 .footer {
-    background: var(--bg-darker);
+    background: var(--bg-darkest);
     color: var(--text-secondary);
-    padding: 3rem 0 2rem;
-    margin-top: 4rem;
+    padding: 4rem 0 2rem;
+    margin-top: 6rem;
     position: relative;
-    border-top: var(--border-light);
+    border-top: 1px solid rgba(76, 201, 240, 0.2);
 }
 
 .footer::before {
@@ -668,21 +668,167 @@ body::after {
     top: 0;
     left: 0;
     right: 0;
-    height: 1px;
+    height: 2px;
     background: var(--gradient-primary);
-    opacity: 0.5;
+    opacity: 0.8;
 }
 
-.footer .container {
+.footer-container {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 0 2rem;
+}
+
+.footer-content {
+    display: grid;
+    grid-template-columns: 1fr 2fr;
+    gap: 4rem;
+    margin-bottom: 3rem;
+}
+
+.footer-brand {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.footer-logo {
+    width: 50px;
+    height: 50px;
+    background: var(--gradient-primary);
+    border-radius: var(--radius-lg);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem;
+    color: white;
+    box-shadow: var(--glow-primary);
+}
+
+.footer-text h4 {
+    color: var(--text-light);
+    font-size: 1.2rem;
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+}
+
+.footer-text p {
+    color: var(--text-muted);
+    font-size: 0.9rem;
+}
+
+.footer-links {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 2rem;
+}
+
+.footer-section h5 {
+    color: var(--accent-light);
+    font-size: 1rem;
+    font-weight: 600;
+    margin-bottom: 1rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.footer-section a {
+    display: block;
+    color: var(--text-secondary);
+    text-decoration: none;
+    padding: 0.5rem 0;
+    transition: var(--transition);
+    border-left: 2px solid transparent;
+    padding-left: 0.5rem;
+}
+
+.footer-section a:hover {
+    color: var(--accent-color);
+    border-left-color: var(--accent-color);
+    transform: translateX(5px);
+}
+
+.footer-bottom {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding-bottom: 10px;
+    padding: 2rem 0;
+    border-top: var(--border-light);
 }
 
-.footer p {
-    opacity: 0.8;
+.footer-bottom p {
+    color: var(--text-muted);
     font-size: 0.9rem;
+}
+
+.footer-social {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.tech-indicator {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.5rem 1rem;
+    background: var(--bg-glass);
+    border-radius: var(--radius-lg);
+    border: var(--border-light);
+    color: var(--success-color);
+    font-size: 0.85rem;
+    font-weight: 500;
+}
+
+.tech-indicator i {
+    animation: pulse 2s infinite;
+}
+
+.footer-tech-lines {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 40px;
+    overflow: hidden;
+}
+
+.tech-line {
+    position: absolute;
+    height: 1px;
+    background: var(--gradient-primary);
+    opacity: 0.3;
+    animation: techFlow 8s linear infinite;
+}
+
+.tech-line:nth-child(1) {
+    top: 10px;
+    animation-delay: 0s;
+}
+
+.tech-line:nth-child(2) {
+    top: 20px;
+    animation-delay: 2s;
+}
+
+.tech-line:nth-child(3) {
+    top: 30px;
+    animation-delay: 4s;
+}
+
+@keyframes techFlow {
+    0% {
+        left: -100%;
+        width: 0;
+    }
+    50% {
+        left: 0;
+        width: 100%;
+    }
+    100% {
+        left: 100%;
+        width: 0;
+    }
 }
 
 /* ===== 通知系统 ===== */
