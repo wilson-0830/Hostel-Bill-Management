@@ -509,6 +509,17 @@ def add_payment_item():
             return redirect(url_for('recipient_studio'))
         participant_count = len(group.members)
     
+    # Handle image upload
+    image_url = None
+    if 'image' in request.files:
+        file = request.files['image']
+        if file and allowed_file(file.filename, app.config['ALLOWED_EXTENSIONS']):
+            os.makedirs(app.config['UPLOAD_FOLDER'], exist_ok=True)
+            filename = secure_filename(f"{current_user.id}_{datetime.now().timestamp()}_{file.filename}")
+            file_path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
+            file.save(file_path)
+            image_url = url_for('static', filename=f'uploads/{filename}')
+
     # 创建支付项目
     payment_item = PaymentItem(
         recipient_id=current_user.id,
