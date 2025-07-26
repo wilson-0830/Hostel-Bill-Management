@@ -329,7 +329,7 @@ def transfer():
         flash("请输入有效的金额", "error")
         return redirect(url_for('index'))
 
-    # 检查是否已支付过
+    # 检查是否��支付过
     existing_transaction = Transaction.query.filter_by(
         payer_id=current_user.id,
         payment_item_id=payment_item_id,
@@ -369,7 +369,7 @@ def transfer():
     db.session.add(transaction)
     db.session.commit()
 
-    flash(f'支付成功！已向{recipient.username}转账RM{amount:.2f}，页面将在3秒后刷新...', 'success')
+    flash(f'支付成功！已向{recipient.username}转账RM{amount:.2f}，页面将在3秒后刷��...', 'success')
     socketio.emit('refresh_page', {
         'message': 'payment_completed',
         'item_id': payment_item.id,
@@ -942,9 +942,7 @@ def delete_group(group_id):
     flash('群组已成功删除', 'success')
     return redirect(url_for('list_groups'))
 
-# 在 if __name__ == '__main__': 前添加
-# 初始化 SocketIO（放在这里确保 app 已完全定义）
-socketio = SocketIO(app, cors_allowed_origins="*")
+# SocketIO已在前面条件初始化
 
 if __name__ == '__main__':
     # 确保上传文件夹存在
@@ -991,7 +989,11 @@ if __name__ == '__main__':
         local_ip = 'localhost'
 
     print(f"\n服务器将在 {host}:{port} 运行")
-    print(f"在本地访问: http://localhost:{port}")
+    print(f"在本���访问: http://localhost:{port}")
     print(f"在局域网内其他设备访问: http://{local_ip}:{port}\n")
     
-    socketio.run(app, host='0.0.0.0', port=8080, debug=True)
+    # 根据可用性使用SocketIO或普通Flask运行
+    if SOCKETIO_AVAILABLE and socketio:
+        socketio.run(app, host='0.0.0.0', port=8080, debug=True)
+    else:
+        app.run(host='0.0.0.0', port=8080, debug=True, use_reloader=False)
