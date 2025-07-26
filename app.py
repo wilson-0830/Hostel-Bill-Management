@@ -111,10 +111,24 @@ def load_user(user_id):
 with app.app_context():
     db.create_all()
 
-# 确保这个上下文处理���存在
+# 确保这个上下��处理���存在
 @app.context_processor
 def inject_now():
     return {'now': datetime.now()}
+
+# 提供moment的上下文处理器，即使Flask-Moment不可用
+@app.context_processor
+def inject_moment():
+    if MOMENT_AVAILABLE and moment:
+        return {'moment': moment}
+    else:
+        # 提供一个虚拟的moment对象，避免模板错误
+        class DummyMoment:
+            def include_moment(self):
+                return ''
+            def locale(self, lang):
+                return ''
+        return {'moment': DummyMoment()}
 
 # 路由定义
 @app.route('/')
@@ -538,7 +552,7 @@ def add_payment_item():
         flash('您没有访问此页面的权限', 'error')
         return redirect(url_for('index'))
     
-    # 获取基本数据
+    # 获���基本数据
     title = request.form.get('title')
     description = request.form.get('description')
     amount_str = request.form.get('amount')
@@ -572,7 +586,7 @@ def add_payment_item():
     group_id = None
     
     if split_mode == 'average':
-        # 传统AA：获取参与者数量（包括自己）
+        # 传统AA：��取参与者数量（包括自己）
         participant_count = User.query.count()
     
     elif split_mode == 'individual':
@@ -705,7 +719,7 @@ def add_payment_method():
             file_path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
             file.save(file_path)
             
-            # 使用url_for生成正确的URL
+            # 使用url_for生��正确的URL
             qr_code_image = url_for('static', filename=f'uploads/{filename}')
     
     # 验证逻辑：如果没有上传图片，则必须提供账号信息
@@ -772,7 +786,7 @@ def update_payment_item_status(item_id):
         'affected_users': affected_users  # 明确传递受影响的用户列表
     }, namespace='/')
 
-    flash(f'项目状态已更新为{new_status}', 'success')
+    flash(f'项目状态已��新为{new_status}', 'success')
     
     return redirect(url_for('recipient_studio'))
 
