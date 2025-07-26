@@ -158,8 +158,10 @@ body::before {
 
 .btn-primary:hover {
     transform: translateY(-5px);
+    background: linear-gradient(135deg, #3a56d4 0%, #3a86ff 100%);
     box-shadow: 0 10px 30px rgba(67,97,238,0.5);
-    text-shadow: 0 1px 2px rgba(0,0,0,0.3); /* 新增文字阴影 */
+    color: white !important;
+    text-shadow: 0 2px 4px rgba(0,0,0,0.5);
 }
 
 .btn-outline {
@@ -182,8 +184,10 @@ body::before {
 
 .btn-gradient:hover {
     transform: translateY(-5px);
+    background: linear-gradient(135deg, #3a86ff 0%, #2563eb 100%);
     box-shadow: 0 10px 30px rgba(76,201,240,0.5);
-    text-shadow: 0 1px 2px rgba(0,0,0,0.3); /* 新增文字阴影 */
+    color: white !important;
+    text-shadow: 0 2px 4px rgba(0,0,0,0.5);
 }
 
 /* Hero Visual */
@@ -354,9 +358,20 @@ body::before {
 
 .quick-link:hover {
     transform: translateY(-10px);
-    background: rgba(67, 97, 238, 0.15);
+    background: rgba(67, 97, 238, 0.25);
     box-shadow: 0 20px 40px rgba(0, 0, 0, 0.25), var(--glow-primary);
-    border-color: rgba(76, 201, 240, 0.3);
+    border-color: rgba(76, 201, 240, 0.5);
+    color: white !important;
+}
+
+.quick-link:hover h3 {
+    color: white !important;
+    text-shadow: 0 2px 4px rgba(0,0,0,0.5);
+}
+
+.quick-link:hover p {
+    color: rgba(255, 255, 255, 0.9) !important;
+    text-shadow: 0 1px 2px rgba(0,0,0,0.3);
 }
 
 .quick-icon {
