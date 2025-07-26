@@ -61,6 +61,7 @@
     <div id="notification-container"></div>
 
     {% block scripts %}
+    {% if socketio_available %}
     <script>
     // WebSocket 实时刷新
     const socket = io();
@@ -79,7 +80,7 @@
                 shouldRefresh = data.affected_users.includes(currentUserId);
             } else {
                 // 兼容旧格式
-                shouldRefresh = data.recipient_id === currentUserId || 
+                shouldRefresh = data.recipient_id === currentUserId ||
                             data.payer_id === currentUserId;
             }
         }
@@ -87,14 +88,14 @@
         else if (data.message === 'item_created') {
             shouldRefresh = true;
         } else {
-            shouldRefresh = data.recipient_id === currentUserId || 
+            shouldRefresh = data.recipient_id === currentUserId ||
                         data.payer_id === currentUserId;
         }
 
         if (shouldRefresh) {
             const scrollPosition = window.scrollY || document.documentElement.scrollTop;
             sessionStorage.setItem('scrollPosition', scrollPosition);
-            showNotification('数据已更新，即将刷新...', 'info', 2000);
+            showNotification('数据已更新，即将刷��...', 'info', 2000);
             setTimeout(() => location.replace(location.href), 2000);
         }
         {% endif %}
@@ -104,6 +105,12 @@
     socket.on('disconnect', () => console.warn('Disconnected from Socket.IO'));
     socket.on('connect_error', (error) => console.error('WebSocket error:', error));
     </script>
+    {% else %}
+    <script>
+    // Socket.IO not available - using fallback for real-time features
+    console.log('Socket.IO not available - real-time features disabled');
+    </script>
+    {% endif %}
 
     <script>
     // 顶部导航切换
