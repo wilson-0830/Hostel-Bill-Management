@@ -253,7 +253,7 @@ def register():
 @login_required
 def logout():
     logout_user()
-    return redirect(url_for('index'))
+    return redirect(url_for('gallery'))
 
 @app.route('/change_password', methods=['GET', 'POST'])
 def change_password():
@@ -493,7 +493,7 @@ def delete_payment_method(method_id):
 @login_required
 def history_items():
     if not current_user.is_recipient:
-        flash('您没有访问此页面的权限', 'error')
+        flash('您没有访问��页面的权限', 'error')
         return redirect(url_for('index'))
     
     # Make sure this query returns PaymentItem objects
@@ -667,7 +667,7 @@ def update_payment_item_status(item_id):
         
         # 如果是取消状态，执行自动退款
         if new_status == 'cancelled':
-            # 获取所有支付记录
+            # 获取所有支付记��
             transactions = Transaction.query.filter_by(
                 payment_item_id=item.id,
                 is_personal_payment=True
