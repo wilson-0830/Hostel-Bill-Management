@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 try:
     import eventlet
     eventlet.monkey_patch()  # 必须放在最前面
@@ -6,10 +5,7 @@ try:
 except ImportError:
     EVENTLET_AVAILABLE = False
 
-from flask import Flask, render_template, redirect, url_for, flash, request, session, abort
-=======
 from flask import Flask, render_template, redirect, url_for, flash, request, session, abort, make_response
->>>>>>> 6b0ea1d93efaaa1efce79d76c3f0622bfb6b55cf
 from flask_login import LoginManager, current_user, login_user, logout_user, login_required
 from flask_sqlalchemy import SQLAlchemy
 from models import db, User, Recipient, PaymentItem, PaymentMethod, Transaction, Group
@@ -19,7 +15,6 @@ from werkzeug.utils import secure_filename
 from decimal import Decimal, InvalidOperation
 from flask_migrate import Migrate
 from sqlalchemy import or_
-<<<<<<< HEAD
 
 try:
     from flask_moment import Moment
@@ -28,20 +23,20 @@ except ImportError:
     MOMENT_AVAILABLE = False
 
 try:
+    from flask_session import Session
+    SESSION_AVAILABLE = True
+except ImportError:
+    SESSION_AVAILABLE = False
+
+try:
     from flask_socketio import SocketIO, emit
     SOCKETIO_AVAILABLE = True
 except ImportError:
     SOCKETIO_AVAILABLE = False
-=======
-from flask_session import Session
-from flask_socketio import SocketIO, emit
->>>>>>> 6b0ea1d93efaaa1efce79d76c3f0622bfb6b55cf
 
 
 # 初始化应用
 app = Flask(__name__)
-socketio = SocketIO(app, async_mode='threading')
-
 app.config['SECRET_KEY'] = 'your-secret-key-here'
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///transfers.db'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
@@ -49,8 +44,11 @@ app.config['UPLOAD_FOLDER'] = os.path.join(app.root_path, 'static/uploads')
 app.config['GALLERY_UPLOAD_FOLDER'] = os.path.join(app.root_path, 'static/uploads/gallery')
 app.config['ALLOWED_EXTENSIONS'] = {'png', 'jpg', 'jpeg', 'gif'}  # 普通文件上传允许的扩展名
 app.config['ALLOWED_GALLERY_EXTENSIONS'] = {'png', 'jpg', 'jpeg', 'gif', 'svg'}  # 画廊图片允许的扩展名
-app.config['SESSION_TYPE'] = 'filesystem'
-Session(app)
+
+# 条件配置Session
+if SESSION_AVAILABLE:
+    app.config['SESSION_TYPE'] = 'filesystem'
+    Session(app)
 
 # 初始化扩展
 db.init_app(app)
@@ -58,14 +56,14 @@ migrate = Migrate(app, db)  # 添加这行
 login_manager = LoginManager(app)
 login_manager.login_view = 'login'
 
-# 条件初始化���选扩展
+# 条件初始化可选扩展
 if MOMENT_AVAILABLE:
     moment = Moment(app)
 else:
     moment = None
 
 if SOCKETIO_AVAILABLE:
-    socketio = SocketIO(app)
+    socketio = SocketIO(app, async_mode='threading')
 else:
     socketio = None
 
@@ -82,12 +80,12 @@ def save_gallery_image(file):
         # 确保使用绝对路径
         upload_dir = app.config['GALLERY_UPLOAD_FOLDER']
         os.makedirs(upload_dir, exist_ok=True)
-
+        
         # 生成唯一文件名
         ext = file.filename.rsplit('.', 1)[1].lower()
         filename = f"gallery_{datetime.now().timestamp()}.{ext}"
         filepath = os.path.join(upload_dir, filename)
-
+        
         try:
             file.save(filepath)
             # 返回相对于static目录的路径
@@ -124,12 +122,11 @@ def load_user(user_id):
 with app.app_context():
     db.create_all()
 
-# 确保这个上下文处理���存在
+# 确保这个上下文处理器存在
 @app.context_processor
 def inject_now():
     return {'now': datetime.now()}
 
-<<<<<<< HEAD
 # 提供moment的上下文处理器，即使Flask-Moment不可用
 @app.context_processor
 def inject_moment():
@@ -148,11 +145,6 @@ def inject_moment():
 @app.context_processor
 def inject_socketio_availability():
     return {'socketio_available': SOCKETIO_AVAILABLE and socketio is not None}
-=======
-@app.errorhandler(404)
-def not_found(e):
-    return render_template('404.html'), 404
->>>>>>> 6b0ea1d93efaaa1efce79d76c3f0622bfb6b55cf
 
 # 路由定义
 @app.route('/')
@@ -166,50 +158,36 @@ def index():
         ).limit(5).all()
     else:
         payment_items = PaymentItem.query.filter_by(status='active').limit(5).all()
-
+    
     # 获取当前用户的所有个人支付记录
     user_payments = {
-        t.payment_item_id: t
+        t.payment_item_id: t 
         for t in Transaction.query.filter_by(
             payer_id=current_user.id,
             is_personal_payment=True
         ).all()
     }
-
+    
     # 计算应付金额和已付金额
     pending_payments = Decimal('0.00')
     paid_amount = Decimal('0.00')
-
+    
     for item in payment_items:
         if item.id in user_payments:
             paid_amount += user_payments[item.id].amount
         else:
             count = item.participant_count if item.participant_count > 0 else 1
             pending_payments += item.amount / Decimal(count)
-
+    
     # 获取最近交易
     transactions = Transaction.query.filter(
-        (Transaction.payer_id == current_user.id) |
+        (Transaction.payer_id == current_user.id) | 
         (Transaction.recipient_id == current_user.id)
     ).order_by(Transaction.created_at.desc()).limit(5).all()
-<<<<<<< HEAD
     
-    # 获取��近交易并转换时区
-=======
-
-    # 获取最近交易并转换时区
->>>>>>> 6b0ea1d93efaaa1efce79d76c3f0622bfb6b55cf
-    transactions = Transaction.query.filter(
-        (Transaction.payer_id == current_user.id) |
-        (Transaction.recipient_id == current_user.id)
-    ).order_by(Transaction.created_at.desc()).limit(5).all()
-
-    for trans in transactions:
-        trans.created_at = to_local_time(trans.created_at)
-
     return render_template('index.html',
                          payment_items=payment_items,
-                         user_payments=user_payments,
+                         user_payments=user_payments,  # 传递用户支付状态
                          pending_payments=pending_payments,
                          paid_amount=paid_amount,
                          transactions=transactions)
@@ -219,18 +197,18 @@ def login():
     if current_user.is_authenticated:
         next_page = request.args.get('next')
         return redirect(next_page or url_for('gallery'))
-
+    
     if request.method == 'POST':
         username = request.form.get('username')
         password = request.form.get('password')
         user = User.query.filter_by(username=username).first()
-
+        
         if user and user.check_password(password):
             login_user(user)
             next_page = request.args.get('next')
             return redirect(next_page or url_for('gallery'))
         flash('用户名或密码错误', 'error')
-
+    
     return render_template('login.html')
 
 @app.route('/register', methods=['GET', 'POST'])
@@ -238,13 +216,13 @@ def register():
     if current_user.is_authenticated:
         next_page = request.args.get('next')
         return redirect(next_page or url_for('gallery'))
-
+    
     if request.method == 'POST':
         username = request.form.get('username')
         email = request.form.get('email')
         password = request.form.get('password')
         is_recipient = request.form.get('is_recipient') == 'on'
-
+        
         if User.query.filter_by(username=username).first():
             flash('用户名已存在', 'error')
         elif User.query.filter_by(email=email).first():
@@ -258,17 +236,17 @@ def register():
             )
             user.set_password(password)
             db.session.add(user)
-
+            
             if is_recipient:
                 recipient = Recipient(user=user, business_name=f"{username}的工作室")
                 db.session.add(recipient)
-
+            
             db.session.commit()
             login_user(user)
             next_page = request.args.get('next')
             flash('注册成功', 'success')
             return redirect(next_page or url_for('gallery'))
-
+    
     return render_template('register.html')
 
 @app.route('/logout')
@@ -284,22 +262,22 @@ def change_password():
         if 'verify_email' in request.form:
             email = request.form.get('email')
             user = User.query.filter_by(email=email).first()
-
+            
             if not user:
                 flash('该邮箱地址未注册', 'error')
             else:
                 # Store user email in session for verification
                 session['password_reset_email'] = email
                 flash(f'验证成功！请为 {user.username} 设置新密码', 'success')
-
+            
             return redirect(url_for('change_password'))
-
+        
         # Second step: change password
         elif 'change_password' in request.form:
             if 'password_reset_email' not in session:
                 flash('请先验证邮箱', 'error')
                 return redirect(url_for('change_password'))
-
+                
             new_password = request.form.get('new_password', '')
             confirm_password = request.form.get('confirm_password', '')
 
@@ -318,9 +296,9 @@ def change_password():
                     session.pop('password_reset_email', None)
                     flash(f'用户 {user.username} 的密码已成功更新', 'success')
                     return redirect(url_for('login'))
-
+                
                 flash('验证已过期，请重新验证邮箱', 'error')
-
+    
     # Check if email is verified
     email_verified = False
     username = None
@@ -329,66 +307,32 @@ def change_password():
         if user:
             email_verified = True
             username = user.username
-
+    
     return render_template('c_pass.html',
                          email_verified=email_verified,
                          username=username)
 
 # app.py 中 gallery 路由优化
-@app.route('/gallery')  # 移除了 endpoint='gallery_page'
+@app.route('/gallery')
 def gallery():
     # 定义默认图片路径
     default_image = url_for('static', filename='images/default-hero.jpg')
-
+    
     # 检查自定义图片是否存在
     hero_image_path = os.path.join(app.static_folder, 'uploads/gallery/hero_image.jpg')
     hero_image = url_for('static', filename='uploads/gallery/hero_image.jpg') if os.path.exists(hero_image_path) else default_image
-
+    
     # 添加更多上下文信息
     stats = {
         'total_users': User.query.count(),
         'total_transactions': Transaction.query.count(),
         'active_projects': PaymentItem.query.filter_by(status='active').count()
     }
-
-    # 计算当前用户的累计转账金额（如果已登录）
-    total_transfer = Decimal('0.00')
-    recent_transactions = []
     
-    if current_user.is_authenticated:
-        # 计算累计转账金额
-        total_transfer = db.session.query(
-            db.func.sum(Transaction.amount)
-        ).filter(
-            Transaction.payer_id == current_user.id,
-            Transaction.status == 'completed'
-        ).scalar() or Decimal('0.00')
-        
-        # 获取最近5条交易记录
-        recent_transactions = Transaction.query.filter(
-            (Transaction.payer_id == current_user.id) |
-            (Transaction.recipient_id == current_user.id)
-        ).order_by(Transaction.created_at.desc()).limit(5).all()
-    
-            # 添加时区转换
-        for trans in recent_transactions:
-            trans.created_at = to_local_time(trans.created_at)
-
-    # 确保正确编码
-    html = render_template(
-        'gallery.html',
-        hero_image=hero_image,
-        is_authenticated=current_user.is_authenticated,
-        current_user=current_user if current_user.is_authenticated else None,
-        stats=stats,
-        total_transfer=total_transfer,
-        recent_transactions=recent_transactions
-    )
-    
-    # 确保正确编码
-    response = make_response(html)
-    response.headers['Content-Type'] = 'text/html; charset=utf-8'
-    return response
+    return render_template('gallery.html', 
+                         hero_image=hero_image,
+                         is_authenticated=current_user.is_authenticated,
+                         stats=stats)
 
 # 转账功能
 # app.py 中修改 transfer 路由
@@ -399,14 +343,14 @@ def transfer():
     payment_item_id = request.form.get('payment_item_id')
     amount_str = request.form.get('amount')
     payment_method_id = request.form.get('payment_method_id')
-
+    
     try:
         amount = Decimal(amount_str)
     except (InvalidOperation, ValueError, TypeError):
         flash("请输入有效的金额", "error")
         return redirect(url_for('index'))
 
-    # 检查是否��支付过
+    # 检查是否已支付过
     existing_transaction = Transaction.query.filter_by(
         payer_id=current_user.id,
         payment_item_id=payment_item_id,
@@ -419,7 +363,7 @@ def transfer():
 
     recipient = User.query.get(recipient_id)
     payment_item = PaymentItem.query.get(payment_item_id)
-
+    
     if not recipient or not payment_item:
         flash('收款项目不存在', 'error')
         return redirect(url_for('index'))
@@ -442,17 +386,11 @@ def transfer():
 
     # 更新收款项目的已收金额
     payment_item.amount_received += amount
-
+    
     db.session.add(transaction)
     db.session.commit()
 
-    flash(f'支付成功！已���{recipient.username}转账RM{amount:.2f}，页面将在3秒后刷��...', 'success')
-    socketio.emit('refresh_page', {
-        'message': 'payment_completed',
-        'item_id': payment_item.id,
-        'recipient_id': recipient.id,
-        'payer_id': current_user.id
-    }, namespace='/')
+    flash(f'成功向{recipient.username}转账RM{amount:.2f}', 'success')
     return redirect(url_for('index'))
 
 # 新增确认支付页面路由
@@ -461,14 +399,14 @@ def transfer():
 def confirm_payment():
     payment_item_id = request.args.get('payment_item_id')
     amount = request.args.get('amount')
-
+    
     payment_item = PaymentItem.query.get_or_404(payment_item_id)
-
+    
     # 新增验证逻辑
     if payment_item.amount_received >= payment_item.amount:
         flash('该项目已完成，无需再支付', 'error')
         return redirect(url_for('index'))
-
+    
     if Transaction.query.filter_by(
         payer_id=current_user.id,
         payment_item_id=payment_item_id,
@@ -478,61 +416,51 @@ def confirm_payment():
         return redirect(url_for('index'))
     recipient = payment_item.recipient
     payment_methods = recipient.payment_methods
-
-    total_users = User.query.count()
-
+    
     return render_template('confirm_payment.html',
                          payment_item=payment_item,
                          amount=amount,
-                         payment_methods=payment_methods,
-                         total_users=total_users)
+                         payment_methods=payment_methods)
 
 # 收款工作室
-# app.py 中修改收款工作室相关路��
+# app.py 中修改收款工作室相关路由
 @app.route('/recipient_studio')
 @login_required
 def recipient_studio():
     if not current_user.is_recipient:
         flash('您没有访问此页面的权限', 'error')
         return redirect(url_for('index'))
-
+    
     # Get all users except current user for individual assignments
     all_users = User.query.filter(User.id != current_user.id).all()
-
+    
     # Get active payment items (max 5)
     payment_items = PaymentItem.query.filter_by(
         recipient_id=current_user.id,
         status='active'
     ).order_by(PaymentItem.created_at.desc()).limit(5).all()
-
+    
     # Get history items (non-active, max 3 preview)
     history_items = PaymentItem.query.filter(
         PaymentItem.recipient_id == current_user.id,
         PaymentItem.status != 'active'
     ).order_by(PaymentItem.created_at.desc()).limit(3).all()
-
+    
     payment_methods = PaymentMethod.query.filter_by(recipient_id=current_user.id).all()
-
+    
     # Get transactions (others' payments, max 5 preview)
     transactions = Transaction.query.filter(
         Transaction.recipient_id == current_user.id,
         Transaction.payer_id != current_user.id
     ).order_by(Transaction.created_at.desc()).limit(5).all()
-
-    # 转换时间为本地时区
-    for trans in transactions:
-        trans.created_at = to_local_time(trans.created_at)
-
-    total_users = User.query.count()
-
+    
     return render_template('recipient_studio.html',
                          payment_items=payment_items,
                          history_items=history_items,
                          payment_methods=payment_methods,
                          transactions=transactions,
                          all_users=all_users,  # Pass all users to template
-                         groups=current_user.groups,
-                         total_users=total_users)  # Pass user's groups to template
+                         groups=current_user.groups)  # Pass user's groups to template
 
 # 添加删除支付方式功能
 # 保留这个更完整的版本，删除其他重复定义
@@ -542,22 +470,22 @@ def delete_payment_method(method_id):
     if not current_user.is_recipient:
         flash('您没有访问此页面的权限', 'error')
         return redirect(url_for('index'))
-
+    
     method = PaymentMethod.query.get_or_404(method_id)
-
+    
     # 确保当前用户是付款方式的所有者
     if method.recipient_id != current_user.id:
         flash('无权操作此付款方式', 'error')
         return redirect(url_for('recipient_studio'))
-
+    
     # 检查是否有交易使用此支付方式
     if Transaction.query.filter_by(payment_method_id=method.id).count() > 0:
-        flash('该支付方���已被使用，无法删除', 'error')
+        flash('该支付方式已被使用，无法删除', 'error')
     else:
         db.session.delete(method)
         db.session.commit()
         flash('支付方式已删除', 'success')
-
+    
     return redirect(url_for('recipient_studio'))
 
 # 获取全部历史项目
@@ -567,20 +495,15 @@ def history_items():
     if not current_user.is_recipient:
         flash('您没有访问此页面的权限', 'error')
         return redirect(url_for('index'))
-
+    
+    # Make sure this query returns PaymentItem objects
     history_items = PaymentItem.query.filter(
         PaymentItem.recipient_id == current_user.id,
         PaymentItem.status != 'active'
     ).order_by(PaymentItem.created_at.desc()).all()
-
-    # 转换时间为本地时区
-    for item in history_items:
-        item.created_at = to_local_time(item.created_at)
-        if hasattr(item, 'updated_at') and item.updated_at:
-            item.updated_at = to_local_time(item.updated_at)
-
-    return render_template('history_items.html',
-                         history_items=history_items)
+    
+    return render_template('history_items.html', 
+                         history_items=history_items)  # Passing the list correctly
 
 # 删除项目
 @app.route('/delete_payment_item/<int:item_id>', methods=['POST'])
@@ -589,21 +512,21 @@ def delete_payment_item(item_id):
     item = PaymentItem.query.get_or_404(item_id)
     if item.recipient_id != current_user.id:
         abort(403)
-
+    
     # 删除关联的图片
     if item.image_url:
         try:
-            image_path = os.path.join(app.config['UPLOAD_FOLDER'],
+            image_path = os.path.join(app.config['UPLOAD_FOLDER'], 
                                      item.image_url.split('/')[-1])
             if os.path.exists(image_path):
                 os.remove(image_path)
         except Exception as e:
             app.logger.error(f"删除图片失败: {e}")
-
+    
     # 删除项目
     db.session.delete(item)
     db.session.commit()
-
+    
     flash('项目已删除', 'success')
     return redirect(url_for('recipient_studio'))
 
@@ -614,82 +537,45 @@ def add_payment_item():
     if not current_user.is_recipient:
         flash('您没有访问此页面的权限', 'error')
         return redirect(url_for('index'))
-
+    
     # 获取基本数据
     title = request.form.get('title')
     description = request.form.get('description')
     amount_str = request.form.get('amount')
     split_mode = request.form.get('split_mode', 'average')
-
+    
     try:
         amount = Decimal(amount_str)
     except (InvalidOperation, ValueError, TypeError):
         flash("请输入有效的金额", "error")
         return redirect(url_for('recipient_studio'))
 
-    # 处理图片上传
-    image_url = None
-    if 'image' in request.files:
-        file = request.files['image']
-        if file and allowed_file(file.filename, app.config['ALLOWED_EXTENSIONS']):
-            # 确保上传目录存在
-            os.makedirs(app.config['UPLOAD_FOLDER'], exist_ok=True)
-
-            # 生成唯一文件名
-            filename = secure_filename(f"{current_user.id}_{datetime.now().timestamp()}_{file.filename}")
-            file_path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
-            file.save(file_path)
-
-            # 使用url_for生成正确的URL
-            image_url = url_for('static', filename=f'uploads/{filename}')
-
     # 处理不同分摊模式
-    participant_count = 1  # 默认包括自己
+    participant_count = 1
     assigned_users = None
     group_id = None
-
+    
     if split_mode == 'average':
-        # 传统AA：获取参与者数量（包括自己）
-        participant_count = User.query.count()
-
+        participant_count = int(request.form.get('participant_count', 1))
     elif split_mode == 'individual':
         # 处理指定用户
         user_ids = request.form.getlist('assigned_user_id')
         amounts = request.form.getlist('assigned_amount')
         assigned_users = {}
-
-        try:
-            # 确保金额是 Decimal 类型
-            for uid, amt in zip(user_ids, amounts):
-                assigned_users[int(uid)] = Decimal(amt)  # Convert to Decimal here
-
-                # 计算自己的金额
-                other_users_total = sum(assigned_users.values())
-                own_amount = amount - other_users_total
-
-                if own_amount < 0:
-                    flash("其他用户金额总和不能超过总金额", "error")
-                    return redirect(url_for('recipient_studio'))
-
-                # 添加当前用户（收款者）的应付金额
-                assigned_users[current_user.id] = own_amount
-                participant_count = len(assigned_users)
-
-        except (ValueError, InvalidOperation) as e:
-            flash(f"金额格式错误: {str(e)}", "error")
-            return redirect(url_for('recipient_studio'))
-
-
+        for uid, amt in zip(user_ids, amounts):
+            try:
+                assigned_users[int(uid)] = Decimal(amt)
+            except (ValueError, InvalidOperation):
+                flash(f"用户 {uid} 的金额无效", "error")
+                return redirect(url_for('recipient_studio'))
+        participant_count = len(assigned_users)
     elif split_mode == 'group':
         group_id = request.form.get('group_id')
         group = Group.query.get(group_id)
         if not group or current_user not in group.members:
             flash("无效的群组选择", "error")
             return redirect(url_for('recipient_studio'))
-
-        # 参与者数量 = 群组成员数（包括自己）
         participant_count = len(group.members)
-<<<<<<< HEAD
     
     # Handle image upload
     image_url = None
@@ -701,8 +587,6 @@ def add_payment_item():
             file_path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
             file.save(file_path)
             image_url = url_for('static', filename=f'uploads/{filename}')
-=======
->>>>>>> 6b0ea1d93efaaa1efce79d76c3f0622bfb6b55cf
 
     # 创建支付项目
     payment_item = PaymentItem(
@@ -717,83 +601,46 @@ def add_payment_item():
         assigned_users=assigned_users,
         group_id=group_id
     )
-
+    
     # 保存到数据库
     db.session.add(payment_item)
-    db.session.commit()  # 需要先提交以获取item.id
-
-    # 计算当前用户的应付金额
-    if split_mode == 'average':
-        per_user_amount = amount / Decimal(participant_count)
-    elif split_mode == 'individual':
-        # 从之前计算的assigned_users字典中获取当前用户的金额
-        per_user_amount = assigned_users.get(current_user.id, Decimal('0.00'))
-    elif split_mode == 'group':
-        per_user_amount = amount / Decimal(participant_count)
-
-    # 确保金额大于0才创建支付记录
-    if per_user_amount > Decimal('0.00'):
-        # 创建交易记录
-        transaction = Transaction(
-            payment_item_id=payment_item.id,
-            payer_id=current_user.id,
-            recipient_id=current_user.id,  # 收款工作室主人
-            amount=per_user_amount,
-            status='completed',
-            is_personal_payment=True,
-            note='项目发起者自动支付',
-            created_at=datetime.now(timezone.utc)
-        )
-        db.session.add(transaction)
-
-        # 更新项目的已收金额
-        payment_item.amount_received = per_user_amount
-        db.session.commit()  # 提交更新后的金额
-
-    # 添加日志记录
-    app.logger.info(f"Emitting refresh_page event for item {payment_item.id}")
-    socketio.emit('refresh_page', {
-        'message': 'item_created',
-        'item_id': payment_item.id,
-        'recipient_id': current_user.id,
-        'payer_id': None
-    }, namespace='/')
+    db.session.commit()
+    
     flash('收款项目添加成功', 'success')
     return redirect(url_for('recipient_studio'))
-
 
 # 添加付款方式
 @app.route('/add_payment_method', methods=['POST'])
 @login_required
 def add_payment_method():
     if not current_user.is_recipient:
-        flash('您没有访问此页面���权限', 'error')
+        flash('您没有访问此页面的权限', 'error')
         return redirect(url_for('index'))
-
+    
     method_type = request.form.get('method_type')
     account_info = request.form.get('account_info')
     qr_code_image = None
-
+    
     # 处理二维码图片上传
     if 'qr_code_image' in request.files:
         file = request.files['qr_code_image']
         if file and allowed_file(file.filename, app.config['ALLOWED_EXTENSIONS']):  # 修改这里
             # 确保上传目录存在
             os.makedirs(app.config['UPLOAD_FOLDER'], exist_ok=True)
-
+            
             # 生成唯一文件名
             filename = secure_filename(f"{current_user.id}_{datetime.now().timestamp()}_{file.filename}")
             file_path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
             file.save(file_path)
-
+            
             # 使用url_for生成正确的URL
             qr_code_image = url_for('static', filename=f'uploads/{filename}')
-
+    
     # 验证逻辑：如果没有上传图片，则必须提供账号信息
     if not qr_code_image and not account_info:
         flash('请至少提供账号信息或上传二维码图片', 'error')
         return redirect(url_for('recipient_studio'))
-
+    
     payment_method = PaymentMethod(
         recipient_id=current_user.id,
         method_type=method_type,
@@ -801,7 +648,7 @@ def add_payment_method():
         qr_code_image=qr_code_image,
         is_default=request.form.get('is_default') == 'on'
     )
-
+    
     db.session.add(payment_method)
     db.session.commit()
     flash('付款方式添加成功', 'success')
@@ -813,11 +660,11 @@ def update_payment_item_status(item_id):
     item = PaymentItem.query.get_or_404(item_id)
     if item.recipient_id != current_user.id:
         abort(403)
-
+    
     new_status = request.form.get('status')
     if new_status in ['completed', 'cancelled']:
         item.status = new_status
-
+        
         # 如果是取消状态，执行自动退款
         if new_status == 'cancelled':
             # 获取所有支付记录
@@ -825,36 +672,25 @@ def update_payment_item_status(item_id):
                 payment_item_id=item.id,
                 is_personal_payment=True
             ).all()
-
+            
             for trans in transactions:
                 # 标记为退款
                 trans.refund_status = 'cancelled'
                 trans.refund_at = datetime.now()
-
+                
                 # 更新用户余额（需要确保User模型有balance字段）
                 payer = User.query.get(trans.payer_id)
                 recipient = User.query.get(trans.recipient_id)
-
+                
                 payer.balance += trans.amount
                 recipient.balance -= trans.amount
-
+                
                 # 添加退款备注
                 trans.note = f"项目取消自动退款 - {trans.note or ''}"
-
+        
         db.session.commit()
-
-    # 获取所有相关用户ID（付款人+收款人）
-    affected_users = list(set([t.payer_id for t in item.transactions] + [item.recipient_id]))
-
-    # 发送刷新事件给所有相关用户
-    socketio.emit('refresh_page', {
-        'message': 'status_changed',
-        'item_id': item.id,
-        'affected_users': affected_users  # 明确传递受影响的用户列表
-    }, namespace='/')
-
-    flash(f'项目状态已更新为{new_status}', 'success')
-
+        flash(f'项目状态已更新为{new_status}', 'success')
+    
     return redirect(url_for('recipient_studio'))
 
 @app.route('/debug_payment_items')
@@ -872,12 +708,14 @@ def debug_payment_items():
 
 @app.route('/fix_payment_methods')
 def fix_payment_methods():
-    from sqlalchemy import text
     try:
-        # For SQLite
-        db.session.execute(text('ALTER TABLE payment_methods ADD COLUMN updated_at DATETIME'))
+        from models import PaymentMethod
+        for method in PaymentMethod.query.all():
+            if hasattr(method, 'recipient') and method.recipient is None:
+                # 删除无效的支付方法
+                db.session.delete(method)
         db.session.commit()
-        return 'Added updated_at column to payment_methods'
+        return f'Fixed payment methods.'
     except Exception as e:
         db.session.rollback()
         return f'Error: {str(e)}'
@@ -888,16 +726,16 @@ def fix_payment_methods():
 def transactions():
     # 自动清理旧交易(保留最近15条)
     user_transactions = Transaction.query.filter(
-        (Transaction.payer_id == current_user.id) |
+        (Transaction.payer_id == current_user.id) | 
         (Transaction.recipient_id == current_user.id)
     )
-
+    
     total_count = user_transactions.count()
     if total_count > 15:
         oldest = user_transactions.order_by(
             Transaction.created_at.asc()
         ).limit(total_count - 15).all()
-
+        
         for t in oldest:
             db.session.delete(t)
         db.session.commit()
@@ -905,25 +743,25 @@ def transactions():
     # 获取筛选参数
     search = request.args.get('search', '').strip()
     trans_type = request.args.get('type', '')
-
+    
     # 构建基础查询
     query = Transaction.query.filter(
-        (Transaction.payer_id == current_user.id) |
+        (Transaction.payer_id == current_user.id) | 
         (Transaction.recipient_id == current_user.id)
     )
-
+    
     # 应用收入/支出筛选
     if trans_type == 'incoming':
         query = query.filter(Transaction.recipient_id == current_user.id)
     elif trans_type == 'outgoing':
         query = query.filter(Transaction.payer_id == current_user.id)
-
+    
     # 应用搜索条件
     if search:
         query = query.join(
             PaymentItem, Transaction.payment_item_id == PaymentItem.id
         ).join(
-            User,
+            User, 
             or_(
                 Transaction.payer_id == User.id,
                 Transaction.recipient_id == User.id
@@ -934,9 +772,9 @@ def transactions():
                 User.username.ilike(f'%{search}%')
             )
         )
-
+    
     transactions = query.order_by(Transaction.created_at.desc()).all()
-
+    
     # 计算总额
     total_sent = db.session.query(
         db.func.sum(Transaction.amount)
@@ -944,20 +782,20 @@ def transactions():
         Transaction.payer_id == current_user.id,
         Transaction.status == 'completed'
     ).scalar() or Decimal('0.00')
-
+    
     total_received = db.session.query(
         db.func.sum(Transaction.amount)
     ).filter(
         Transaction.recipient_id == current_user.id,
         Transaction.status == 'completed'
     ).scalar() or Decimal('0.00')
-
+    
     # 转换时间为本地时区
     for trans in transactions:
         trans.created_at = to_local_time(trans.created_at)
         if trans.refund_at:
             trans.refund_at = to_local_time(trans.refund_at)
-
+    
     return render_template('transactions.html',
                          transactions=transactions,
                          total_sent=total_sent,
@@ -996,7 +834,7 @@ def add_to_group(group_id):
 def calculate_payments(payment_item):
     if payment_item.split_mode == 'average':
         # 传统AA平摊
-        return {user.id: payment_item.amount / payment_item.participant_count
+        return {user.id: payment_item.amount / payment_item.participant_count 
                 for user in payment_item.recipient.members}
     elif payment_item.split_mode == 'individual':
         # 各付各的
@@ -1004,40 +842,35 @@ def calculate_payments(payment_item):
     elif payment_item.split_mode == 'group':
         # 群组AA
         group_members = payment_item.group.members
-        return {user.id: payment_item.amount / len(group_members)
+        return {user.id: payment_item.amount / len(group_members) 
                 for user in group_members}
-
+    
 # Add this route to app.py
 @app.route('/delete_group/<int:group_id>', methods=['POST'])
 @login_required
 def delete_group(group_id):
     group = Group.query.get_or_404(group_id)
-
+    
     # Only creator can delete the group
     if group.creator_id != current_user.id:
         flash('只有群组创建者可以删除群组', 'error')
         return redirect(url_for('list_groups'))
-
+    
     db.session.delete(group)
     db.session.commit()
     flash('群组已成功删除', 'success')
     return redirect(url_for('list_groups'))
 
-<<<<<<< HEAD
 # SocketIO已在前面条件初始化
-=======
->>>>>>> 6b0ea1d93efaaa1efce79d76c3f0622bfb6b55cf
 
 if __name__ == '__main__':
-    socketio.run(app, host='0.0.0.0', port=8080, debug=True)
-
     # 确保上传文件夹存在
     upload_folders = [
         app.config['UPLOAD_FOLDER'],
         app.config['GALLERY_UPLOAD_FOLDER'],
         'static/uploads/gallery'
     ]
-
+    
     for folder in upload_folders:
         try:
             os.makedirs(folder, exist_ok=True)
@@ -1052,17 +885,17 @@ if __name__ == '__main__':
     # 获取本地IP地址
     import socket
     from contextlib import suppress
-
+    
     host = '0.0.0.0'
     port = 8080
     local_ip = 'localhost'
-
+    
     try:
         # Try multiple methods to get local IP
         hostname = socket.gethostname()
         with suppress(Exception):
             local_ip = socket.gethostbyname(hostname)
-
+        
         # Alternative method using network connections
         if local_ip == 'localhost':
             with suppress(Exception):
@@ -1075,14 +908,11 @@ if __name__ == '__main__':
         local_ip = 'localhost'
 
     print(f"\n服务器将在 {host}:{port} 运行")
-    print(f"在本���访问: http://localhost:{port}")
+    print(f"在本地访问: http://localhost:{port}")
     print(f"在局域网内其他设备访问: http://{local_ip}:{port}\n")
-<<<<<<< HEAD
     
     # 根据可用性使用SocketIO或普通Flask运行
     if SOCKETIO_AVAILABLE and socketio:
         socketio.run(app, host='0.0.0.0', port=8080, debug=True)
     else:
         app.run(host='0.0.0.0', port=8080, debug=True, use_reloader=False)
-=======
->>>>>>> 6b0ea1d93efaaa1efce79d76c3f0622bfb6b55cf
