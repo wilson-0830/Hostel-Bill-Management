@@ -411,11 +411,12 @@ body::before {
 /* ����小快速通道卡片尺寸 */
 .quick-links {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); /* 减小最小宽度 */
-    gap: 1.5rem; /* 减小间距 */
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 2rem;
     margin-top: 2rem;
     position: relative;
     z-index: 1;
+    padding: 0 1rem;
 }
 
 .quick-link {
