@@ -139,6 +139,16 @@ def inject_moment():
                 return ''
             def locale(self, lang):
                 return ''
+            def __call__(self, datetime_obj):
+                # 返回一个虚拟的moment对象，具有format方法
+                class DummyMomentInstance:
+                    def __init__(self, dt):
+                        self.dt = dt
+                    def format(self, format_string):
+                        if self.dt:
+                            return self.dt.strftime('%Y-%m-%d %H:%M')
+                        return ''
+                return DummyMomentInstance(datetime_obj)
         return {'moment': DummyMoment()}
 
 # 提供socketio可用性信息给模板
@@ -206,7 +216,7 @@ def login():
         app.logger.info(f"Login attempt for username: {username}")
 
         if not username or not password:
-            flash('请填写用户名和密码', 'error')
+            flash('请填写用户名和��码', 'error')
             return render_template('login.html')
 
         user = User.query.filter_by(username=username).first()
@@ -740,7 +750,7 @@ def add_payment_method():
             # 使用url_for生成正确的URL
             qr_code_image = url_for('static', filename=f'uploads/{filename}')
     
-    # 验证逻辑：如果没有上传图片，则必须提供账号信息
+    # 验证逻辑：如果没��上传图片，则必须提供账号信息
     if not qr_code_image and not account_info:
         flash('请至少提供账号信息或上传二维码图片', 'error')
         return redirect(url_for('recipient_studio'))
@@ -1098,7 +1108,7 @@ if __name__ == '__main__':
         except Exception as e:
             print(f"无法创建目录 {folder}: {e}")
 
-    # 打印所有注册路由
+    # 打印所有注册���由
     print("\n已注册路由：")
     for rule in app.url_map.iter_rules():
         print(f"{rule.endpoint}: {rule}")
