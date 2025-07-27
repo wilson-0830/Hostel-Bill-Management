@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{% block title %}数字金融服务{% endblock %}</title>
+    <title>{% block title %}���字金融服务{% endblock %}</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/base.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
     <!-- 优化字体加载 -->
@@ -331,7 +331,7 @@
         return container;
     }
 
-    // 通知自动关闭
+    // 通知自动���闭
     document.querySelectorAll('.notification-close').forEach(btn => {
         btn.addEventListener('click', function() {
             const notification = this.closest('.notification');
@@ -414,8 +414,7 @@
         window.location.href = this.href;
     });
 
-<<<<<<< HEAD
-=======
+
     // 添加用户信息链接的样式
     const userInfoLinks = document.querySelectorAll('.user-info-link');
     userInfoLinks.forEach(link => {
@@ -424,7 +423,7 @@
             const navbar = document.querySelector('.navbar');
             const toggle = document.getElementById('mobileToggle');
             const menu = document.getElementById('navbarMenu');
-            
+
             if (toggle && menu) {
                 toggle.classList.remove('active');
                 navbar.classList.remove('menu-open');
@@ -432,8 +431,6 @@
             }
         });
     });
-
->>>>>>> 864f9e05d2c679b129da682b03737eca09b71b2c
     <!-- 闪存消息处理 -->
     <script>
     {% with messages = get_flashed_messages(with_categories=true) %}
