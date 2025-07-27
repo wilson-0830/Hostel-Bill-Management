@@ -14,7 +14,7 @@ import os
 from werkzeug.utils import secure_filename
 from decimal import Decimal, InvalidOperation
 from flask_migrate import Migrate
-from sqlalchemy import or_
+from sqlalchemy import or_, func
 
 try:
     from flask_moment import Moment
@@ -159,7 +159,7 @@ def index():
     else:
         payment_items = PaymentItem.query.filter_by(status='active').limit(5).all()
     
-    # 获取当前用户的所有个人支付记录
+    # 获取���前用户的所有个人支付记录
     user_payments = {
         t.payment_item_id: t 
         for t in Transaction.query.filter_by(
@@ -451,7 +451,7 @@ def confirm_payment():
     
     payment_item = PaymentItem.query.get_or_404(payment_item_id)
     
-    # 新增验证逻辑
+    # 新��验证逻辑
     if payment_item.amount_received >= payment_item.amount:
         flash('该项目已完成，无需再支���', 'error')
         return redirect(url_for('index'))
@@ -576,7 +576,7 @@ def delete_payment_item(item_id):
     db.session.delete(item)
     db.session.commit()
     
-    flash('项目已删��', 'success')
+    flash('项目已删除', 'success')
     return redirect(url_for('recipient_studio'))
 
 # 添加收款项目
@@ -926,7 +926,7 @@ if __name__ == '__main__':
         except Exception as e:
             print(f"无法创建目录 {folder}: {e}")
 
-    # 打印所有注册路由
+    # 打��所有注册路由
     print("\n已注册路由：")
     for rule in app.url_map.iter_rules():
         print(f"{rule.endpoint}: {rule}")
