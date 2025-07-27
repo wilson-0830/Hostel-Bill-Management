@@ -322,23 +322,23 @@ def change_password():
                          email_verified=email_verified,
                          username=username)
 
-# app.py 中 gallery 路由��化
+# app.py 中 gallery 路由优化
 @app.route('/gallery')
 def gallery():
-    # 优化图片路径处理
-    default_image = url_for('static', filename='uploads/gallery.jpg')
+    # 优化图片路径处理 - 使用现有的gallery.jpg
     hero_image_paths = [
         'uploads/gallery/hero_image.jpg',
         'uploads/gallery.jpg',
         'images/default-hero.jpg'
     ]
 
-    hero_image = default_image
+    hero_image = url_for('static', filename='uploads/gallery.jpg')  # 默认使用现有图片
     for image_path in hero_image_paths:
-        full_path = os.path.join(app.static_folder, image_path)
-        if os.path.exists(full_path):
-            hero_image = url_for('static', filename=image_path)
-            break
+        if app.static_folder:
+            full_path = os.path.join(app.static_folder, image_path)
+            if os.path.exists(full_path):
+                hero_image = url_for('static', filename=image_path)
+                break
 
     # 优化统计数据获取 - 使用缓存减少数据库查询
     stats = {
@@ -442,7 +442,7 @@ def transfer():
     flash(f'成功向{recipient.username}转账RM{amount:.2f}', 'success')
     return redirect(url_for('index'))
 
-# 新增确��支付页面路由
+# 新增确认支付页面路由
 @app.route('/confirm_payment')
 @login_required
 def confirm_payment():
@@ -576,7 +576,7 @@ def delete_payment_item(item_id):
     db.session.delete(item)
     db.session.commit()
     
-    flash('项目已删除', 'success')
+    flash('项目已删��', 'success')
     return redirect(url_for('recipient_studio'))
 
 # 添加收款项目
