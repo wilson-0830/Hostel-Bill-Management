@@ -665,6 +665,10 @@ body::before {
 }
 
 @media (max-width: 768px) {
+    .gallery-hero {
+        margin: 0 15px 0 20px;
+    }
+
     .hero-content h1 {
         font-size: 2.3rem;
     }
