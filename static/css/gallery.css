@@ -109,6 +109,64 @@ body::before {
     font-weight: 600;
 }
 
+/* 状态徽章样式 */
+.status-badge {
+    display: inline-block;
+    padding: 0.25rem 0.75rem;
+    background: var(--gradient-accent);
+    color: white;
+    border-radius: var(--radius-sm);
+    font-size: 0.8rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-top: 0.5rem;
+}
+
+/* 金额显示样式 */
+.amount-sent {
+    color: var(--danger-color);
+    font-weight: 700;
+}
+
+.amount-received {
+    color: var(--success-color);
+    font-weight: 700;
+}
+
+/* 活动描述样式 */
+.activity-desc {
+    font-size: 0.8rem;
+    color: rgba(255, 255, 255, 0.6);
+    margin-top: 0.25rem;
+}
+
+/* 查看更多活动项 */
+.activity-item.view-more {
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    padding-top: 1rem;
+    margin-top: 0.5rem;
+}
+
+.activity-item.view-more .activity-title {
+    color: var(--accent-color);
+    text-decoration: none;
+    transition: var(--transition);
+}
+
+.activity-item.view-more .activity-title:hover {
+    color: var(--accent-light);
+}
+
+/* 文本颜色辅助类 */
+.text-danger {
+    color: var(--danger-color) !important;
+}
+
+.text-success {
+    color: var(--success-color) !important;
+}
+
 /* Modern Buttons */
 .cta-buttons {
     display: flex;
@@ -474,7 +532,7 @@ body::before {
 
 .stat-card .icon {
     font-size: 2rem; /* 减小图标大小 */
-    margin-bottom: 1rem; /* 减小间距 */
+    margin-bottom: 1rem; /* 减小间��� */
     color: var(--accent-color);
 }
 
