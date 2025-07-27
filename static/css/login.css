@@ -6,10 +6,7 @@
     min-height: calc(100vh - var(--navbar-height));
     padding: 2rem 1rem;
     position: relative;
-<<<<<<< HEAD
     font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Microsoft YaHei', sans-serif;
-=======
->>>>>>> 864f9e05d2c679b129da682b03737eca09b71b2c
 }
 
 .auth-wrapper {
@@ -303,6 +300,112 @@
     font-size: 0.95rem;
     cursor: pointer;
     user-select: none;
+    line-height: 1.4;
+}
+
+/* ===== Terms Checkbox Special Styling ===== */
+.terms-checkbox {
+    background: var(--bg-glass);
+    border: var(--border-light);
+    border-radius: var(--radius-lg);
+    padding: 1rem;
+    margin-bottom: 2rem;
+    transition: var(--transition);
+    position: relative;
+}
+
+.terms-checkbox::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 2px;
+    background: var(--gradient-secondary);
+    border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+    opacity: 0;
+    transition: var(--transition);
+}
+
+.terms-checkbox:hover::before {
+    opacity: 1;
+}
+
+.terms-checkbox:hover {
+    background: var(--bg-glass-hover);
+    border-color: rgba(76, 201, 240, 0.3);
+    box-shadow: var(--shadow-md);
+}
+
+.terms-checkbox .custom-checkbox {
+    width: 24px;
+    height: 24px;
+}
+
+.terms-checkbox .checkmark {
+    width: 24px;
+    height: 24px;
+    border: 2px solid var(--border-medium);
+    border-radius: var(--radius-md);
+}
+
+.terms-checkbox .checkmark::after {
+    left: 8px;
+    top: 4px;
+    width: 6px;
+    height: 12px;
+    border-width: 0 3px 3px 0;
+}
+
+.terms-checkbox .checkbox-label {
+    font-size: 0.9rem;
+    color: var(--text-light);
+    font-weight: 500;
+}
+
+.terms-link {
+    color: var(--accent-color);
+    text-decoration: none;
+    font-weight: 600;
+    transition: var(--transition);
+    position: relative;
+    display: inline-block;
+}
+
+.terms-link::after {
+    content: '';
+    position: absolute;
+    bottom: -2px;
+    left: 0;
+    width: 0;
+    height: 2px;
+    background: var(--gradient-primary);
+    transition: var(--transition);
+}
+
+.terms-link:hover {
+    color: var(--accent-light);
+    text-shadow: 0 0 8px rgba(76, 201, 240, 0.5);
+}
+
+.terms-link:hover::after {
+    width: 100%;
+}
+
+/* Terms checkbox validation styling */
+.terms-checkbox .custom-checkbox input:invalid {
+    border-color: var(--danger-color);
+}
+
+.terms-checkbox .custom-checkbox input:invalid ~ .checkmark {
+    border-color: var(--danger-color);
+    animation: errorPulse 0.5s ease-out;
+}
+
+@keyframes errorPulse {
+    0% { box-shadow: 0 0 0 0 rgba(247, 37, 133, 0.7); }
+    70% { box-shadow: 0 0 0 10px rgba(247, 37, 133, 0); }
+    100% { box-shadow: 0 0 0 0 rgba(247, 37, 133, 0); }
 }
 
 /* ===== 密码强度指示器 ===== */
@@ -383,7 +486,6 @@
     border-color: var(--danger-color);
     color: var(--danger-color);
     box-shadow: 0 0 20px rgba(247, 37, 133, 0.2);
-<<<<<<< HEAD
     animation: errorShake 0.5s ease-out;
 }
 
@@ -392,8 +494,6 @@
     0%, 100% { transform: translateX(0); }
     25% { transform: translateX(-5px); }
     75% { transform: translateX(5px); }
-=======
->>>>>>> 864f9e05d2c679b129da682b03737eca09b71b2c
 }
 
 .message-warning {
