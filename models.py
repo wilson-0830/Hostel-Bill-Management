@@ -41,6 +41,9 @@ class User(db.Model, UserMixin):
     balance = db.Column(db.Numeric(12, 2), default=Decimal('0.00'))
     is_recipient = db.Column(db.Boolean, default=False)
     created_at = db.Column(db.DateTime, default=db.func.current_timestamp())
+    # 添加以下字段
+    is_deleted = db.Column(db.Boolean, default=False)  # 软删除标记
+    bio = db.Column(db.Text)  # 个人简介
 
     recipient_profile = db.relationship('Recipient', backref='user', uselist=False)
     payment_items = db.relationship('PaymentItem', backref='recipient')
@@ -165,6 +168,17 @@ class PaymentMethod(db.Model):
     is_default = db.Column(db.Boolean, default=False)
     updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
 
+
+class Announcement(db.Model):
+    __tablename__ = 'announcements'
+    
+    id = db.Column(db.Integer, primary_key=True)
+    title = db.Column(db.String(80), nullable=False)  # 限制公告标题长度（约23个中文字）
+    content = db.Column(db.Text)
+    creator_id = db.Column(db.Integer, db.ForeignKey('users.id'))
+    created_at = db.Column(db.DateTime, default=lambda: datetime.now(timezone.utc))
+    
+    creator = db.relationship('User', backref='announcements')
 
 class Transaction(db.Model):
     __tablename__ = 'transactions'

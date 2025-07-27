@@ -189,9 +189,12 @@
         {% endif %}
       </ul>
     </div>
+    
+    <!-- 系统通知部分 -->
     <div class="activity-card">
       <h3><i class="fas fa-bell"></i> 系统通知</h3>
       <ul class="activity-list">
+        <!-- 安全提示通知 -->
         <li class="activity-item">
           <div class="activity-icon"><i class="fas fa-shield-alt"></i></div>
           <div class="activity-content">
@@ -199,20 +202,29 @@
             <div class="activity-time">刚刚</div>
           </div>
         </li>
+        
+        <!-- 动态通知 - 公告和项目创建 -->
+        {% for activity in activities %}
         <li class="activity-item">
-          <div class="activity-icon"><i class="fas fa-sync-alt"></i></div>
+          <div class="activity-icon">
+            <i class="fas fa-{{ 'bullhorn' if activity.type == 'announcement' else 'file-invoice-dollar' }}"></i>
+          </div>
           <div class="activity-content">
-            <div class="activity-title">系统维护通知：{{ now.strftime('%Y-%m-%d') }}凌晨2-4点</div>
-            <div class="activity-time">1天前</div>
+            <div class="activity-title">
+              {{ activity.creator }} {{ activity.title }}
+            </div>
+            <div class="activity-time">{{ activity.time }}</div> <!-- 注意：这里已经是字符串 -->
           </div>
         </li>
+        {% else %}
+        <!-- 没有活动时的备用通知 -->
         <li class="activity-item">
-          <div class="activity-icon"><i class="fas fa-gift"></i></div>
+          <div class="activity-icon"><i class="fas fa-info-circle"></i></div>
           <div class="activity-content">
-            <div class="activity-title">新用户优惠：推荐好友获RM30奖励</div>
-            <div class="activity-time">3天前</div>
+            <div class="activity-title">暂无最新通知</div>
           </div>
         </li>
+        {% endfor %}
       </ul>
     </div>
   </div>

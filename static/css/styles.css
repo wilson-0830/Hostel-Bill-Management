@@ -592,4 +592,8 @@ body::after {
 
 .glow-accent {
     box-shadow: var(--glow-accent);
+<<<<<<< HEAD
 }
+=======
+}
+>>>>>>> 864f9e05d2c679b129da682b03737eca09b71b2c
