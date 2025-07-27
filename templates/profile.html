@@ -8,7 +8,6 @@
 
 {% block content %}
 <div class="profile-container">
-<<<<<<< HEAD
     <div class="profile-wrapper">
         <!-- Profile Header -->
         <div class="profile-header">
@@ -41,7 +40,7 @@
                         <p class="amount">RM {{ current_user.balance|default('0.00', true) }}</p>
                     </div>
                 </div>
-                
+
                 <div class="overview-card">
                     <div class="card-icon">
                         <i class="fas fa-clock"></i>
@@ -72,80 +71,23 @@
                     <i class="fas fa-key"></i>
                     <span>修改密码</span>
                 </a>
-                
+
                 <a href="{{ url_for('transactions') }}" class="action-btn">
                     <i class="fas fa-history"></i>
                     <span>交易记录</span>
                 </a>
-                
+
                 {% if current_user.is_recipient %}
                 <a href="{{ url_for('recipient_studio') }}" class="action-btn">
                     <i class="fas fa-briefcase"></i>
                     <span>收款工作室</span>
                 </a>
                 {% endif %}
-                
+
                 <a href="{{ url_for('list_groups') }}" class="action-btn">
                     <i class="fas fa-users"></i>
                     <span>群组管理</span>
                 </a>
-=======
-    <h1><i class="fas fa-user"></i> 个人主页</h1>
-    
-    <div class="profile-card">
-        <div class="profile-header">
-            <!-- 使用与导航栏相同的用户头像样式 -->
-            <div class="avatar">
-                <div class="user-avatar">{{ user.username[0] | upper }}</div>
-            </div>
-            <div class="profile-info">
-                <h2>{{ user.username }}</h2>
-                <p class="email">{{ user.email }}</p>
-                <p class="join-date">加入时间: {{ user.created_at.strftime('%Y-%m-%d') }}</p>
-            </div>
-        </div>
-        
-        <!-- 只保留收款身份标签 -->
-        <div class="profile-stats">
-            <div class="stat-item">
-                <i class="fas fa-hand-holding-usd"></i>
-                <div>
-                    <span>收款身份</span>
-                    <strong>{{ "已启用" if user.is_recipient else "未启用" }}</strong>
-                </div>
-            </div>
-        </div>
-        
-        <form method="POST" action="{{ url_for('update_profile') }}" class="profile-form">
-            <div class="form-group">
-                <label for="username">用户名</label>
-                <input type="text" id="username" name="username" value="{{ user.username }}" required>
-            </div>
-            
-            <div class="form-group">
-                <label for="email">电子邮箱</label>
-                <input type="email" id="email" name="email" value="{{ user.email }}" required>
-            </div>
-            
-            <div class="form-group">
-                <label for="bio">个人简介</label>
-                <textarea id="bio" name="bio" placeholder="介绍一下你自己...">{{ user.bio or '' }}</textarea>
-            </div>
-            
-            <button type="submit" class="btn">更新信息</button>
-        </form>
-        
-        <div class="danger-zone">
-            <h3><i class="fas fa-exclamation-triangle"></i> 危险区域</h3>
-            <div class="danger-content">
-                <p>删除账号将永久移除您的所有数据且无法恢复</p>
-                <form method="POST" action="{{ url_for('delete_account') }}" 
-                      onsubmit="return confirm('确定要永久删除您的账号吗？此操作不可撤销！');">
-                    <button type="submit" class="btn btn-danger">
-                        <i class="fas fa-trash-alt"></i> 删除我的账号
-                    </button>
-                </form>
->>>>>>> 864f9e05d2c679b129da682b03737eca09b71b2c
             </div>
         </div>
     </div>
