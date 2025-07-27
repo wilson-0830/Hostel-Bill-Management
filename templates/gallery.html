@@ -146,31 +146,45 @@
   </div>
   <div class="activity-grid">
     <div class="activity-card">
-      <h3><i class="fas fa-history"></i> 交易记录</h3>
+      <h3><i class="fas fa-history"></i> 交易记���</h3>
       <ul class="activity-list">
-        {% if recent_transactions %}
+        {% if recent_transactions and recent_transactions|length > 0 %}
           {% for trans in recent_transactions %}
           <li class="activity-item">
             <div class="activity-icon">
-              <i class="fas fa-arrow-{% if trans.payer_id == current_user.id %}up{% else %}down{% endif %}"></i>
+              <i class="fas fa-arrow-{% if trans.payer_id == current_user.id %}up text-danger{% else %}down text-success{% endif %}"></i>
             </div>
             <div class="activity-content">
               <div class="activity-title">
                 {% if trans.payer_id == current_user.id %}
-                  向 {{ trans.recipient.username }} 转账 RM {{ trans.amount|default('0.00', true) }}
+                  向 {{ trans.recipient.username }} 转账
+                  <span class="amount-sent">RM {{ trans.amount|default('0.00', true) }}</span>
                 {% else %}
-                  收到 {{ trans.payer.username }} 付款 RM {{ trans.amount|default('0.00', true) }}
+                  收到 {{ trans.payer.username }} 付款
+                  <span class="amount-received">RM {{ trans.amount|default('0.00', true) }}</span>
                 {% endif %}
               </div>
-              <div class="activity-time">{{ trans.created_at.strftime('%Y-%m-%d') }}</div>
+              <div class="activity-time">{{ trans.created_at.strftime('%Y-%m-%d %H:%M') if trans.created_at else '时间未知' }}</div>
+              {% if trans.payment_item and trans.payment_item.title %}
+              <div class="activity-desc">项目：{{ trans.payment_item.title }}</div>
+              {% endif %}
             </div>
           </li>
           {% endfor %}
+          {% if recent_transactions|length >= 5 %}
+          <li class="activity-item view-more">
+            <div class="activity-icon"><i class="fas fa-ellipsis-h"></i></div>
+            <div class="activity-content">
+              <a href="{{ url_for('transactions') }}" class="activity-title">查看更多交易记录</a>
+            </div>
+          </li>
+          {% endif %}
         {% else %}
           <li class="activity-item">
             <div class="activity-icon"><i class="fas fa-info-circle"></i></div>
             <div class="activity-content">
               <div class="activity-title">暂无近期交易记录</div>
+              <div class="activity-desc">开始使用我们的服务来查看您的交易历史</div>
             </div>
           </li>
         {% endif %}
@@ -182,7 +196,7 @@
         <li class="activity-item">
           <div class="activity-icon"><i class="fas fa-shield-alt"></i></div>
           <div class="activity-content">
-            <div class="activity-title">安全���示：您的账户有新的登录活动</div>
+            <div class="activity-title">安全提示：您的账户有新的登录活动</div>
             <div class="activity-time">刚刚</div>
           </div>
         </li>
