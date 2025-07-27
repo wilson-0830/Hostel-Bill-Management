@@ -6,8 +6,12 @@
     <title>{% block title %}数字金融服务{% endblock %}</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/base.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- 优化字体加载 -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="preload" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+    <noscript><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"></noscript>
     {% block extra_css %}{% endblock %}
     {{ moment.include_moment() }}
     {{ moment.locale('zh-cn') }}
@@ -138,7 +142,7 @@
         </div>
     </main>
 
-    <!-- 现代化页脚 -->
+    <!-- 现代化页��� -->
     <footer class="footer">
         <div class="footer-container">
             <div class="footer-content">
@@ -167,7 +171,7 @@
                 </div>
             </div>
             <div class="footer-bottom">
-                <p>&copy; {{ now.year }} 数字金融服务. 版权所有. 由先进技术驱动.</p>
+                <p>&copy; {{ now.year }} 数字金融服务. 版权��有. 由先进技术驱动.</p>
                 <div class="footer-social">
                     <span class="tech-indicator">
                         <i class="fas fa-wifi"></i>
