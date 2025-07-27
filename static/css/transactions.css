@@ -268,3 +268,15 @@
     font-size: 0.9em;
     color: #495057;
 }
+
+.transaction-party,
+.transaction-date,
+.transaction-method,
+.transaction-footer {
+    color: #212529; /* 深灰或黑色 */
+    font-size: 0.95rem;
+}
+
+.transaction-amount {
+    font-size: 1rem;
+}

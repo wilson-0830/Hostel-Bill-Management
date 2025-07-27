@@ -47,3 +47,124 @@
         font-size: 1.75rem;
     }
 }
+
+/* 统一复选框组样式 */
+.checkbox-group, .terms-group {
+    display: flex;
+    align-items: center;
+    margin-bottom: 1.5rem;
+    position: relative;
+    cursor: pointer;
+}
+
+/* 自定义复选框容器 */
+.custom-checkbox {
+    position: relative;
+    display: inline-block;
+    width: 20px;
+    height: 20px;
+    margin-right: 10px;
+}
+
+/* 隐藏原生复选框 */
+.custom-checkbox input {
+    position: absolute;
+    opacity: 0;
+    cursor: pointer;
+    height: 0;
+    width: 0;
+}
+
+/* 自定义复选框外观 */
+.checkmark {
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 20px;
+    width: 20px;
+    background-color: transparent;
+    border: var(--border-light);
+    border-radius: var(--radius-sm);
+    transition: var(--transition-fast);
+}
+
+/* 复选框选中状态 */
+.custom-checkbox input:checked ~ .checkmark {
+    background-color: var(--accent-color);
+    border-color: var(--accent-color);
+}
+
+/* 复选框勾选标记 */
+.checkmark:after {
+    content: "";
+    position: absolute;
+    display: none;
+}
+
+.custom-checkbox input:checked ~ .checkmark:after {
+    display: block;
+}
+
+.custom-checkbox .checkmark:after {
+    left: 7px;
+    top: 3px;
+    width: 5px;
+    height: 10px;
+    border: solid white;
+    border-width: 0 2px 2px 0;
+    transform: rotate(45deg);
+}
+
+/* 标签样式 */
+.checkbox-label, .terms-label {
+    color: var(--text-secondary);
+    font-size: 0.9rem;
+    user-select: none;
+}
+
+/* 链接样式 */
+.checkbox-label a, .terms-label a {
+    color: var(--accent-light);
+    text-decoration: none;
+    transition: var(--transition-fast);
+    position: relative;
+}
+
+.checkbox-label a:hover, .terms-label a:hover {
+    color: var(--accent-color);
+    text-decoration: underline;
+}
+
+.checkbox-label a::after, .terms-label a::after {
+    content: '';
+    position: absolute;
+    bottom: -2px;
+    left: 0;
+    width: 0;
+    height: 1px;
+    background: var(--accent-light);
+    transition: var(--transition);
+}
+
+.checkbox-label a:hover::after, .terms-label a:hover::after {
+    width: 100%;
+}
+
+/* 响应式调整 */
+@media (max-width: 768px) {
+    .auth-card {
+        padding: 2rem 1.5rem;
+    }
+    
+    .auth-card h1 {
+        font-size: 1.75rem;
+    }
+    
+    .checkbox-group, .terms-group {
+        margin-bottom: 1.2rem;
+    }
+    
+    .checkbox-label, .terms-label {
+        font-size: 0.85rem;
+    }
+}

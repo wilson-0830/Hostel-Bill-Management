@@ -6,8 +6,12 @@
     <title>{% block title %}数字金融服务{% endblock %}</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/base.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- 优化字体加载 -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="preload" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+    <noscript><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"></noscript>
     {% block extra_css %}{% endblock %}
     {{ moment.include_moment() }}
     {{ moment.locale('zh-cn') }}
@@ -55,6 +59,10 @@
                             <i class="fas fa-users nav-icon"></i>
                             <span>群组</span>
                         </a>
+                        <a href="{{ url_for('profile') }}" class="nav-link {% if request.endpoint == 'profile' %}active{% endif %}">
+                            <i class="fas fa-user-circle nav-icon"></i>
+                            <span>资料</span>
+                        </a>
                     {% else %}
                         <a href="{{ url_for('gallery') }}" class="nav-link {% if request.endpoint == 'gallery' %}active{% endif %}">
                             <i class="fas fa-home nav-icon"></i>
@@ -73,7 +81,11 @@
                         <a href="{{ url_for('profile') }}" class="user-info-link">
                             <div class="user-info">
                                 <div class="user-avatar">
-                                    <i class="fas fa-user"></i>
+                                    {% if current_user.username %}
+                                        {{ current_user.username[0]|upper }}
+                                    {% else %}
+                                        <i class="fas fa-user"></i>
+                                    {% endif %}
                                 </div>
                                 <div class="user-details">
                                     <span class="user-name">{{ current_user.username }}</span>
@@ -399,23 +411,6 @@
         
         // 直接跳转到登出URL
         window.location.href = this.href;
-    });
-
-    // 添加用户信息链接的样式
-    const userInfoLinks = document.querySelectorAll('.user-info-link');
-    userInfoLinks.forEach(link => {
-        link.addEventListener('click', function(e) {
-            // 关闭移动菜单（如果打开）
-            const navbar = document.querySelector('.navbar');
-            const toggle = document.getElementById('mobileToggle');
-            const menu = document.getElementById('navbarMenu');
-            
-            if (toggle && menu) {
-                toggle.classList.remove('active');
-                navbar.classList.remove('menu-open');
-                menu.classList.remove('active');
-            }
-        });
     });
 
     <!-- 闪存消息处理 -->

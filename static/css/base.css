@@ -19,7 +19,7 @@
     --text-dark: #2b2d42;
     --text-light: #f8f9fa;
     --text-lighter: #ffffff;
-    --text-muted: rgba(255, 255, 255, 0.7);
+    --text-muted: #6c757d;
     --text-secondary: rgba(255, 255, 255, 0.8);
     
     /* 背景色系统 */
@@ -1233,8 +1233,40 @@ body::after {
     }
 }
     
-    .user-menu {
-        position: relative;
-        z-index: 1000;
-    }
+.user-menu {
+    position: relative;
+    z-index: 1000;
 }
+
+@media (max-width: 768px) {
+  nav {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  nav .logo {
+    font-size: 1.3rem;
+  }
+
+  nav .nav-links {
+    flex-direction: column;
+    width: 100%;
+    margin-top: 10px;
+  }
+
+  nav .nav-item {
+    width: 100%;
+    padding: 10px 0;
+    border-bottom: 1px solid rgba(255,255,255,0.1);
+  }
+
+  .notification {
+    top: auto;
+    bottom: 0;
+    right: 0;
+    width: 100%;
+    font-size: 0.9rem;
+  }
+}
+
+

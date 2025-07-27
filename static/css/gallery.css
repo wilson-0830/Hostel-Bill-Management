@@ -28,12 +28,15 @@
 
 body {
     background: var(--bg-darker);
-    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Microsoft YaHei', sans-serif;
     color: var(--text-light);
     line-height: 1.6;
     min-height: 100vh;
     overflow-x: hidden;
     position: relative;
+    font-feature-settings: 'kern' 1, 'liga' 1;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
 }
 
 body::before {
@@ -56,15 +59,41 @@ body::before {
     padding: 0 20px;
 }
 
+/* Optimized container for sections with custom margins */
+.gallery-hero .container {
+    padding: 0;
+    max-width: none;
+}
+
 /* Modern Hero Section */
 .gallery-hero {
     display: flex;
     flex-wrap: wrap;
     align-items: center;
     justify-content: space-between;
+    margin: 0 25px 0 30px;
     padding: 5rem 0;
     min-height: 85vh;
     gap: 3rem;
+    position: relative;
+    overflow: hidden;
+}
+
+.gallery-hero::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100px;
+    width: calc(100% + 200px);
+    height: 100%;
+    background: radial-gradient(ellipse at center, rgba(76, 201, 240, 0.05) 0%, transparent 70%);
+    pointer-events: none;
+    z-index: 0;
+}
+
+.gallery-hero > * {
+    position: relative;
+    z-index: 1;
 }
 
 .hero-content {
@@ -107,6 +136,64 @@ body::before {
 .highlight {
     color: var(--accent-light);
     font-weight: 600;
+}
+
+/* 状态徽章样式 */
+.status-badge {
+    display: inline-block;
+    padding: 0.25rem 0.75rem;
+    background: var(--gradient-accent);
+    color: white;
+    border-radius: var(--radius-sm);
+    font-size: 0.8rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-top: 0.5rem;
+}
+
+/* 金额显示样式 */
+.amount-sent {
+    color: var(--danger-color);
+    font-weight: 700;
+}
+
+.amount-received {
+    color: var(--success-color);
+    font-weight: 700;
+}
+
+/* 活动描述样式 */
+.activity-desc {
+    font-size: 0.8rem;
+    color: rgba(255, 255, 255, 0.6);
+    margin-top: 0.25rem;
+}
+
+/* 查看更多活动项 */
+.activity-item.view-more {
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    padding-top: 1rem;
+    margin-top: 0.5rem;
+}
+
+.activity-item.view-more .activity-title {
+    color: var(--accent-color);
+    text-decoration: none;
+    transition: var(--transition);
+}
+
+.activity-item.view-more .activity-title:hover {
+    color: var(--accent-light);
+}
+
+/* 文���颜色辅助类 */
+.text-danger {
+    color: var(--danger-color) !important;
+}
+
+.text-success {
+    color: var(--success-color) !important;
 }
 
 /* Modern Buttons */
@@ -158,8 +245,10 @@ body::before {
 
 .btn-primary:hover {
     transform: translateY(-5px);
+    background: linear-gradient(135deg, #3a56d4 0%, #3a86ff 100%);
     box-shadow: 0 10px 30px rgba(67,97,238,0.5);
-    text-shadow: 0 1px 2px rgba(0,0,0,0.3); /* 新增文字阴影 */
+    color: white !important;
+    text-shadow: 0 2px 4px rgba(0,0,0,0.5);
 }
 
 .btn-outline {
@@ -170,8 +259,10 @@ body::before {
 
 .btn-outline:hover {
     background: var(--accent-light);
-    color: var(--bg-dark);
+    color: var(--bg-darker) !important;
     transform: translateY(-5px);
+    text-shadow: none;
+    font-weight: 600;
 }
 
 .btn-gradient {
@@ -182,8 +273,10 @@ body::before {
 
 .btn-gradient:hover {
     transform: translateY(-5px);
+    background: linear-gradient(135deg, #3a86ff 0%, #2563eb 100%);
     box-shadow: 0 10px 30px rgba(76,201,240,0.5);
-    text-shadow: 0 1px 2px rgba(0,0,0,0.3); /* 新增文字阴影 */
+    color: white !important;
+    text-shadow: 0 2px 4px rgba(0,0,0,0.5);
 }
 
 /* Hero Visual */
@@ -260,6 +353,7 @@ body::before {
 
 /* Quick Access Section */
 .quick-access {
+    margin: 0 25px 0 30px;
     padding: 5rem 0;
     position: relative;
     overflow: hidden;
@@ -314,20 +408,21 @@ body::before {
     font-weight: 300;
 }
 
-/* 缩小快速通道卡片尺寸 */
+/* ����小快速通道卡片尺寸 */
 .quick-links {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); /* 减小最小宽度 */
-    gap: 1.5rem; /* 减小间距 */
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 2rem;
     margin-top: 2rem;
     position: relative;
     z-index: 1;
+    padding: 0 1rem;
 }
 
 .quick-link {
     background: var(--card-bg);
     backdrop-filter: blur(12px);
-    padding: 1.8rem; /* 减小内边距 */
+    padding: 1.8rem; /* ���小内边距 */
     border-radius: var(--radius-xl);
     text-align: center;
     text-decoration: none;
@@ -340,11 +435,34 @@ body::before {
     height: 100%;
 }
 
+.quick-link:first-child {
+    margin-left: 24px;
+}
+
+.quick-link:nth-child(2) {
+    margin: 0 4px;
+}
+
+.quick-link:last-child {
+    margin-right: 24px;
+}
+
 .quick-link:hover {
     transform: translateY(-10px);
-    background: rgba(67, 97, 238, 0.15);
+    background: rgba(67, 97, 238, 0.25);
     box-shadow: 0 20px 40px rgba(0, 0, 0, 0.25), var(--glow-primary);
-    border-color: rgba(76, 201, 240, 0.3);
+    border-color: rgba(76, 201, 240, 0.5);
+    color: white !important;
+}
+
+.quick-link:hover h3 {
+    color: white !important;
+    text-shadow: 0 2px 4px rgba(0,0,0,0.5);
+}
+
+.quick-link:hover p {
+    color: rgba(255, 255, 255, 0.9) !important;
+    text-shadow: 0 1px 2px rgba(0,0,0,0.3);
 }
 
 .quick-icon {
@@ -355,7 +473,7 @@ body::before {
     justify-content: center;
     background: var(--gradient-primary);
     border-radius: 50%;
-    margin-bottom: 1.2rem; /* 减小间距 */
+    margin-bottom: 1.2rem; /* 减小���距 */
     font-size: 1.8rem; /* 减小图标字体大小 */
     color: white;
     transition: var(--transition);
@@ -417,6 +535,24 @@ body::before {
     text-align: center;
     border: 1px solid rgba(255, 255, 255, 0.1);
     transition: var(--transition);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+.stat-card:first-child {
+    margin-left: 25px;
+}
+
+.stat-card:nth-child(2),
+.stat-card:nth-child(3) {
+    margin: 0 5px;
+}
+
+.stat-card:last-child {
+    margin-right: 25px;
+    padding: 1.5rem 1.9rem 1.5rem 1.5rem;
 }
 
 .stat-card:hover {
@@ -538,7 +674,12 @@ body::before {
 @media (max-width: 992px) {
     .gallery-hero {
         flex-direction: column;
+        margin: 0 20px 0 25px;
         padding: 3rem 0;
+    }
+
+    .quick-access {
+        margin: 0 20px 0 25px;
     }
     
     .hero-content, .hero-visual {
@@ -555,6 +696,14 @@ body::before {
 }
 
 @media (max-width: 768px) {
+    .gallery-hero {
+        margin: 0 15px 0 20px;
+    }
+
+    .quick-access {
+        margin: 0 15px 0 20px;
+    }
+
     .hero-content h1 {
         font-size: 2.3rem;
     }
@@ -584,6 +733,14 @@ body::before {
 }
 
 @media (max-width: 480px) {
+    .gallery-hero {
+        margin: 0 10px 0 15px;
+    }
+
+    .quick-access {
+        margin: 0 10px 0 15px;
+    }
+
     .hero-content h1 {
         font-size: 2rem;
     }
