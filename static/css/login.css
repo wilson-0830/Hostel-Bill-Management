@@ -1,4 +1,4 @@
-/* ===== 现代化登录页面设计 ===== */
+/* ===== 现代化登录页面设��� ===== */
 .auth-container {
     display: flex;
     align-items: center;
@@ -406,6 +406,112 @@
     0% { box-shadow: 0 0 0 0 rgba(247, 37, 133, 0.7); }
     70% { box-shadow: 0 0 0 10px rgba(247, 37, 133, 0); }
     100% { box-shadow: 0 0 0 0 rgba(247, 37, 133, 0); }
+}
+
+/* ===== Submit Button Loading States ===== */
+.btn-auth {
+    position: relative;
+    overflow: hidden;
+    transition: all 0.3s ease;
+}
+
+.btn-auth.btn-loading {
+    pointer-events: none;
+    opacity: 0.8;
+    background: var(--gradient-secondary);
+}
+
+.btn-auth.btn-loading i {
+    animation: spin 1s linear infinite;
+}
+
+/* Success state for successful registration */
+.btn-auth.btn-success {
+    background: var(--gradient-primary);
+    animation: successPulse 0.6s ease-out;
+}
+
+@keyframes successPulse {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.05); box-shadow: var(--glow-accent); }
+    100% { transform: scale(1); }
+}
+
+/* ===== Enhanced Form Animations ===== */
+.checkbox-group.terms-checkbox {
+    animation: termsSlideIn 0.6s ease-out 0.5s backwards;
+}
+
+@keyframes termsSlideIn {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Hover effects for better user experience */
+.terms-checkbox:hover .custom-checkbox .checkmark {
+    border-color: var(--accent-color);
+    transform: scale(1.05);
+}
+
+.terms-checkbox .custom-checkbox input:checked ~ .checkmark {
+    animation: checkboxCheck 0.3s ease-out;
+}
+
+@keyframes checkboxCheck {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.2); }
+    100% { transform: scale(1); }
+}
+
+/* ===== Improved Form Field Focus States ===== */
+.form-control:focus {
+    animation: inputFocus 0.3s ease-out;
+}
+
+@keyframes inputFocus {
+    0% { transform: translateY(0); }
+    50% { transform: translateY(-2px); }
+    100% { transform: translateY(-2px); }
+}
+
+/* ===== Enhanced Particle Effects ===== */
+.floating-particles .particle {
+    border-radius: 50%;
+    background: linear-gradient(45deg, var(--accent-color), var(--primary-color));
+}
+
+.floating-particles .particle:nth-child(odd) {
+    background: linear-gradient(45deg, var(--primary-color), var(--accent-light));
+}
+
+/* Particle interaction on hover */
+.auth-card:hover .floating-particles .particle {
+    animation-duration: 4s;
+    opacity: 0.5;
+}
+
+/* ===== Responsive Enhancements ===== */
+@media (max-width: 768px) {
+    .terms-checkbox {
+        padding: 0.75rem;
+        margin-bottom: 1.5rem;
+    }
+
+    .terms-checkbox .checkbox-label {
+        font-size: 0.85rem;
+        line-height: 1.5;
+    }
+
+    .terms-link {
+        display: inline-block;
+        margin-top: 0.25rem;
+    }
 }
 
 /* ===== 密码强度指示器 ===== */
