@@ -128,9 +128,11 @@ document.addEventListener('DOMContentLoaded', function() {
         if (termsCheckbox.checked) {
             submitButton.style.opacity = '1';
             submitButton.style.pointerEvents = 'auto';
+            submitButton.disabled = false;
         } else {
             submitButton.style.opacity = '0.6';
             submitButton.style.pointerEvents = 'none';
+            submitButton.disabled = true;
         }
     }
 
