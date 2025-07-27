@@ -97,14 +97,14 @@
 document.getElementById('password').addEventListener('input', function() {
     const password = this.value;
     const strengthBar = document.querySelector('.strength-bar');
-    
+
     let strength = 0;
     if (password.length >= 6) strength++;
     if (password.match(/[a-z]/)) strength++;
     if (password.match(/[A-Z]/)) strength++;
     if (password.match(/[0-9]/)) strength++;
     if (password.match(/[^a-zA-Z0-9]/)) strength++;
-    
+
     strengthBar.className = 'strength-bar';
     if (strength >= 2 && strength < 4) {
         strengthBar.classList.add('strength-weak');
@@ -115,6 +115,71 @@ document.getElementById('password').addEventListener('input', function() {
         strengthBar.classList.remove('strength-medium');
         strengthBar.classList.add('strength-strong');
     }
+});
+
+// Terms checkbox validation
+document.addEventListener('DOMContentLoaded', function() {
+    const form = document.querySelector('.auth-form');
+    const termsCheckbox = document.getElementById('terms_agreement');
+    const submitButton = document.querySelector('.btn-auth');
+
+    // Update submit button state based on terms agreement
+    function updateSubmitButton() {
+        if (termsCheckbox.checked) {
+            submitButton.style.opacity = '1';
+            submitButton.style.pointerEvents = 'auto';
+        } else {
+            submitButton.style.opacity = '0.6';
+            submitButton.style.pointerEvents = 'none';
+        }
+    }
+
+    // Initial check
+    updateSubmitButton();
+
+    // Listen for checkbox changes
+    termsCheckbox.addEventListener('change', updateSubmitButton);
+
+    // Form submission validation
+    form.addEventListener('submit', function(e) {
+        if (!termsCheckbox.checked) {
+            e.preventDefault();
+
+            // Highlight the terms checkbox
+            const termsCheckboxGroup = document.querySelector('.terms-checkbox');
+            termsCheckboxGroup.style.borderColor = 'var(--danger-color)';
+            termsCheckboxGroup.style.boxShadow = '0 0 0 3px rgba(247, 37, 133, 0.2)';
+
+            // Show error message
+            showTechNotification('请先同意条款与条件', 'error', 3000);
+
+            // Reset border after 3 seconds
+            setTimeout(() => {
+                termsCheckboxGroup.style.borderColor = '';
+                termsCheckboxGroup.style.boxShadow = '';
+            }, 3000);
+
+            return false;
+        }
+
+        // Add loading state to button
+        submitButton.classList.add('btn-loading');
+        submitButton.innerHTML = '<i class="fas fa-spinner fa-spin"></i> 正在注册...';
+
+        // Re-enable form submission for normal processing
+        return true;
+    });
+
+    // Enhanced checkbox animation
+    termsCheckbox.addEventListener('change', function() {
+        const checkmark = this.nextElementSibling;
+        if (this.checked) {
+            checkmark.style.transform = 'scale(1.1)';
+            setTimeout(() => {
+                checkmark.style.transform = 'scale(1)';
+            }, 200);
+        }
+    });
 });
 </script>
 {% endblock %}
