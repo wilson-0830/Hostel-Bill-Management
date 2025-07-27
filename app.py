@@ -159,7 +159,7 @@ def index():
     else:
         payment_items = PaymentItem.query.filter_by(status='active').limit(5).all()
     
-    # 获取���前用户的所有个人支付记录
+    # 获取当前用户的所有个人支付记录
     user_payments = {
         t.payment_item_id: t 
         for t in Transaction.query.filter_by(
@@ -383,6 +383,12 @@ def gallery():
                          recent_transactions=recent_transactions,
                          user_summary=user_summary)
 
+@app.route('/profile')
+@login_required
+def profile():
+    """用户资料页面"""
+    return render_template('profile.html')
+
 # 转账功能
 # app.py 中修改 transfer 路由
 @app.route('/transfer', methods=['POST'])
@@ -451,7 +457,7 @@ def confirm_payment():
     
     payment_item = PaymentItem.query.get_or_404(payment_item_id)
     
-    # 新��验证逻辑
+    # 新增验证逻辑
     if payment_item.amount_received >= payment_item.amount:
         flash('该项目已完成，无需再支���', 'error')
         return redirect(url_for('index'))
@@ -926,7 +932,7 @@ if __name__ == '__main__':
         except Exception as e:
             print(f"无法创建目录 {folder}: {e}")
 
-    # 打��所有注册路由
+    # 打印所有注册路由
     print("\n已注册路由：")
     for rule in app.url_map.iter_rules():
         print(f"{rule.endpoint}: {rule}")
