@@ -59,6 +59,12 @@ body::before {
     padding: 0 20px;
 }
 
+/* Optimized container for sections with custom margins */
+.gallery-hero .container {
+    padding: 0;
+    max-width: none;
+}
+
 /* Modern Hero Section */
 .gallery-hero {
     display: flex;
