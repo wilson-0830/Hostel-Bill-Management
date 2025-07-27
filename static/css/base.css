@@ -1199,3 +1199,108 @@ body::after {
 ::-webkit-scrollbar-thumb:hover {
     background: var(--accent-dark);
 }
+
+/* ===== 统一字体系统 ===== */
+.font-primary {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Microsoft YaHei', sans-serif;
+}
+
+.font-mono {
+    font-family: 'SF Mono', 'Monaco', 'Inconsolata', 'Roboto Mono', 'Courier New', monospace;
+}
+
+.font-display {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Microsoft YaHei', sans-serif;
+    font-weight: 700;
+    line-height: 1.2;
+}
+
+/* 字体大小系统 */
+.text-xs { font-size: 0.75rem; }
+.text-sm { font-size: 0.875rem; }
+.text-base { font-size: 1rem; }
+.text-lg { font-size: 1.125rem; }
+.text-xl { font-size: 1.25rem; }
+.text-2xl { font-size: 1.5rem; }
+.text-3xl { font-size: 1.875rem; }
+.text-4xl { font-size: 2.25rem; }
+.text-5xl { font-size: 3rem; }
+
+/* 字体重量 */
+.font-thin { font-weight: 100; }
+.font-light { font-weight: 300; }
+.font-normal { font-weight: 400; }
+.font-medium { font-weight: 500; }
+.font-semibold { font-weight: 600; }
+.font-bold { font-weight: 700; }
+.font-extrabold { font-weight: 800; }
+.font-black { font-weight: 900; }
+
+/* 行高系统 */
+.leading-none { line-height: 1; }
+.leading-tight { line-height: 1.25; }
+.leading-snug { line-height: 1.375; }
+.leading-normal { line-height: 1.5; }
+.leading-relaxed { line-height: 1.625; }
+.leading-loose { line-height: 2; }
+
+/* 文本对齐 */
+.text-left { text-align: left; }
+.text-center { text-align: center; }
+.text-right { text-align: right; }
+.text-justify { text-align: justify; }
+
+/* 确保所有标题使用一致的字体 */
+h1, h2, h3, h4, h5, h6 {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Microsoft YaHei', sans-serif !important;
+    font-weight: 700;
+    line-height: 1.2;
+    color: var(--text-light);
+}
+
+/* 确保所有表单元素使用一致的字体 */
+input, textarea, select, button {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Microsoft YaHei', sans-serif !important;
+}
+
+/* 头像样式统一 - 确保与base模板一致 */
+.user-avatar, .profile-avatar, .avatar {
+    width: 35px;
+    height: 35px;
+    background: var(--gradient-secondary);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 1rem;
+    box-shadow: var(--glow-accent);
+    font-weight: 600;
+    text-transform: uppercase;
+    transition: var(--transition);
+}
+
+.user-avatar:hover, .profile-avatar:hover, .avatar:hover {
+    transform: scale(1.05);
+    box-shadow: var(--glow-primary);
+}
+
+/* 大尺寸头像 */
+.avatar-lg {
+    width: 60px;
+    height: 60px;
+    font-size: 1.5rem;
+}
+
+.avatar-xl {
+    width: 80px;
+    height: 80px;
+    font-size: 2rem;
+}
+
+/* 小尺寸头像 */
+.avatar-sm {
+    width: 28px;
+    height: 28px;
+    font-size: 0.8rem;
+}
