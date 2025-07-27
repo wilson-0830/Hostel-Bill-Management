@@ -12,9 +12,9 @@
     
     <div class="profile-card">
         <div class="profile-header">
-            <!-- 使用纯CSS创建的默认头像图标 -->
+            <!-- 使用与导航栏相同的用户头像样式 -->
             <div class="avatar">
-                <div class="default-icon"></div>
+                <div class="user-avatar">{{ user.username[0] | upper }}</div>
             </div>
             <div class="profile-info">
                 <h2>{{ user.username }}</h2>

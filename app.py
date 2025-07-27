@@ -1096,6 +1096,9 @@ def get_activities():
     
     return jsonify(activities_sorted)
 
+@app.route('/terms')
+def terms():
+    return render_template('terms.html')
 
 if __name__ == '__main__':
     socketio.run(app, host='0.0.0.0', port=8080, debug=True)

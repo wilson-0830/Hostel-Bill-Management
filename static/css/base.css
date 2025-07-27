@@ -1206,12 +1206,32 @@ body::after {
     background: var(--accent-dark);
 }
 
-/* ===== 移动端退出按钮优化 ===== */
+/* 添加用户信息链接样式 */
+.user-info-link {
+    display: block;
+    text-decoration: none;
+    color: inherit;
+    flex: 1;
+    transition: var(--transition);
+}
+
+.user-info-link:hover .user-info {
+    background: var(--bg-glass-hover);
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-md);
+}
+
+.user-info-link:hover .user-avatar {
+    box-shadow: var(--glow-accent);
+    transform: rotate(5deg) scale(1.05);
+}
+
+/* 移动端优化 */
 @media (max-width: 992px) {
-    .logout-btn {
-        z-index: 1001;
-        position: relative;
+    .user-info-link {
+        width: 100%;
     }
+}
     
     .user-menu {
         position: relative;
