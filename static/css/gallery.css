@@ -162,7 +162,7 @@ body::before {
     color: var(--accent-light);
 }
 
-/* 文本颜色辅助类 */
+/* 文���颜色辅助类 */
 .text-danger {
     color: var(--danger-color) !important;
 }
@@ -647,6 +647,7 @@ body::before {
 @media (max-width: 992px) {
     .gallery-hero {
         flex-direction: column;
+        margin: 0 20px 0 25px;
         padding: 3rem 0;
     }
     
