@@ -3,193 +3,458 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{% block title %}账单管理{% endblock %}</title>
+    <title>{% block title %}数字金融服务{% endblock %}</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/base.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
-    {% block extra_css %}
-        <link rel="stylesheet" href="{{ url_for('static', filename='css/base.css') }}">
-    {% endblock %}
+<<<<<<< HEAD
+    <!-- 优化字体加载 -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="preload" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+    <noscript><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"></noscript>
+=======
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+>>>>>>> 864f9e05d2c679b129da682b03737eca09b71b2c
+    {% block extra_css %}{% endblock %}
+    {{ moment.include_moment() }}
+    {{ moment.locale('zh-cn') }}
+    {% if socketio_available %}
+    <script src="https://cdn.socket.io/4.0.1/socket.io.min.js"></script>
+    {% endif %}
 </head>
+
 <body>
+    <!-- 高科技导航栏 -->
     <nav class="navbar">
-        <div class="container">
-            <a href="{{ url_for('gallery') }}" class="navbar-brand">
-                <i class="logo-icon"></i> 首页
-            </a>
-                    
-            <button class="navbar-toggle" id="navbarToggle">
-                ☰
-            </button>
-            
-            <div class="navbar-menu" id="navbarMenu">
-                <div class="navbar-start">
-                    <a href="{{ url_for('index') }}" class="navbar-item {% if request.endpoint == 'index' %}active{% endif %}">
-                        我的账单
-                    </a>
-                    
-                    {% if current_user.is_authenticated and current_user.is_recipient %}
-                    <div class="navbar-item has-dropdown">
-                        <a href="{{ url_for('recipient_studio') }}" class="navbar-item {% if request.endpoint == 'recipient_studio' %}active{% endif %}">
-                            收款工作室
-                        </a>
+        <div class="navbar-container">
+            <!-- 左侧品牌 -->
+            <div class="navbar-brand">
+                <a href="{{ url_for('gallery') }}" class="brand-link">
+                    <div class="brand-icon">
+                        <i class="fas fa-bolt"></i>
                     </div>
-                    {% endif %}
-                </div>
-                
-                <div class="navbar-end">
-                    {% if current_user.is_authenticated %}
-                    <span class="navbar-text">
-                        欢迎, {{ current_user.username }}
+                    <span class="brand-text">
+                        <span class="brand-main">数字金融</span>
+                        <span class="brand-sub">Digital Finance</span>
                     </span>
-                    <a href="{{ url_for('logout') }}" class="navbar-item">
-                        退出
-                    </a>
+                </a>
+            </div>
+            
+            <!-- 中央导航菜单 -->
+            <div class="navbar-menu" id="navbarMenu">
+                <div class="nav-links">
+                    {% if current_user.is_authenticated %}
+                        <a href="{{ url_for('index') }}" class="nav-link {% if request.endpoint == 'index' %}active{% endif %}">
+                            <i class="fas fa-tachometer-alt nav-icon"></i>
+                            <span>控制台</span>
+                        </a>
+                        <a href="{{ url_for('transactions') }}" class="nav-link {% if request.endpoint == 'transactions' %}active{% endif %}">
+                            <i class="fas fa-exchange-alt nav-icon"></i>
+                            <span>交易记录</span>
+                        </a>
+                        {% if current_user.is_recipient %}
+                        <a href="{{ url_for('recipient_studio') }}" class="nav-link {% if request.endpoint == 'recipient_studio' %}active{% endif %}">
+                            <i class="fas fa-briefcase nav-icon"></i>
+                            <span>工作室</span>
+                        </a>
+                        {% endif %}
+                        <a href="{{ url_for('list_groups') }}" class="nav-link {% if request.endpoint == 'list_groups' %}active{% endif %}">
+                            <i class="fas fa-users nav-icon"></i>
+                            <span>群组</span>
+                        </a>
+<<<<<<< HEAD
+                        <a href="{{ url_for('profile') }}" class="nav-link {% if request.endpoint == 'profile' %}active{% endif %}">
+                            <i class="fas fa-user-circle nav-icon"></i>
+                            <span>资料</span>
+                        </a>
+=======
+>>>>>>> 864f9e05d2c679b129da682b03737eca09b71b2c
                     {% else %}
-                    <a href="{{ url_for('login') }}" class="navbar-item {% if request.endpoint == 'login' %}active{% endif %}">
-                        登录
-                    </a>
-                    <a href="{{ url_for('register') }}" class="navbar-item {% if request.endpoint == 'register' %}active{% endif %}">
-                        注册
-                    </a>
+                        <a href="{{ url_for('gallery') }}" class="nav-link {% if request.endpoint == 'gallery' %}active{% endif %}">
+                            <i class="fas fa-home nav-icon"></i>
+                            <span>首页</span>
+                        </a>
                     {% endif %}
                 </div>
             </div>
+            
+            <!-- 右侧用户区域 -->
+            <div class="navbar-end">
+                {% if current_user.is_authenticated %}
+                    <!-- 已登录用户 -->
+                    <div class="user-menu">
+                        <!-- 将用户信息区域改为可点击的个人主页链接 -->
+                        <a href="{{ url_for('profile') }}" class="user-info-link">
+                            <div class="user-info">
+                                <div class="user-avatar">
+                                    {% if current_user.username %}
+                                        {{ current_user.username[0]|upper }}
+                                    {% else %}
+                                        <i class="fas fa-user"></i>
+                                    {% endif %}
+                                </div>
+                                <div class="user-details">
+                                    <span class="user-name">{{ current_user.username }}</span>
+                                    <span class="user-status">{{ '收款方' if current_user.is_recipient else '用户' }}</span>
+                                </div>
+                            </div>
+                        </a>
+                        <div class="user-actions">
+                            <!-- 修正登出按钮的ID -->
+                            <a href="{{ url_for('logout') }}" class="logout-btn" id="logoutBtn">
+                                <i class="fas fa-sign-out-alt"></i>
+                                <span>退出</span>
+                            </a>
+                        </div>
+                    </div>
+                {% else %}
+                    <!-- 未登录用户 -->
+                    <div class="auth-buttons">
+                        <a href="{{ url_for('login') }}" class="auth-btn login-btn {% if request.endpoint == 'login' %}active{% endif %}">
+                            <i class="fas fa-sign-in-alt"></i>
+                            <span>登录</span>
+                        </a>
+                        <a href="{{ url_for('register') }}" class="auth-btn register-btn {% if request.endpoint == 'register' %}active{% endif %}">
+                            <i class="fas fa-user-plus"></i>
+                            <span>注册</span>
+                        </a>
+                    </div>
+                {% endif %}
+            </div>
+            
+            <!-- 移动端菜单按钮 -->
+            <button class="mobile-toggle" id="mobileToggle">
+                <span class="toggle-line"></span>
+                <span class="toggle-line"></span>
+                <span class="toggle-line"></span>
+            </button>
         </div>
+        
+        <!-- 导航栏发光效果 -->
+        <div class="navbar-glow"></div>
     </nav>
 
-    <script>
-    // Update the existing script in base.html
-    document.getElementById('navbarToggle').addEventListener('click', function() {
-        const menu = document.getElementById('navbarMenu');
-        menu.classList.toggle('active');
-        this.classList.toggle('active');
-        document.body.classList.toggle('menu-open');
-    });
-
-    // Close menu when clicking outside
-    document.addEventListener('click', function(e) {
-        const navbar = document.querySelector('.navbar');
-        const toggle = document.getElementById('navbarToggle');
-        
-        if (!navbar.contains(e.target) {
-            document.getElementById('navbarMenu').classList.remove('active');
-            toggle.classList.remove('active');
-            document.body.classList.remove('menu-open');
-        }
-    });
-
-    // Add smooth scrolling for anchor links
-    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-        anchor.addEventListener('click', function(e) {
-            e.preventDefault();
-            document.querySelector(this.getAttribute('href')).scrollIntoView({
-                behavior: 'smooth'
-            });
-        });
-    });
-    </script>
-
-    <main class="container">
-        {% with messages = get_flashed_messages(with_categories=true) %}
-            {% if messages %}
-                {% for category, message in messages %}
-                <div class="alert alert-{{ category }}">
-                    {{ message }}
-                </div>
-                {% endfor %}
-            {% endif %}
-        {% endwith %}
-        
-        {% block content %}{% endblock %}
+    <!-- 主内容区域 -->
+    <main class="main-content">
+        <div class="content-container">
+            <!-- 通知消息 -->
+            {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                    <div class="notifications-container">
+                        {% for category, message in messages %}
+                        <div class="notification notification-{{ category }}">
+                            <i class="fas fa-{{ 'check-circle' if category == 'success' else 'exclamation-triangle' if category == 'error' else 'info-circle' }}"></i>
+                            <span>{{ message }}</span>
+                            <button class="notification-close">&times;</button>
+                        </div>
+                        {% endfor %}
+                    </div>
+                {% endif %}
+            {% endwith %}
+            
+            {% block content %}{% endblock %}
+        </div>
     </main>
 
+    <!-- 现代化页脚 -->
     <footer class="footer">
-        <div class="container">
-            <p>&copy; {{ now.year }} 转账服务. 版权所有.</p>
+        <div class="footer-container">
+            <div class="footer-content">
+                <div class="footer-brand">
+                    <div class="footer-logo">
+                        <i class="fas fa-bolt"></i>
+                    </div>
+                    <div class="footer-text">
+                        <h4>数字金融服务</h4>
+                        <p>安全 · 快速 · 可靠</p>
+                    </div>
+                </div>
+                <div class="footer-links">
+                    <div class="footer-section">
+                        <h5>服务</h5>
+                        <a href="{{ url_for('gallery') }}">首页</a>
+                        <a href="{{ url_for('login') }}">登录</a>
+                        <a href="{{ url_for('register') }}">注册</a>
+                    </div>
+                    <div class="footer-section">
+                        <h5>支持</h5>
+                        <a href="#">帮助中心</a>
+<<<<<<< HEAD
+                        <a href="{{ url_for('terms') }}#contact-chinese">联系我们</a>
+                        <a href="{{ url_for('terms') }}">条款与条件</a>
+                    </div>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; {{ now.year }} 数字金融服务. 版权所有. 由先进技术驱动.</p>
+                <div class="footer-social">
+                    <span class="tech-indicator">
+                        <i class="fas fa-wifi"></i>
+                        <span>在线</span>
+                    </span>
+                </div>
+            </div>
+        </div>
+        <div class="footer-tech-lines">
+            <div class="tech-line"></div>
+            <div class="tech-line"></div>
+            <div class="tech-line"></div>
         </div>
     </footer>
 
+    <!-- 浮动元素容器 -->
+    <div class="floating-tech-elements">
+        <div class="tech-particle"></div>
+        <div class="tech-particle"></div>
+        <div class="tech-particle"></div>
+        <div class="tech-particle"></div>
+        <div class="tech-particle"></div>
+    </div>
+
     {% block scripts %}
-        <script>
-        // 显示选择的文件名
-        document.getElementById('qr_code_image').addEventListener('change', function(e) {
+    {% if socketio_available %}
+    <script>
+    // WebSocket 实时刷新
+    const socket = io();
+
+    socket.on('refresh_page', function(data) {
+        console.log("收到刷新事件：", data);
+        {% if current_user.is_authenticated %}
+        const currentUserId = {{ current_user.id|tojson }};
+        let shouldRefresh = false;
+
+        if (data.message === 'status_changed') {
+            if (Array.isArray(data.affected_users)) {
+                shouldRefresh = data.affected_users.includes(currentUserId);
+            } else {
+                shouldRefresh = data.recipient_id === currentUserId || data.payer_id === currentUserId;
+            }
+        } else if (data.message === 'item_created') {
+            shouldRefresh = true;
+        } else {
+            shouldRefresh = data.recipient_id === currentUserId || data.payer_id === currentUserId;
+        }
+
+        if (shouldRefresh) {
+            const scrollPosition = window.scrollY || document.documentElement.scrollTop;
+            sessionStorage.setItem('scrollPosition', scrollPosition);
+            showTechNotification('数据已更新，即将刷新...', 'info', 2000);
+            setTimeout(() => location.replace(location.href), 2000);
+        }
+        {% endif %}
+    });
+
+    socket.on('connect', () => console.log('Connected to Socket.IO'));
+    socket.on('disconnect', () => console.warn('Disconnected from Socket.IO'));
+    socket.on('connect_error', (error) => console.error('WebSocket error:', error));
+    </script>
+    {% else %}
+    <script>
+    console.log('Socket.IO not available - real-time features disabled');
+    </script>
+    {% endif %}
+
+    <script>
+    // 移动端导航切换
+    document.getElementById('mobileToggle')?.addEventListener('click', function() {
+        const navbar = document.querySelector('.navbar');
+        const menu = document.getElementById('navbarMenu');
+        
+        this.classList.toggle('active');
+        navbar.classList.toggle('menu-open');
+        menu.classList.toggle('active');
+    });
+
+    // 点击外部关闭菜单
+    document.addEventListener('click', function(e) {
+        const navbar = document.querySelector('.navbar');
+        const toggle = document.getElementById('mobileToggle');
+        const menu = document.getElementById('navbarMenu');
+        
+        if (!navbar.contains(e.target)) {
+            toggle?.classList.remove('active');
+            navbar?.classList.remove('menu-open');
+            menu?.classList.remove('active');
+        }
+    });
+
+    // 导航栏滚动效果
+    let lastScrollY = window.scrollY;
+    window.addEventListener('scroll', () => {
+        const navbar = document.querySelector('.navbar');
+        const currentScrollY = window.scrollY;
+        
+        if (currentScrollY > 100) {
+            navbar.classList.add('scrolled');
+        } else {
+            navbar.classList.remove('scrolled');
+        }
+        
+        if (currentScrollY > lastScrollY && currentScrollY > 200) {
+            navbar.classList.add('hidden');
+        } else {
+            navbar.classList.remove('hidden');
+        }
+        
+        lastScrollY = currentScrollY;
+    });
+
+    // 现代化通知系统
+    function showTechNotification(message, type = 'info', duration = 4000) {
+        const container = document.querySelector('.notifications-container') || createNotificationContainer();
+        
+        const notification = document.createElement('div');
+        notification.className = `notification notification-${type} show`;
+        
+        const icon = type === 'success' ? 'check-circle' : 
+                    type === 'error' ? 'exclamation-triangle' : 'info-circle';
+        
+        notification.innerHTML = `
+            <i class="fas fa-${icon}"></i>
+            <span>${message}</span>
+            <button class="notification-close">&times;</button>
+        `;
+        
+        container.appendChild(notification);
+        
+        // 自动关闭
+        setTimeout(() => {
+            notification.classList.add('fade-out');
+            setTimeout(() => notification.remove(), 300);
+        }, duration);
+        
+        // 手动关闭
+        notification.querySelector('.notification-close').addEventListener('click', () => {
+            notification.classList.add('fade-out');
+            setTimeout(() => notification.remove(), 300);
+        });
+    }
+
+    function createNotificationContainer() {
+        const container = document.createElement('div');
+        container.className = 'notifications-container';
+        document.querySelector('.main-content').prepend(container);
+        return container;
+    }
+
+    // 通知自动关闭
+    document.querySelectorAll('.notification-close').forEach(btn => {
+        btn.addEventListener('click', function() {
+            const notification = this.closest('.notification');
+            notification.classList.add('fade-out');
+            setTimeout(() => notification.remove(), 300);
+        });
+    });
+
+    // 滚动位置恢复
+    document.addEventListener('DOMContentLoaded', function() {
+        const savedScroll = sessionStorage.getItem('scrollPosition');
+        if (savedScroll) {
+            window.scrollTo(0, parseInt(savedScroll));
+            sessionStorage.removeItem('scrollPosition');
+        }
+    });
+
+    window.addEventListener('beforeunload', function() {
+        sessionStorage.setItem('scrollPosition', window.scrollY || document.documentElement.scrollTop);
+    });
+
+    // 科技粒子动画
+    function initTechParticles() {
+        const particles = document.querySelectorAll('.tech-particle');
+        particles.forEach((particle, index) => {
+            particle.style.left = Math.random() * 100 + '%';
+            particle.style.animationDelay = Math.random() * 5 + 's';
+            particle.style.animationDuration = (5 + Math.random() * 5) + 's';
+        });
+    }
+
+    // 初始化
+    document.addEventListener('DOMContentLoaded', function() {
+        initTechParticles();
+        
+        // 添加页面加载动画
+        document.body.classList.add('loaded');
+    });
+
+    // 文件上传处理
+    const qrCodeInput = document.getElementById('qr_code_image');
+    const accountInfoInput = document.getElementById('account_info');
+
+    if (qrCodeInput && accountInfoInput) {
+        qrCodeInput.addEventListener('change', function() {
             const fileName = document.getElementById('file-name');
             if (this.files.length > 0) {
                 fileName.textContent = this.files[0].name;
-                // 清空文本输入
-                document.getElementById('account_info').value = '';
+                accountInfoInput.value = '';
             } else {
                 fileName.textContent = '';
             }
         });
 
-        // 如果用户开始输入文本，则清除文件选择
-        document.getElementById('account_info').addEventListener('input', function() {
+        accountInfoInput.addEventListener('input', function() {
             if (this.value.trim() !== '') {
-                document.getElementById('qr_code_image').value = '';
+                qrCodeInput.value = '';
                 document.getElementById('file-name').textContent = '';
             }
         });
-        </script>
-    {% endblock %}
-
-    <!-- 添加到base.html的body结束前 -->
-    <div id="notification-container"></div>
-
-    <script>
-    // 通知系统
-    function showNotification(message, type = 'info', duration = 5000) {
-        const container = document.getElementById('notification-container');
-        const notification = document.createElement('div');
-        notification.className = `notification ${type}`;
-        notification.innerHTML = `
-            <i class="fas fa-${type === 'success' ? 'check-circle' : type === 'warning' ? 'exclamation-triangle' : 'info-circle'}"></i>
-            <span>${message}</span>
-            <span class="notification-close">&times;</span>
-        `;
+    }
+    
+    // 修正登出按钮的事件监听器
+    document.getElementById('logoutBtn')?.addEventListener('click', function(e) {
+        // 阻止默认行为
+        e.preventDefault();
         
-        container.appendChild(notification);
+        // 关闭移动菜单（如果打开）
+        const navbar = document.querySelector('.navbar');
+        const toggle = document.getElementById('mobileToggle');
+        const menu = document.getElementById('navbarMenu');
         
-        // 显示通知
-        setTimeout(() => {
-            notification.classList.add('show');
-        }, 100);
-        
-        // 关闭按钮事件
-        notification.querySelector('.notification-close').addEventListener('click', () => {
-            hideNotification(notification);
-        });
-        
-        // 自动关闭
-        if (duration > 0) {
-            setTimeout(() => {
-                hideNotification(notification);
-            }, duration);
+        if (toggle && menu) {
+            toggle.classList.remove('active');
+            navbar.classList.remove('menu-open');
+            menu.classList.remove('active');
         }
         
-        return notification;
-    }
+        // 直接跳转到登出URL
+        window.location.href = this.href;
+    });
 
-    function hideNotification(notification) {
-        notification.classList.remove('show');
-        setTimeout(() => {
-            notification.remove();
-        }, 300);
-    }
+<<<<<<< HEAD
+=======
+    // 添加用户信息链接的样式
+    const userInfoLinks = document.querySelectorAll('.user-info-link');
+    userInfoLinks.forEach(link => {
+        link.addEventListener('click', function(e) {
+            // 关闭移动菜单（如果打开）
+            const navbar = document.querySelector('.navbar');
+            const toggle = document.getElementById('mobileToggle');
+            const menu = document.getElementById('navbarMenu');
+            
+            if (toggle && menu) {
+                toggle.classList.remove('active');
+                navbar.classList.remove('menu-open');
+                menu.classList.remove('active');
+            }
+        });
+    });
 
-    // 显示闪存消息作为通知
+>>>>>>> 864f9e05d2c679b129da682b03737eca09b71b2c
+    <!-- 闪存消息处理 -->
+    <script>
     {% with messages = get_flashed_messages(with_categories=true) %}
         {% if messages %}
             {% for category, message in messages %}
-                {% if category == 'success' %}
-                    showNotification('{{ message }}', 'success');
-                {% elif category == 'error' %}
-                    showNotification('{{ message }}', 'warning');
-                {% else %}
-                    showNotification('{{ message }}', 'info');
-                {% endif %}
+                setTimeout(() => {
+                    showTechNotification('{{ message }}', '{{ "success" if category == "success" else "error" if category == "error" else "info" }}');
+                }, {{ loop.index * 100 }});
             {% endfor %}
         {% endif %}
     {% endwith %}
     </script>
+
+    {% endblock %}
 </body>
 </html>

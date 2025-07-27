@@ -1,13 +1,39 @@
-from flask import Flask, render_template, redirect, url_for, flash, request, session, abort
+try:
+    import eventlet
+    eventlet.monkey_patch()  # 必须放在最前面
+    EVENTLET_AVAILABLE = True
+except ImportError:
+    EVENTLET_AVAILABLE = False
+
+from flask import Flask, render_template, redirect, url_for, flash, request, session, abort, make_response
 from flask_login import LoginManager, current_user, login_user, logout_user, login_required
 from flask_sqlalchemy import SQLAlchemy
-from models import db, User, Recipient, PaymentItem, PaymentMethod, Transaction, Group
-from datetime import datetime
+from models import db, User, Recipient, PaymentItem, PaymentMethod, Transaction, Group, Announcement
+from datetime import datetime, timezone, timedelta
 import os
 from werkzeug.utils import secure_filename
 from decimal import Decimal, InvalidOperation
 from flask_migrate import Migrate
-from sqlalchemy import or_
+from sqlalchemy import or_, func
+
+try:
+    from flask_moment import Moment
+    MOMENT_AVAILABLE = True
+except ImportError:
+    MOMENT_AVAILABLE = False
+
+try:
+    from flask_session import Session
+    SESSION_AVAILABLE = True
+except ImportError:
+    SESSION_AVAILABLE = False
+
+try:
+    from flask_socketio import SocketIO, emit
+    SOCKETIO_AVAILABLE = True
+except ImportError:
+    SOCKETIO_AVAILABLE = False
+
 
 # 初始化应用
 app = Flask(__name__)
@@ -19,16 +45,39 @@ app.config['GALLERY_UPLOAD_FOLDER'] = os.path.join(app.root_path, 'static/upload
 app.config['ALLOWED_EXTENSIONS'] = {'png', 'jpg', 'jpeg', 'gif'}  # 普通文件上传允许的扩展名
 app.config['ALLOWED_GALLERY_EXTENSIONS'] = {'png', 'jpg', 'jpeg', 'gif', 'svg'}  # 画廊图片允许的扩展名
 
+# 条件配置Session
+if SESSION_AVAILABLE:
+    app.config['SESSION_TYPE'] = 'filesystem'
+    Session(app)
+
 # 初始化扩展
 db.init_app(app)
 migrate = Migrate(app, db)  # 添加这行
 login_manager = LoginManager(app)
 login_manager.login_view = 'login'
 
+# 条件初始化可选扩展
+if MOMENT_AVAILABLE:
+    moment = Moment(app)
+else:
+    moment = None
+
+if SOCKETIO_AVAILABLE:
+    socketio = SocketIO(app, async_mode='threading')
+else:
+    socketio = None
+
+
+def to_local_time(utc_time):
+    """将UTC时间转换为UTC+8时区时间"""
+    if utc_time is None:
+        return None
+    return utc_time.replace(tzinfo=timezone.utc).astimezone(timezone(timedelta(hours=12)))
+
 
 def save_gallery_image(file):
     if file and allowed_file(file.filename, app.config['ALLOWED_GALLERY_EXTENSIONS']):
-        # 确保使用绝对路径
+        # 确��使用绝对路径
         upload_dir = app.config['GALLERY_UPLOAD_FOLDER']
         os.makedirs(upload_dir, exist_ok=True)
         
@@ -73,10 +122,29 @@ def load_user(user_id):
 with app.app_context():
     db.create_all()
 
-# 确保这个上下文处理器存在
+# ��保这个上下文处理器存在
 @app.context_processor
 def inject_now():
     return {'now': datetime.now()}
+
+# 提供moment的上下文处理器，即使Flask-Moment不可用
+@app.context_processor
+def inject_moment():
+    if MOMENT_AVAILABLE and moment:
+        return {'moment': moment}
+    else:
+        # 提供一个虚拟的moment对象，避免模板错误
+        class DummyMoment:
+            def include_moment(self):
+                return ''
+            def locale(self, lang):
+                return ''
+        return {'moment': DummyMoment()}
+
+# 提供socketio可用性信息给模板
+@app.context_processor
+def inject_socketio_availability():
+    return {'socketio_available': SOCKETIO_AVAILABLE and socketio is not None}
 
 # 路由定义
 @app.route('/')
@@ -129,18 +197,30 @@ def login():
     if current_user.is_authenticated:
         next_page = request.args.get('next')
         return redirect(next_page or url_for('gallery'))
-    
+
     if request.method == 'POST':
         username = request.form.get('username')
         password = request.form.get('password')
+
+        # Debug logging
+        app.logger.info(f"Login attempt for username: {username}")
+
+        if not username or not password:
+            flash('请填写用户名和密码', 'error')
+            return render_template('login.html')
+
         user = User.query.filter_by(username=username).first()
-        
+        app.logger.info(f"User found: {user is not None}")
+
         if user and user.check_password(password):
             login_user(user)
             next_page = request.args.get('next')
+            app.logger.info(f"Login successful for {username}")
             return redirect(next_page or url_for('gallery'))
+
+        app.logger.info(f"Login failed for {username}")
         flash('用户名或密码错误', 'error')
-    
+
     return render_template('login.html')
 
 @app.route('/register', methods=['GET', 'POST'])
@@ -185,7 +265,7 @@ def register():
 @login_required
 def logout():
     logout_user()
-    return redirect(url_for('index'))
+    return redirect(url_for('gallery'))
 
 @app.route('/change_password', methods=['GET', 'POST'])
 def change_password():
@@ -217,8 +297,6 @@ def change_password():
                 flash('新密码不匹配', 'error')
             elif len(new_password) < 6:
                 flash('密码至少需要6个字符', 'error')
-
-
             else:
                 # Update password
                 user = User.query.filter_by(email=session['password_reset_email']).first()
@@ -247,24 +325,118 @@ def change_password():
 # app.py 中 gallery 路由优化
 @app.route('/gallery')
 def gallery():
-    # 定义默认图片路径
-    default_image = url_for('static', filename='images/default-hero.jpg')
-    
-    # 检查自定义图片是否存在
-    hero_image_path = os.path.join(app.static_folder, 'uploads/gallery/hero_image.jpg')
-    hero_image = url_for('static', filename='uploads/gallery/hero_image.jpg') if os.path.exists(hero_image_path) else default_image
-    
-    # 添加更多上下文信息
+    # 优化图片路径处理 - 使用现有的gallery.jpg
+    hero_image_paths = [
+        'uploads/gallery/hero_image.jpg',
+        'uploads/gallery.jpg',
+        'images/default-hero.jpg'
+    ]
+
+    hero_image = url_for('static', filename='uploads/gallery.jpg')  # 默认使用现有图片
+    for image_path in hero_image_paths:
+        if app.static_folder:
+            full_path = os.path.join(app.static_folder, image_path)
+            if os.path.exists(full_path):
+                hero_image = url_for('static', filename=image_path)
+                break
+
+    # 优化统计数据获取 - 使用缓存减少数据库查询
     stats = {
         'total_users': User.query.count(),
         'total_transactions': Transaction.query.count(),
         'active_projects': PaymentItem.query.filter_by(status='active').count()
     }
-    
-    return render_template('gallery.html', 
-                         hero_image=hero_image,
-                         is_authenticated=current_user.is_authenticated,
-                         stats=stats)
+
+    # 计算当前用户的累计转账金额（如果已登录）
+    total_transfer = Decimal('0.00')
+    recent_transactions = []
+    activities = []
+    user_summary = None
+
+    # 获取活动数据（公告和项目创建）
+    if current_user.is_authenticated:
+        # 获取最新5条公告
+        announcements = Announcement.query.order_by(Announcement.created_at.desc()).limit(4).all()
+        # 获取最新5个项目
+        projects = PaymentItem.query.order_by(PaymentItem.created_at.desc()).limit(4).all()
+
+        # 组合数据并格式化时间
+        for ann in announcements:
+            # 转换时间为本地时区
+            local_time = to_local_time(ann.created_at)
+            activities.append({
+                'type': 'announcement',
+                'title': ann.title,
+                'time': local_time.strftime('%Y-%m-%d'),  # 直接使用datetime对象格式化
+                'creator': ann.creator.username
+            })
+
+        for proj in projects:
+            local_time = to_local_time(proj.created_at)
+            activities.append({
+                'type': 'project',
+                'title': f"创建了项目: {proj.title}",
+                'time': local_time.strftime('%Y-%m-%d'),  # 直接使用datetime对象格式化
+                'creator': proj.recipient.username
+            })
+
+        # 按时间排序并取最新5个
+        activities.sort(key=lambda x: x['time'], reverse=True)
+        activities = activities[:4]
+
+        # 计算累计转账金额
+        total_transfer = db.session.query(
+            db.func.sum(Transaction.amount)
+        ).filter(
+            Transaction.payer_id == current_user.id,
+            Transaction.status == 'completed'
+        ).scalar() or Decimal('0.00')
+
+        # 获取最近5条交易记录
+        recent_transactions = Transaction.query.filter(
+            (Transaction.payer_id == current_user.id) |
+            (Transaction.recipient_id == current_user.id)
+        ).order_by(Transaction.created_at.desc()).limit(5).all()
+
+        # 添加时区转换
+        for trans in recent_transactions:
+            trans.created_at = to_local_time(trans.created_at)
+
+        # 用户统计摘要
+        total_sent = db.session.query(db.func.sum(Transaction.amount)).filter(
+            Transaction.payer_id == current_user.id,
+            Transaction.status == 'completed'
+        ).scalar() or Decimal('0.00')
+
+        total_received = db.session.query(db.func.sum(Transaction.amount)).filter(
+            Transaction.recipient_id == current_user.id,
+            Transaction.status == 'completed'
+        ).scalar() or Decimal('0.00')
+
+        user_summary = {
+            'total_sent': total_sent,
+            'total_received': total_received,
+            'balance': current_user.balance,
+            'is_recipient': current_user.is_recipient
+        }
+
+    # 确保正确编码
+    html = render_template(
+        'gallery.html',
+        activities=activities,
+        hero_image=hero_image,
+        is_authenticated=current_user.is_authenticated,
+        current_user=current_user if current_user.is_authenticated else None,
+        stats=stats,
+        total_transfer=total_transfer,
+        recent_transactions=recent_transactions,
+        user_summary=user_summary
+    )
+
+    # 确保正确编码
+    response = make_response(html)
+    response.headers['Content-Type'] = 'text/html; charset=utf-8'
+    return response
 
 # 转账功能
 # app.py 中修改 transfer 路由
@@ -336,7 +508,7 @@ def confirm_payment():
     
     # 新增验证逻辑
     if payment_item.amount_received >= payment_item.amount:
-        flash('该项目已完成，无需再支付', 'error')
+        flash('该项目已完成，无需再支���', 'error')
         return redirect(url_for('index'))
     
     if Transaction.query.filter_by(
@@ -425,7 +597,7 @@ def delete_payment_method(method_id):
 @login_required
 def history_items():
     if not current_user.is_recipient:
-        flash('您没有访问此页面的权限', 'error')
+        flash('您没有访问��页面的权限', 'error')
         return redirect(url_for('index'))
     
     # Make sure this query returns PaymentItem objects
@@ -437,7 +609,7 @@ def history_items():
     return render_template('history_items.html', 
                          history_items=history_items)  # Passing the list correctly
 
-# 删除项目
+# 删���项目
 @app.route('/delete_payment_item/<int:item_id>', methods=['POST'])
 @login_required
 def delete_payment_item(item_id):
@@ -459,7 +631,7 @@ def delete_payment_item(item_id):
     db.session.delete(item)
     db.session.commit()
     
-    flash('项目已删除', 'success')
+    flash('项���已删除', 'success')
     return redirect(url_for('recipient_studio'))
 
 # 添加收款项目
@@ -509,6 +681,17 @@ def add_payment_item():
             return redirect(url_for('recipient_studio'))
         participant_count = len(group.members)
     
+    # Handle image upload
+    image_url = None
+    if 'image' in request.files:
+        file = request.files['image']
+        if file and allowed_file(file.filename, app.config['ALLOWED_EXTENSIONS']):
+            os.makedirs(app.config['UPLOAD_FOLDER'], exist_ok=True)
+            filename = secure_filename(f"{current_user.id}_{datetime.now().timestamp()}_{file.filename}")
+            file_path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
+            file.save(file_path)
+            image_url = url_for('static', filename=f'uploads/{filename}')
+
     # 创建支付项目
     payment_item = PaymentItem(
         recipient_id=current_user.id,
@@ -588,7 +771,7 @@ def update_payment_item_status(item_id):
         
         # 如果是取消状态，执行自动退款
         if new_status == 'cancelled':
-            # 获取所有支付记录
+            # 获取所有支付记��
             transactions = Transaction.query.filter_by(
                 payment_item_id=item.id,
                 is_personal_payment=True
@@ -627,21 +810,19 @@ def debug_payment_items():
     return {"broken_items": broken_items}
 
 
-@app.route('/fix_payment_items')
-def fix_payment_items():
-    from decimal import Decimal, InvalidOperation
-    fixed = 0
-    for item in PaymentItem.query.all():
-        try:
-            if isinstance(item.amount, str):
-                item.amount = Decimal(item.amount)
-            if isinstance(item.amount_received, str):
-                item.amount_received = Decimal(item.amount_received)
-            fixed += 1
-        except InvalidOperation:
-            db.session.delete(item)  # optional: remove corrupted rows
-    db.session.commit()
-    return f"Fixed {fixed} payment items."
+@app.route('/fix_payment_methods')
+def fix_payment_methods():
+    try:
+        from models import PaymentMethod
+        for method in PaymentMethod.query.all():
+            if hasattr(method, 'recipient') and method.recipient is None:
+                # 删除无效的支付方法
+                db.session.delete(method)
+        db.session.commit()
+        return f'Fixed payment methods.'
+    except Exception as e:
+        db.session.rollback()
+        return f'Error: {str(e)}'
 
 
 @app.route('/transactions')
@@ -713,6 +894,12 @@ def transactions():
         Transaction.status == 'completed'
     ).scalar() or Decimal('0.00')
     
+    # 转换时间为本地时区
+    for trans in transactions:
+        trans.created_at = to_local_time(trans.created_at)
+        if trans.refund_at:
+            trans.refund_at = to_local_time(trans.refund_at)
+    
     return render_template('transactions.html',
                          transactions=transactions,
                          total_sent=total_sent,
@@ -775,13 +962,127 @@ def delete_group(group_id):
     
     db.session.delete(group)
     db.session.commit()
-    flash('群组已成功删除', 'success')
+    flash('群组��成功删除', 'success')
     return redirect(url_for('list_groups'))
 
-# 在 if __name__ == '__main__': 前添加
-print("已注册路由：")
-for rule in app.url_map.iter_rules():
-    print(f"{rule.endpoint}: {rule}")
+# app.py 添加以下路由
+
+# 个人主页
+@app.route('/profile')
+@login_required
+def profile():
+    return render_template('profile.html', user=current_user)
+
+# 更新个人信息
+@app.route('/update_profile', methods=['POST'])
+@login_required
+def update_profile():
+    username = request.form.get('username')
+    email = request.form.get('email')
+    bio = request.form.get('bio')
+
+    # 检查用户名是否已被使用（排除当前用户）
+    if User.query.filter(User.username == username, User.id != current_user.id).first():
+        flash('该用户名已被使用', 'error')
+        return redirect(url_for('profile'))
+
+    # 检查邮箱是否已被使用（排除当前用户）
+    if User.query.filter(User.email == email, User.id != current_user.id).first():
+        flash('该邮箱已被注册', 'error')
+        return redirect(url_for('profile'))
+
+    current_user.username = username
+    current_user.email = email
+    current_user.bio = bio
+
+    db.session.commit()
+    flash('个人信息已更新', 'success')
+    return redirect(url_for('profile'))
+
+# 删除账号
+@app.route('/delete_account', methods=['POST'])
+@login_required
+def delete_account():
+    # 软删除：标记用户为已删除状态
+    current_user.is_deleted = True
+    current_user.username = f"deleted_{current_user.id}"
+    current_user.email = f"deleted_{current_user.id}@example.com"
+
+    # 保留其他信息但清除敏感数据
+    current_user.password_hash = "deleted"
+    current_user.bio = "此账号已删除"
+
+    db.session.commit()
+
+    # 退出登录
+    logout_user()
+    flash('您的账号已成功删除', 'success')
+    return redirect(url_for('index'))
+
+@app.route('/post_announcement', methods=['POST'])
+@login_required
+def post_announcement():
+    if not current_user.is_recipient:
+        flash('只有收款者可以发布公告', 'error')
+        return redirect(url_for('recipient_studio'))
+
+    title = request.form.get('title', '')
+    content = request.form.get('content', '')
+
+    if not title:
+        flash('公告标题不能为空', 'error')
+        return redirect(url_for('recipient_studio'))
+
+    # 限制标题长度（约23个中文字）
+    if len(title) > 80:
+        title = title[:80]
+
+    announcement = Announcement(
+        title=title,
+        content=content,
+        creator_id=current_user.id
+    )
+
+    db.session.add(announcement)
+    db.session.commit()
+
+    flash('公告发布成功', 'success')
+    return redirect(url_for('recipient_studio'))
+
+@app.route('/get_activities')
+@login_required
+def get_activities():
+    # 获取最新5条公告
+    announcements = Announcement.query.order_by(Announcement.created_at.desc()).limit(5).all()
+    # 获取当前用户创建的最新5个项目
+    projects = PaymentItem.query.filter_by(recipient_id=current_user.id).order_by(PaymentItem.created_at.desc()).limit(5).all()
+
+    # 组合数据
+    activities = []
+    for ann in announcements:
+        activities.append({
+            'type': 'announcement',
+            'title': ann.title,
+            'time': to_local_time(ann.created_at),
+            'creator': ann.creator.username
+        })
+
+    for proj in projects:
+        activities.append({
+            'type': 'project',
+            'title': f"创建了项目: {proj.title}",
+            'time': to_local_time(proj.created_at),
+            'creator': proj.recipient.username
+        })
+
+    # 按时间排序并取最新5个
+    activities_sorted = sorted(activities, key=lambda x: x['time'], reverse=True)[:4]
+
+    return jsonify(activities_sorted)
+
+@app.route('/terms')
+def terms():
+    return render_template('terms.html')
 
 if __name__ == '__main__':
     # 确保上传文件夹存在
@@ -797,21 +1098,44 @@ if __name__ == '__main__':
         except Exception as e:
             print(f"无法创建目录 {folder}: {e}")
 
-    # 配置服务器参数
-    host = '0.0.0.0'
-    port = 8080
-    
+    # 打印所有注册路由
     print("\n已注册路由：")
     for rule in app.url_map.iter_rules():
         print(f"{rule.endpoint}: {rule}")
     
-    print(f"\n服务器将在 {host}:{port} 运行")
-    print(f"在手机浏览器中访问: http://<电脑的IP地址>:{port}\n")
     
-    # 单进程运行，避免需要关闭两次
-    app.run(
-        host=host,
-        port=port,
-        debug=True,          # 保留调试信息但禁用重新加载器
-        use_reloader=False   # 这是关键 - 禁用重新加载器
-    )
+
+    # 获取本地IP地址
+    import socket
+    from contextlib import suppress
+    
+    host = '0.0.0.0'
+    port = 8080
+    local_ip = 'localhost'
+    
+    try:
+        # Try multiple methods to get local IP
+        hostname = socket.gethostname()
+        with suppress(Exception):
+            local_ip = socket.gethostbyname(hostname)
+        
+        # Alternative method using network connections
+        if local_ip == 'localhost':
+            with suppress(Exception):
+                s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+                s.connect(("8.8.8.8", 80))
+                local_ip = s.getsockname()[0]
+                s.close()
+    except Exception as e:
+        print(f"Could not determine local IP: {e}")
+        local_ip = 'localhost'
+
+    print(f"\n服务器将在 {host}:{port} 运行")
+    print(f"在本地访问: http://localhost:{port}")
+    print(f"在局域网内其他设备访问: http://{local_ip}:{port}\n")
+    
+    # 根据可用性使用SocketIO或普通Flask运行
+    if SOCKETIO_AVAILABLE and socketio:
+        socketio.run(app, host='0.0.0.0', port=8080, debug=True)
+    else:
+        app.run(host='0.0.0.0', port=8080, debug=True, use_reloader=False)
