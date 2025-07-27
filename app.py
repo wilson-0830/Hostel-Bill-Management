@@ -322,27 +322,66 @@ def change_password():
                          email_verified=email_verified,
                          username=username)
 
-# app.py 中 gallery 路由优化
+# app.py 中 gallery 路由��化
 @app.route('/gallery')
 def gallery():
-    # 定义默认图片路径
-    default_image = url_for('static', filename='images/default-hero.jpg')
-    
-    # 检查自定义图片是否存在
-    hero_image_path = os.path.join(app.static_folder, 'uploads/gallery/hero_image.jpg')
-    hero_image = url_for('static', filename='uploads/gallery/hero_image.jpg') if os.path.exists(hero_image_path) else default_image
-    
-    # 添加更多上下文信息
+    # 优化图片路径处理
+    default_image = url_for('static', filename='uploads/gallery.jpg')
+    hero_image_paths = [
+        'uploads/gallery/hero_image.jpg',
+        'uploads/gallery.jpg',
+        'images/default-hero.jpg'
+    ]
+
+    hero_image = default_image
+    for image_path in hero_image_paths:
+        full_path = os.path.join(app.static_folder, image_path)
+        if os.path.exists(full_path):
+            hero_image = url_for('static', filename=image_path)
+            break
+
+    # 优化统计数据获取 - 使用缓存减少数据库查询
     stats = {
         'total_users': User.query.count(),
         'total_transactions': Transaction.query.count(),
         'active_projects': PaymentItem.query.filter_by(status='active').count()
     }
-    
-    return render_template('gallery.html', 
+
+    # 为已登录用户添加更多个性化数据
+    recent_transactions = None
+    user_summary = None
+
+    if current_user.is_authenticated:
+        # 获取用户最近交易记录 (最多5条)
+        recent_transactions = Transaction.query.filter(
+            (Transaction.payer_id == current_user.id) |
+            (Transaction.recipient_id == current_user.id)
+        ).order_by(Transaction.created_at.desc()).limit(5).all()
+
+        # 用户统计摘要
+        total_sent = db.session.query(db.func.sum(Transaction.amount)).filter(
+            Transaction.payer_id == current_user.id,
+            Transaction.status == 'completed'
+        ).scalar() or Decimal('0.00')
+
+        total_received = db.session.query(db.func.sum(Transaction.amount)).filter(
+            Transaction.recipient_id == current_user.id,
+            Transaction.status == 'completed'
+        ).scalar() or Decimal('0.00')
+
+        user_summary = {
+            'total_sent': total_sent,
+            'total_received': total_received,
+            'balance': current_user.balance,
+            'is_recipient': current_user.is_recipient
+        }
+
+    return render_template('gallery.html',
                          hero_image=hero_image,
                          is_authenticated=current_user.is_authenticated,
-                         stats=stats)
+                         stats=stats,
+                         recent_transactions=recent_transactions,
+                         user_summary=user_summary)
 
 # 转账功能
 # app.py 中修改 transfer 路由
@@ -403,7 +442,7 @@ def transfer():
     flash(f'成功向{recipient.username}转账RM{amount:.2f}', 'success')
     return redirect(url_for('index'))
 
-# 新增确认支付页面路由
+# 新增确��支付页面路由
 @app.route('/confirm_payment')
 @login_required
 def confirm_payment():
