@@ -86,13 +86,17 @@ html {
 }
 
 body {
-    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Microsoft YaHei', '微软雅黑', 'SimSun', '宋体', Roboto, sans-serif;
     background: var(--bg-darker);
     color: var(--text-light);
     line-height: 1.6;
     min-height: 100vh;
     overflow-x: hidden;
     position: relative;
+    font-feature-settings: 'kern' 1, 'liga' 1;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
 }
 
 /* 全局科技感背景 */
