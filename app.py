@@ -77,7 +77,7 @@ def to_local_time(utc_time):
 
 def save_gallery_image(file):
     if file and allowed_file(file.filename, app.config['ALLOWED_GALLERY_EXTENSIONS']):
-        # 确保使用绝对路径
+        # 确��使用绝对路径
         upload_dir = app.config['GALLERY_UPLOAD_FOLDER']
         os.makedirs(upload_dir, exist_ok=True)
         
@@ -297,8 +297,6 @@ def change_password():
                 flash('新密码不匹配', 'error')
             elif len(new_password) < 6:
                 flash('密码至少需要6个字符', 'error')
-
-
             else:
                 # Update password
                 user = User.query.filter_by(email=session['password_reset_email']).first()
