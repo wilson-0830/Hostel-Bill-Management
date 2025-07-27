@@ -366,9 +366,9 @@ def gallery():
     # 获取活动数据（公告和项目创建）
     if current_user.is_authenticated:
         # 获取最新5条公告
-        announcements = Announcement.query.order_by(Announcement.created_at.desc()).limit(4).all()
+        announcements = Announcement.query.order_by(Announcement.created_at.desc()).limit(5).all()
         # 获取最新5个项目
-        projects = PaymentItem.query.order_by(PaymentItem.created_at.desc()).limit(4).all()
+        projects = PaymentItem.query.order_by(PaymentItem.created_at.desc()).limit(5).all()
 
         # 组合数据并格式化时间
         for ann in announcements:
@@ -392,7 +392,7 @@ def gallery():
 
         # 按时间排序并取最新5个
         activities.sort(key=lambda x: x['time'], reverse=True)
-        activities = activities[:4]
+        activities = activities[:5]
 
         # 计算累计转账金额
         total_transfer = db.session.query(
@@ -580,7 +580,7 @@ def recipient_studio():
                          total_users=total_users,  # Pass total user count to template
                          groups=current_user.groups)  # Pass user's groups to template
 
-# 添加删除支付方式功能
+# 添加删除支��方式功能
 # 保留这个更完整的版本，删除其他重复定义
 @app.route('/delete_payment_method/<int:method_id>', methods=['POST'])
 @login_required
