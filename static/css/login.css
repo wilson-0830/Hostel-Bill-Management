@@ -305,6 +305,9 @@
     cursor: pointer;
     user-select: none;
     line-height: 1.4;
+    margin-left: 0.75rem;
+    display: flex;
+    align-items: center;
 }
 
 /* ===== Terms Checkbox Special Styling ===== */
@@ -672,7 +675,7 @@
     box-shadow: var(--shadow-md);
 }
 
-/* ===== 响应式设��� ===== */
+/* ===== 响应式设计 ===== */
 @media (max-width: 768px) {
     .auth-container {
         padding: 1rem;
