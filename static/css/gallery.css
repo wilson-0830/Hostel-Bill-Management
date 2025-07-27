@@ -334,6 +334,7 @@ body::before {
 
 /* Quick Access Section */
 .quick-access {
+    margin: 0 25px 0 30px;
     padding: 5rem 0;
     position: relative;
     overflow: hidden;
