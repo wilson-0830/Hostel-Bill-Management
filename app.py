@@ -122,7 +122,7 @@ def load_user(user_id):
 with app.app_context():
     db.create_all()
 
-# 确保这个上下文处理器存在
+# ��保这个上下文处理器存在
 @app.context_processor
 def inject_now():
     return {'now': datetime.now()}
@@ -325,7 +325,6 @@ def change_password():
 # app.py 中 gallery 路由优化
 @app.route('/gallery')
 def gallery():
-<<<<<<< HEAD
     # 优化图片路径处理 - 使用现有的gallery.jpg
     hero_image_paths = [
         'uploads/gallery/hero_image.jpg',
@@ -342,44 +341,25 @@ def gallery():
                 break
 
     # 优化统计数据获取 - 使用缓存减少数据库查询
-=======
-    # 定义默认图片路径
-    default_image = url_for('static', filename='images/default-hero.jpg')
-    
-    # 检查自定义图片是否存在
-    hero_image_path = os.path.join(app.static_folder, 'uploads/gallery/hero_image.jpg')
-    hero_image = url_for('static', filename='uploads/gallery/hero_image.jpg') if os.path.exists(hero_image_path) else default_image
-    
-    # 添加更多上下文信息
->>>>>>> 864f9e05d2c679b129da682b03737eca09b71b2c
     stats = {
         'total_users': User.query.count(),
         'total_transactions': Transaction.query.count(),
         'active_projects': PaymentItem.query.filter_by(status='active').count()
     }
-<<<<<<< HEAD
 
-    # 为已登录用户添加更多个性化数据
-    recent_transactions = None
-    user_summary = None
-
-    if current_user.is_authenticated:
-        # 获取用户最近交易记录 (最多5条)
-=======
-    
     # 计算当前用户的累计转账金额（如果已登录）
     total_transfer = Decimal('0.00')
     recent_transactions = []
     activities = []
-    
-    # 获取活动数据（公告和项目创建）
+    user_summary = None
+
     # 获取活动数据（公告和项目创建）
     if current_user.is_authenticated:
         # 获取最新5条公告
         announcements = Announcement.query.order_by(Announcement.created_at.desc()).limit(4).all()
         # 获取最新5个项目
         projects = PaymentItem.query.order_by(PaymentItem.created_at.desc()).limit(4).all()
-        
+
         # 组合数据并格式化时间
         for ann in announcements:
             # 转换时间为本地时区
@@ -390,7 +370,7 @@ def gallery():
                 'time': local_time.strftime('%Y-%m-%d'),  # 直接使用datetime对象格式化
                 'creator': ann.creator.username
             })
-        
+
         for proj in projects:
             local_time = to_local_time(proj.created_at)
             activities.append({
@@ -399,11 +379,11 @@ def gallery():
                 'time': local_time.strftime('%Y-%m-%d'),  # 直接使用datetime对象格式化
                 'creator': proj.recipient.username
             })
-        
+
         # 按时间排序并取最新5个
         activities.sort(key=lambda x: x['time'], reverse=True)
         activities = activities[:4]
-        
+
         # 计算累计转账金额
         total_transfer = db.session.query(
             db.func.sum(Transaction.amount)
@@ -411,14 +391,16 @@ def gallery():
             Transaction.payer_id == current_user.id,
             Transaction.status == 'completed'
         ).scalar() or Decimal('0.00')
-        
+
         # 获取最近5条交易记录
->>>>>>> 864f9e05d2c679b129da682b03737eca09b71b2c
         recent_transactions = Transaction.query.filter(
             (Transaction.payer_id == current_user.id) |
             (Transaction.recipient_id == current_user.id)
         ).order_by(Transaction.created_at.desc()).limit(5).all()
-<<<<<<< HEAD
+
+        # 添加时区转换
+        for trans in recent_transactions:
+            trans.created_at = to_local_time(trans.created_at)
 
         # 用户统计摘要
         total_sent = db.session.query(db.func.sum(Transaction.amount)).filter(
@@ -438,24 +420,6 @@ def gallery():
             'is_recipient': current_user.is_recipient
         }
 
-    return render_template('gallery.html',
-                         hero_image=hero_image,
-                         is_authenticated=current_user.is_authenticated,
-                         stats=stats,
-                         recent_transactions=recent_transactions,
-                         user_summary=user_summary)
-
-@app.route('/profile')
-@login_required
-def profile():
-    """用户资料页面"""
-    return render_template('profile.html')
-=======
-    
-        # 添加时区转换
-        for trans in recent_transactions:
-            trans.created_at = to_local_time(trans.created_at)
-
     # 确保正确编码
     html = render_template(
         'gallery.html',
@@ -465,14 +429,14 @@ def profile():
         current_user=current_user if current_user.is_authenticated else None,
         stats=stats,
         total_transfer=total_transfer,
-        recent_transactions=recent_transactions
+        recent_transactions=recent_transactions,
+        user_summary=user_summary
     )
-    
+
     # 确保正确编码
     response = make_response(html)
     response.headers['Content-Type'] = 'text/html; charset=utf-8'
     return response
->>>>>>> 864f9e05d2c679b129da682b03737eca09b71b2c
 
 # 转账功能
 # app.py 中修改 transfer 路由
@@ -667,7 +631,7 @@ def delete_payment_item(item_id):
     db.session.delete(item)
     db.session.commit()
     
-    flash('项目已删除', 'success')
+    flash('项���已删除', 'success')
     return redirect(url_for('recipient_studio'))
 
 # 添加收款项目
@@ -998,12 +962,9 @@ def delete_group(group_id):
     
     db.session.delete(group)
     db.session.commit()
-    flash('群组已成功删除', 'success')
+    flash('群组��成功删除', 'success')
     return redirect(url_for('list_groups'))
 
-<<<<<<< HEAD
-# SocketIO已在前面条件初始化
-=======
 # app.py 添加以下路由
 
 # 个人主页
@@ -1019,21 +980,21 @@ def update_profile():
     username = request.form.get('username')
     email = request.form.get('email')
     bio = request.form.get('bio')
-    
+
     # 检查用户名是否已被使用（排除当前用户）
     if User.query.filter(User.username == username, User.id != current_user.id).first():
         flash('该用户名已被使用', 'error')
         return redirect(url_for('profile'))
-    
+
     # 检查邮箱是否已被使用（排除当前用户）
     if User.query.filter(User.email == email, User.id != current_user.id).first():
         flash('该邮箱已被注册', 'error')
         return redirect(url_for('profile'))
-    
+
     current_user.username = username
     current_user.email = email
     current_user.bio = bio
-    
+
     db.session.commit()
     flash('个人信息已更新', 'success')
     return redirect(url_for('profile'))
@@ -1046,13 +1007,13 @@ def delete_account():
     current_user.is_deleted = True
     current_user.username = f"deleted_{current_user.id}"
     current_user.email = f"deleted_{current_user.id}@example.com"
-    
+
     # 保留其他信息但清除敏感数据
     current_user.password_hash = "deleted"
     current_user.bio = "此账号已删除"
-    
+
     db.session.commit()
-    
+
     # 退出登录
     logout_user()
     flash('您的账号已成功删除', 'success')
@@ -1064,27 +1025,27 @@ def post_announcement():
     if not current_user.is_recipient:
         flash('只有收款者可以发布公告', 'error')
         return redirect(url_for('recipient_studio'))
-    
+
     title = request.form.get('title', '')
     content = request.form.get('content', '')
-    
+
     if not title:
         flash('公告标题不能为空', 'error')
         return redirect(url_for('recipient_studio'))
-    
+
     # 限制标题长度（约23个中文字）
     if len(title) > 80:
         title = title[:80]
-    
+
     announcement = Announcement(
         title=title,
         content=content,
         creator_id=current_user.id
     )
-    
+
     db.session.add(announcement)
     db.session.commit()
-    
+
     flash('公告发布成功', 'success')
     return redirect(url_for('recipient_studio'))
 
@@ -1095,7 +1056,7 @@ def get_activities():
     announcements = Announcement.query.order_by(Announcement.created_at.desc()).limit(5).all()
     # 获取当前用户创建的最新5个项目
     projects = PaymentItem.query.filter_by(recipient_id=current_user.id).order_by(PaymentItem.created_at.desc()).limit(5).all()
-    
+
     # 组合数据
     activities = []
     for ann in announcements:
@@ -1105,7 +1066,7 @@ def get_activities():
             'time': to_local_time(ann.created_at),
             'creator': ann.creator.username
         })
-    
+
     for proj in projects:
         activities.append({
             'type': 'project',
@@ -1113,16 +1074,15 @@ def get_activities():
             'time': to_local_time(proj.created_at),
             'creator': proj.recipient.username
         })
-    
+
     # 按时间排序并取最新5个
     activities_sorted = sorted(activities, key=lambda x: x['time'], reverse=True)[:4]
-    
+
     return jsonify(activities_sorted)
 
 @app.route('/terms')
 def terms():
     return render_template('terms.html')
->>>>>>> 864f9e05d2c679b129da682b03737eca09b71b2c
 
 if __name__ == '__main__':
     # 确保上传文件夹存在
