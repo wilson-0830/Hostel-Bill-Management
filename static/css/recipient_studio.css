@@ -478,3 +478,25 @@ textarea {
     color: var(--primary-color);
     font-weight: 500;
 }
+
+/* recipient_studio.css 添加公告部分样式 */
+
+.announcements {
+    margin: 2rem 0;
+    padding: 1.5rem;
+    background: #f8f9fa;
+    border-radius: 10px;
+    border-left: 4px solid #4361ee;
+}
+
+.announcements h2 {
+    color: #4361ee;
+    margin-bottom: 1.5rem;
+}
+
+.announcements form {
+    background: white;
+    padding: 1.5rem;
+    border-radius: 8px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+}
