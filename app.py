@@ -197,18 +197,30 @@ def login():
     if current_user.is_authenticated:
         next_page = request.args.get('next')
         return redirect(next_page or url_for('gallery'))
-    
+
     if request.method == 'POST':
         username = request.form.get('username')
         password = request.form.get('password')
+
+        # Debug logging
+        app.logger.info(f"Login attempt for username: {username}")
+
+        if not username or not password:
+            flash('请填写用户名和密码', 'error')
+            return render_template('login.html')
+
         user = User.query.filter_by(username=username).first()
-        
+        app.logger.info(f"User found: {user is not None}")
+
         if user and user.check_password(password):
             login_user(user)
             next_page = request.args.get('next')
+            app.logger.info(f"Login successful for {username}")
             return redirect(next_page or url_for('gallery'))
+
+        app.logger.info(f"Login failed for {username}")
         flash('用户名或密码错误', 'error')
-    
+
     return render_template('login.html')
 
 @app.route('/register', methods=['GET', 'POST'])
@@ -404,7 +416,7 @@ def confirm_payment():
     
     # 新增验证逻辑
     if payment_item.amount_received >= payment_item.amount:
-        flash('该项目已完成，无需再支付', 'error')
+        flash('该项目已完成，无需再支���', 'error')
         return redirect(url_for('index'))
     
     if Transaction.query.filter_by(
@@ -505,7 +517,7 @@ def history_items():
     return render_template('history_items.html', 
                          history_items=history_items)  # Passing the list correctly
 
-# 删除项目
+# 删���项目
 @app.route('/delete_payment_item/<int:item_id>', methods=['POST'])
 @login_required
 def delete_payment_item(item_id):
