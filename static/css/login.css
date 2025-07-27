@@ -344,6 +344,7 @@
 .terms-checkbox .custom-checkbox {
     width: 24px;
     height: 24px;
+    z-index: 15;
 }
 
 .terms-checkbox .checkmark {
@@ -351,6 +352,8 @@
     height: 24px;
     border: 2px solid var(--border-medium);
     border-radius: var(--radius-md);
+    cursor: pointer;
+    z-index: 14;
 }
 
 .terms-checkbox .checkmark::after {
@@ -669,7 +672,7 @@
     box-shadow: var(--shadow-md);
 }
 
-/* ===== 响应式设计 ===== */
+/* ===== 响应式设��� ===== */
 @media (max-width: 768px) {
     .auth-container {
         padding: 1rem;
