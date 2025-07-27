@@ -6,17 +6,12 @@
     <title>{% block title %}数字金融服务{% endblock %}</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/base.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
-<<<<<<< HEAD
     <!-- 优化字体加载 -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="preload" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
     <noscript><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"></noscript>
-=======
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
->>>>>>> 864f9e05d2c679b129da682b03737eca09b71b2c
     {% block extra_css %}{% endblock %}
     {{ moment.include_moment() }}
     {{ moment.locale('zh-cn') }}
@@ -301,7 +296,7 @@
         lastScrollY = currentScrollY;
     });
 
-    // 现代化通知系统
+    // 现代化��知系统
     function showTechNotification(message, type = 'info', duration = 4000) {
         const container = document.querySelector('.notifications-container') || createNotificationContainer();
         
