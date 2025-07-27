@@ -55,17 +55,18 @@
                     </div>
                     <label for="is_recipient" class="checkbox-label">我是收款方</label>
                 </div>
-<<<<<<< HEAD
-=======
 
-                <div class="form-check">
-                <input type="checkbox" class="form-check-input" required>
-                <label class="form-check-label">
-                    我同意此 <a href="{{ url_for('terms') }}" target="_blank">条件与条款</a>
-                </label>
+                <!-- Terms & Conditions Checkbox -->
+                <div class="checkbox-group terms-checkbox">
+                    <div class="custom-checkbox">
+                        <input type="checkbox" id="terms_agreement" name="terms_agreement" required>
+                        <span class="checkmark"></span>
+                    </div>
+                    <label for="terms_agreement" class="checkbox-label">
+                        我已阅读并同意 <a href="{{ url_for('terms') }}" target="_blank" class="terms-link">《条款与条件》</a>
+                    </label>
                 </div>
->>>>>>> 864f9e05d2c679b129da682b03737eca09b71b2c
-                
+
                 <button type="submit" class="btn-auth">
                     <i class="fas fa-rocket"></i>
                     立即注册
