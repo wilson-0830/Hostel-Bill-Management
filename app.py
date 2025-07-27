@@ -357,7 +357,7 @@ def gallery():
         'active_projects': PaymentItem.query.filter_by(status='active').count()
     }
 
-    # 计算当前用户的累计转账��额（如果已登录）
+    # 计算当前用户的累计���账金额（如果已登录）
     total_transfer = Decimal('0.00')
     recent_transactions = []
     activities = []
@@ -390,7 +390,7 @@ def gallery():
                 'creator': proj.recipient.username
             })
 
-        # ���时间排序并取最新5个
+        # 按时间排序并取最新5个
         activities.sort(key=lambda x: x['time'], reverse=True)
         activities = activities[:4]
 
@@ -577,6 +577,7 @@ def recipient_studio():
                          payment_methods=payment_methods,
                          transactions=transactions,
                          all_users=all_users,  # Pass all users to template
+                         total_users=total_users,  # Pass total user count to template
                          groups=current_user.groups)  # Pass user's groups to template
 
 # 添加删除支付方式功能
@@ -753,7 +754,7 @@ def add_payment_method():
             # 使用url_for生成正确的URL
             qr_code_image = url_for('static', filename=f'uploads/{filename}')
     
-    # 验证逻辑：如果没��上��图片，则必须提供账号信息
+    # 验证逻辑：如果没��上传图片，则必须提供账号信息
     if not qr_code_image and not account_info:
         flash('请至少提供账号信息或上传二维码图片', 'error')
         return redirect(url_for('recipient_studio'))
@@ -829,7 +830,7 @@ def fix_payment_methods():
         from models import PaymentMethod
         for method in PaymentMethod.query.all():
             if hasattr(method, 'recipient') and method.recipient is None:
-                # 删除无效的支��方法
+                # 删除无效的支付方法
                 db.session.delete(method)
         db.session.commit()
         return f'Fixed payment methods.'
@@ -1021,9 +1022,9 @@ def delete_account():
     current_user.username = f"deleted_{current_user.id}"
     current_user.email = f"deleted_{current_user.id}@example.com"
 
-    # 保留其他信息但清除敏感数据
+    # 保留其他信息但清除敏感���据
     current_user.password_hash = "deleted"
-    current_user.bio = "此账号已删��"
+    current_user.bio = "此账号已删除"
 
     db.session.commit()
 
@@ -1067,7 +1068,7 @@ def post_announcement():
 def get_activities():
     # 获取最新5条公告
     announcements = Announcement.query.order_by(Announcement.created_at.desc()).limit(5).all()
-    # 获取当前用户创建的最新5个项目
+    # 获取当前用户创��的最新5个项目
     projects = PaymentItem.query.filter_by(recipient_id=current_user.id).order_by(PaymentItem.created_at.desc()).limit(5).all()
 
     # 组合数据
