@@ -13,6 +13,7 @@
 .dashboard-title {
     font-size: 2.5rem;
     font-weight: 700;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Microsoft YaHei', sans-serif;
     background: linear-gradient(135deg, var(--accent-light), white);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
@@ -22,6 +23,7 @@
 .dashboard-subtitle {
     color: var(--text-secondary);
     font-size: 1.1rem;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Microsoft YaHei', sans-serif;
 }
 
 /* ===== 统计卡片网格 ===== */
