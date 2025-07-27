@@ -1,0 +1,93 @@
+{% extends "base.html" %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/profile.css') }}">
+{% endblock %}
+
+{% block content %}
+<div class="profile-container">
+    <div class="profile-wrapper">
+        <!-- Profile Header -->
+        <div class="profile-header">
+            <div class="profile-avatar-large">
+                {% if current_user.username %}
+                    {{ current_user.username[0]|upper }}
+                {% else %}
+                    <i class="fas fa-user"></i>
+                {% endif %}
+            </div>
+            <div class="profile-info">
+                <h1 class="profile-name">{{ current_user.username }}</h1>
+                <p class="profile-email">{{ current_user.email }}</p>
+                <span class="profile-badge {% if current_user.is_recipient %}recipient{% else %}user{% endif %}">
+                    {{ '收款方账户' if current_user.is_recipient else '普通用户' }}
+                </span>
+            </div>
+        </div>
+
+        <!-- Account Overview -->
+        <div class="account-overview">
+            <h2>账户概览</h2>
+            <div class="overview-grid">
+                <div class="overview-card">
+                    <div class="card-icon">
+                        <i class="fas fa-wallet"></i>
+                    </div>
+                    <div class="card-content">
+                        <h3>账户余额</h3>
+                        <p class="amount">RM {{ current_user.balance|default('0.00', true) }}</p>
+                    </div>
+                </div>
+                
+                <div class="overview-card">
+                    <div class="card-icon">
+                        <i class="fas fa-clock"></i>
+                    </div>
+                    <div class="card-content">
+                        <h3>注册时间</h3>
+                        <p>{{ current_user.created_at.strftime('%Y年%m月%d日') if current_user.created_at else '未知' }}</p>
+                    </div>
+                </div>
+
+                <div class="overview-card">
+                    <div class="card-icon">
+                        <i class="fas fa-shield-alt"></i>
+                    </div>
+                    <div class="card-content">
+                        <h3>账户状态</h3>
+                        <p class="status active">正常</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Quick Actions -->
+        <div class="quick-actions">
+            <h2>快速操作</h2>
+            <div class="actions-grid">
+                <a href="{{ url_for('change_password') }}" class="action-btn">
+                    <i class="fas fa-key"></i>
+                    <span>修改密码</span>
+                </a>
+                
+                <a href="{{ url_for('transactions') }}" class="action-btn">
+                    <i class="fas fa-history"></i>
+                    <span>交易记录</span>
+                </a>
+                
+                {% if current_user.is_recipient %}
+                <a href="{{ url_for('recipient_studio') }}" class="action-btn">
+                    <i class="fas fa-briefcase"></i>
+                    <span>收款工作室</span>
+                </a>
+                {% endif %}
+                
+                <a href="{{ url_for('list_groups') }}" class="action-btn">
+                    <i class="fas fa-users"></i>
+                    <span>群组管理</span>
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
