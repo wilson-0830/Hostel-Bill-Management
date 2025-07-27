@@ -15,7 +15,16 @@
           <span class="welcome-back">欢迎回来，</span>
           <span class="username">{{ current_user.username }}</span>
         </h1>
-        <p class="subtitle">您已成功登录，可以访问所有高级功能。<br>您的累计转账总金额：<span class="highlight">RM {{ total_transfer|default('0.00', true) }}</span></p>
+        {% if user_summary %}
+        <p class="subtitle">
+          您的账户余额：<span class="highlight">RM {{ user_summary.balance|default('0.00', true) }}</span><br>
+          累计发送：<span class="highlight">RM {{ user_summary.total_sent|default('0.00', true) }}</span> |
+          累计收到：<span class="highlight">RM {{ user_summary.total_received|default('0.00', true) }}</span>
+          {% if user_summary.is_recipient %}<br><span class="status-badge">收款方账户</span>{% endif %}
+        </p>
+        {% else %}
+        <p class="subtitle">您已成功登录，可以访问所有高级功能。</p>
+        {% endif %}
       {% else %}
       <h1><span class="main-title">新一代数字金融服务</span></h1>
       <p class="subtitle">加入 <span class="highlight">{{ stats.total_users|default('1000+', true) }}</span> 用户的行列，体验安全便捷的资产管理。</p>
@@ -173,7 +182,7 @@
         <li class="activity-item">
           <div class="activity-icon"><i class="fas fa-shield-alt"></i></div>
           <div class="activity-content">
-            <div class="activity-title">安全提示：您的账户有新的登录活动</div>
+            <div class="activity-title">安全���示：您的账户有新的登录活动</div>
             <div class="activity-time">刚刚</div>
           </div>
         </li>
