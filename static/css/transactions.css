@@ -159,7 +159,107 @@
 .transactions-header {
     margin-bottom: 2rem;
     padding-bottom: 1rem;
-    border-bottom: 1px solid var(--border-color);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+    background: var(--bg-glass);
+    padding: 2rem;
+    border-radius: var(--radius-lg);
+}
+
+/* Fix all text visibility issues */
+.transactions-container * {
+    color: var(--text-light) !important;
+}
+
+.summary {
+    display: flex;
+    gap: 2rem;
+    font-size: 1.1rem;
+    margin: 1.5rem 0;
+    flex-wrap: wrap;
+}
+
+.summary-item {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    background: var(--bg-glass);
+    padding: 1rem 1.5rem;
+    border-radius: var(--radius-lg);
+    border: var(--border-light);
+    font-weight: 600;
+}
+
+.transaction-filters {
+    background: var(--bg-glass);
+    padding: 1.5rem;
+    border-radius: var(--radius-lg);
+    border: var(--border-light);
+    margin-top: 1.5rem;
+}
+
+.transaction-filters form {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+    align-items: end;
+}
+
+.filter-group {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.filter-group label {
+    color: var(--text-light) !important;
+    font-weight: 500;
+    min-width: 60px;
+    white-space: nowrap;
+}
+
+.filter-group input,
+.filter-group select {
+    padding: 0.75rem;
+    border: var(--border-light);
+    border-radius: var(--radius-md);
+    background: var(--bg-glass);
+    color: var(--text-light) !important;
+    min-width: 150px;
+}
+
+.filter-group input::placeholder {
+    color: var(--text-muted) !important;
+}
+
+/* Ensure buttons are visible */
+.btn {
+    padding: 0.75rem 1.5rem;
+    border: none;
+    border-radius: var(--radius-md);
+    cursor: pointer;
+    font-weight: 600;
+    transition: var(--transition);
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.9rem;
+}
+
+.btn-primary {
+    background: var(--gradient-primary);
+    color: white !important;
+}
+
+.btn-secondary {
+    background: var(--bg-glass);
+    color: var(--text-light) !important;
+    border: var(--border-light);
+}
+
+.btn:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-md);
 }
 
 .transactions-header h1 {
