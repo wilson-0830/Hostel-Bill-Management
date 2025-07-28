@@ -122,6 +122,8 @@ document.addEventListener('DOMContentLoaded', function() {
     const form = document.querySelector('.auth-form');
     const termsCheckbox = document.getElementById('terms_agreement');
     const submitButton = document.querySelector('.btn-auth');
+    const termsCheckboxGroup = document.querySelector('.terms-checkbox');
+    const checkboxLabel = document.querySelector('.terms-checkbox .checkbox-label');
 
     // Update submit button state based on terms agreement
     function updateSubmitButton() {
@@ -141,6 +143,21 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Listen for checkbox changes
     termsCheckbox.addEventListener('change', updateSubmitButton);
+
+    // Enhanced click handling for mobile
+    termsCheckboxGroup.addEventListener('click', function(e) {
+        // Only toggle if clicking on the container, not on links
+        if (e.target.tagName !== 'A') {
+            e.preventDefault();
+            termsCheckbox.checked = !termsCheckbox.checked;
+            termsCheckbox.dispatchEvent(new Event('change'));
+        }
+    });
+
+    // Prevent double-toggle when clicking directly on checkbox
+    termsCheckbox.addEventListener('click', function(e) {
+        e.stopPropagation();
+    });
 
     // Form submission validation
     form.addEventListener('submit', function(e) {
