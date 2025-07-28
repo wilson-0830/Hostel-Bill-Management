@@ -1,9 +1,11 @@
-# migrate.py (separate file)
+# migrate.py
 from app import app, db
-from flask_migrate import Migrate
+from flask_migrate import Migrate, upgrade
 
 migrate = Migrate(app, db)
 
 if __name__ == '__main__':
-    app.app_context().push()
-    # Run migrations here
+    with app.app_context():
+        # 应用所有未完成的迁移
+        upgrade()
+        print("数据库升级完成")

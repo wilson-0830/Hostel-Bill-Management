@@ -14,21 +14,36 @@ from flask_migrate import Migrate
 from sqlalchemy import or_
 from flask_session import Session
 from flask_socketio import SocketIO, emit
+import re
 
 
 # 初始化应用
 app = Flask(__name__)
 socketio = SocketIO(app, async_mode='gevent')
 
-app.config['SECRET_KEY'] = 'your-secret-key-here'
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///transfers.db'
+# 创建 Flask 应用
+uri = os.environ.get('DATABASE_URL')
+if uri and uri.startswith("postgres://"):
+    uri = uri.replace("postgres://", "postgresql://", 1)
+app.config['SQLALCHEMY_DATABASE_URI'] = uri or 'sqlite:///transfers.db'
+
+# 初始化配置
+app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY', 'fallback-secret-key')
+app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('DATABASE_URL', 'sqlite:///transfers.db').replace('postgres://', 'postgresql://', 1)
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-app.config['UPLOAD_FOLDER'] = os.path.join(app.root_path, 'static/uploads')
+app.config['S3_BUCKET'] = os.environ.get('S3_BUCKET')
+app.config['S3_KEY'] = os.environ.get('S3_KEY')
+app.config['S3_SECRET'] = os.environ.get('S3_SECRET')
+
+# 添加缺失的配置项
+app.config['UPLOAD_FOLDER'] = os.path.join(app.root_path, 'static/uploads')  # 添加这一行
 app.config['GALLERY_UPLOAD_FOLDER'] = os.path.join(app.root_path, 'static/uploads/gallery')
 app.config['ALLOWED_EXTENSIONS'] = {'png', 'jpg', 'jpeg', 'gif'}  # 普通文件上传允许的扩展名
 app.config['ALLOWED_GALLERY_EXTENSIONS'] = {'png', 'jpg', 'jpeg', 'gif', 'svg'}  # 画廊图片允许的扩展名
 app.config['SESSION_TYPE'] = 'filesystem'
-Session(app)
+
+for folder in [app.config['UPLOAD_FOLDER'], app.config['GALLERY_UPLOAD_FOLDER']]:
+    os.makedirs(folder, exist_ok=True)
 
 # 初始化扩展
 db.init_app(app)
@@ -37,6 +52,8 @@ login_manager = LoginManager(app)
 login_manager.login_view = 'login'
 moment = Moment(app)
 
+def get_id(self):
+    return str(self.id)
 
 def to_local_time(utc_time):
     """将UTC时间转换为UTC+8时区时间"""
@@ -70,23 +87,23 @@ def allowed_file(filename, allowed_extensions):
            filename.rsplit('.', 1)[1].lower() in allowed_extensions
 
 def create_upload_folders():
+    # 确保所有上传目录都存在
     folders = [
-        app.config['UPLOAD_FOLDER'],
-        app.config['GALLERY_UPLOAD_FOLDER']
+        app.config.get('UPLOAD_FOLDER', 'static/uploads'),
+        app.config.get('GALLERY_UPLOAD_FOLDER', 'static/uploads/gallery')
     ]
     for folder in folders:
         try:
             os.makedirs(folder, exist_ok=True)
+            app.logger.info(f"确保目录存在: {folder}")
         except Exception as e:
             app.logger.error(f"无法创建上传目录 {folder}: {e}")
-
-with app.app_context():
-    create_upload_folders()
 
 # 用户加载器
 @login_manager.user_loader
 def load_user(user_id):
-    return User.query.get(int(user_id))
+    # 修复：使用 session.get() 替代 query.get()
+    return db.session.get(User, int(user_id))
 
 # 创建数据库表格
 with app.app_context():
@@ -100,6 +117,10 @@ def inject_now():
 @app.errorhandler(404)
 def not_found(e):
     return render_template('404.html'), 404
+
+@app.route('/static/<path:filename>')
+def static_files(filename):
+    return send_from_directory(os.path.join(app.root_path, 'static'), filename)
 
 # 路由定义
 @app.route('/')
@@ -1103,54 +1124,3 @@ def get_activities():
 def terms():
     return render_template('terms.html')
 
-if __name__ == '__main__':
-    socketio.run(app, host='0.0.0.0', port=8080)
-
-    # 确保上传文件夹存在
-    upload_folders = [
-        app.config['UPLOAD_FOLDER'],
-        app.config['GALLERY_UPLOAD_FOLDER'],
-        'static/uploads/gallery'
-    ]
-
-    for folder in upload_folders:
-        try:
-            os.makedirs(folder, exist_ok=True)
-        except Exception as e:
-            print(f"无法创建目录 {folder}: {e}")
-
-    # 打印所有注册路由
-    print("\n已注册路由：")
-    for rule in app.url_map.iter_rules():
-        print(f"{rule.endpoint}: {rule}")
-    
-    
-
-    # 获取本地IP地址
-    import socket
-    from contextlib import suppress
-
-    host = '0.0.0.0'
-    port = 8080
-    local_ip = 'localhost'
-
-    try:
-        # Try multiple methods to get local IP
-        hostname = socket.gethostname()
-        with suppress(Exception):
-            local_ip = socket.gethostbyname(hostname)
-
-        # Alternative method using network connections
-        if local_ip == 'localhost':
-            with suppress(Exception):
-                s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-                s.connect(("8.8.8.8", 80))
-                local_ip = s.getsockname()[0]
-                s.close()
-    except Exception as e:
-        print(f"Could not determine local IP: {e}")
-        local_ip = 'localhost'
-
-    print(f"\n服务器将在 {host}:{port} 运行")
-    print(f"在本地访问: http://localhost:{port}")
-    print(f"在局域网内其他设备访问: http://{local_ip}:{port}\n")
