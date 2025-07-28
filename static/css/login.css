@@ -523,8 +523,78 @@
     opacity: 0.5;
 }
 
-/* ===== Responsive Enhancements ===== */
+/* ===== Enhanced Mobile Responsiveness ===== */
 @media (max-width: 768px) {
+    .auth-container {
+        padding: 1rem;
+        min-height: 100vh;
+    }
+
+    .auth-card {
+        padding: 2rem 1.5rem;
+        margin: 0;
+        border-radius: var(--radius-lg);
+        max-width: 100%;
+        width: 100%;
+    }
+
+    .auth-title {
+        font-size: 1.75rem;
+    }
+
+    .auth-subtitle {
+        font-size: 0.9rem;
+    }
+
+    .form-control {
+        padding: 0.875rem 1rem;
+        font-size: 16px; /* Prevents zoom on iOS */
+        min-height: 48px; /* Better touch target */
+    }
+
+    .btn-auth {
+        padding: 1rem;
+        font-size: 1rem;
+        min-height: 48px;
+        width: 100%;
+    }
+
+    .checkbox-group {
+        gap: 0.5rem;
+        padding: 0.75rem;
+        margin-bottom: 2rem;
+    }
+
+    .terms-checkbox .custom-checkbox {
+        width: 28px;
+        height: 28px;
+        min-width: 28px;
+    }
+
+    .terms-checkbox .checkmark {
+        width: 28px;
+        height: 28px;
+    }
+
+    .terms-checkbox .checkmark::after {
+        left: 9px;
+        top: 5px;
+        width: 7px;
+        height: 14px;
+    }
+
+    .checkbox-label {
+        font-size: 0.95rem;
+        line-height: 1.5;
+        margin-left: 0;
+    }
+
+    .terms-checkbox .checkbox-label {
+        font-size: 0.9rem;
+    }
+}
+
+@media (max-width: 480px) {
     .terms-checkbox {
         padding: 0.75rem;
         margin-bottom: 1.5rem;
