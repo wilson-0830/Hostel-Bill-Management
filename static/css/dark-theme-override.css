@@ -1,0 +1,381 @@
+/* ===== Complete Dark Theme Override - Eliminate ALL White Backgrounds ===== */
+
+/* Global Dark Theme Enforcement */
+* {
+  background-image: none !important;
+}
+
+/* Force dark backgrounds on common problematic elements */
+div,
+section,
+article,
+main,
+aside,
+header,
+footer,
+nav,
+form,
+fieldset,
+legend,
+table,
+tbody,
+thead,
+tfoot,
+tr,
+td,
+th,
+ul,
+ol,
+li,
+dl,
+dt,
+dd {
+  background-color: transparent !important;
+  color: var(--text-light) !important;
+}
+
+/* Override any white/light backgrounds */
+.bg-white,
+.bg-light,
+.bg-info,
+.bg-secondary,
+.table,
+.card,
+.modal,
+.dropdown-menu,
+.navbar-light,
+.list-group-item {
+  background-color: var(--bg-glass) !important;
+  background: var(--bg-glass) !important;
+  color: var(--text-light) !important;
+  border-color: var(--border-light) !important;
+}
+
+/* Studio and Transaction specific overrides */
+.studio-container *,
+.transactions-container *,
+.recipient-studio *,
+.payment-studio * {
+  background-color: transparent !important;
+  color: var(--text-light) !important;
+}
+
+/* Form elements - ensure dark theme */
+input:not([type="submit"]):not([type="button"]):not([type="reset"]),
+textarea,
+select,
+option {
+  background: var(--bg-glass) !important;
+  background-color: var(--bg-glass) !important;
+  color: var(--text-light) !important;
+  border: var(--border-light) !important;
+  border-color: var(--border-light) !important;
+}
+
+input::placeholder,
+textarea::placeholder {
+  color: var(--text-muted) !important;
+}
+
+/* Button overrides */
+button:not(.btn-primary):not(.btn-success):not(.btn-danger):not(.btn-warning):not(.btn-info),
+.btn:not(.btn-primary):not(.btn-success):not(.btn-danger):not(.btn-warning):not(.btn-info) {
+  background: var(--bg-glass) !important;
+  color: var(--text-light) !important;
+  border-color: var(--border-light) !important;
+}
+
+/* Table overrides */
+table {
+  background-color: transparent !important;
+  color: var(--text-light) !important;
+}
+
+table th,
+table td {
+  background-color: transparent !important;
+  color: var(--text-light) !important;
+  border-color: var(--border-light) !important;
+}
+
+table thead th {
+  background-color: rgba(255, 255, 255, 0.05) !important;
+  color: var(--text-light) !important;
+}
+
+table tbody tr:hover {
+  background-color: rgba(255, 255, 255, 0.05) !important;
+}
+
+/* List overrides */
+ul, ol {
+  background-color: transparent !important;
+}
+
+li {
+  background-color: transparent !important;
+  color: var(--text-light) !important;
+}
+
+/* Card and panel overrides */
+.card,
+.panel,
+.well,
+.jumbotron {
+  background: var(--bg-glass) !important;
+  background-color: var(--bg-glass) !important;
+  color: var(--text-light) !important;
+  border: var(--border-light) !important;
+}
+
+.card-header,
+.card-footer,
+.panel-header,
+.panel-footer {
+  background: rgba(255, 255, 255, 0.05) !important;
+  background-color: rgba(255, 255, 255, 0.05) !important;
+  color: var(--text-light) !important;
+  border-color: var(--border-light) !important;
+}
+
+/* Alert overrides */
+.alert {
+  background: var(--bg-glass) !important;
+  color: var(--text-light) !important;
+  border: var(--border-light) !important;
+}
+
+.alert-info {
+  background: rgba(76, 201, 240, 0.2) !important;
+  border-color: rgba(76, 201, 240, 0.3) !important;
+  color: var(--accent-color) !important;
+}
+
+.alert-success {
+  background: rgba(46, 196, 182, 0.2) !important;
+  border-color: rgba(46, 196, 182, 0.3) !important;
+  color: var(--success-color) !important;
+}
+
+.alert-warning {
+  background: rgba(255, 159, 28, 0.2) !important;
+  border-color: rgba(255, 159, 28, 0.3) !important;
+  color: var(--warning-color) !important;
+}
+
+.alert-danger {
+  background: rgba(247, 37, 133, 0.2) !important;
+  border-color: rgba(247, 37, 133, 0.3) !important;
+  color: var(--danger-color) !important;
+}
+
+/* Modal overrides */
+.modal-content {
+  background: var(--bg-glass) !important;
+  color: var(--text-light) !important;
+  border: var(--border-light) !important;
+}
+
+.modal-header,
+.modal-footer {
+  background: rgba(255, 255, 255, 0.05) !important;
+  border-color: var(--border-light) !important;
+}
+
+/* Dropdown overrides */
+.dropdown-menu {
+  background: var(--bg-glass) !important;
+  border: var(--border-light) !important;
+  color: var(--text-light) !important;
+}
+
+.dropdown-item {
+  background: transparent !important;
+  color: var(--text-light) !important;
+}
+
+.dropdown-item:hover {
+  background: rgba(255, 255, 255, 0.1) !important;
+  color: var(--text-light) !important;
+}
+
+/* Navigation overrides */
+.nav-link {
+  color: var(--text-light) !important;
+  background: transparent !important;
+}
+
+.nav-link:hover {
+  color: var(--accent-color) !important;
+  background: rgba(255, 255, 255, 0.05) !important;
+}
+
+.nav-tabs .nav-link {
+  background: transparent !important;
+  border-color: var(--border-light) !important;
+}
+
+.nav-tabs .nav-link.active {
+  background: var(--bg-glass) !important;
+  border-color: var(--accent-color) !important;
+  color: var(--text-light) !important;
+}
+
+/* Pagination overrides */
+.pagination {
+  background: transparent !important;
+}
+
+.page-link {
+  background: var(--bg-glass) !important;
+  border-color: var(--border-light) !important;
+  color: var(--text-light) !important;
+}
+
+.page-link:hover {
+  background: rgba(255, 255, 255, 0.1) !important;
+  color: var(--accent-color) !important;
+}
+
+.page-item.active .page-link {
+  background: var(--gradient-primary) !important;
+  border-color: var(--accent-color) !important;
+}
+
+/* Progress bar overrides */
+.progress {
+  background: rgba(255, 255, 255, 0.1) !important;
+}
+
+.progress-bar {
+  background: var(--gradient-primary) !important;
+}
+
+/* Badge overrides */
+.badge {
+  background: var(--bg-glass) !important;
+  color: var(--text-light) !important;
+}
+
+.badge-primary {
+  background: var(--gradient-primary) !important;
+}
+
+.badge-success {
+  background: linear-gradient(135deg, var(--success-color), var(--success-hover)) !important;
+}
+
+.badge-danger {
+  background: linear-gradient(135deg, var(--danger-color), var(--danger-hover)) !important;
+}
+
+.badge-warning {
+  background: linear-gradient(135deg, var(--warning-color), var(--warning-hover)) !important;
+}
+
+/* Tooltip and popover overrides */
+.tooltip-inner {
+  background: var(--bg-glass) !important;
+  color: var(--text-light) !important;
+}
+
+.popover {
+  background: var(--bg-glass) !important;
+  border: var(--border-light) !important;
+}
+
+.popover-header {
+  background: rgba(255, 255, 255, 0.05) !important;
+  color: var(--text-light) !important;
+}
+
+.popover-body {
+  color: var(--text-light) !important;
+}
+
+/* Override any framework-specific white backgrounds */
+.white,
+.bg-white,
+.background-white,
+[style*="background-color: white"],
+[style*="background-color: #fff"],
+[style*="background-color: #ffffff"],
+[style*="background: white"],
+[style*="background: #fff"],
+[style*="background: #ffffff"] {
+  background: var(--bg-glass) !important;
+  background-color: var(--bg-glass) !important;
+  color: var(--text-light) !important;
+}
+
+/* Text color enforcement */
+.text-dark,
+.text-black,
+[style*="color: black"],
+[style*="color: #000"],
+[style*="color: #000000"] {
+  color: var(--text-light) !important;
+}
+
+/* Specific overrides for common UI patterns */
+.container,
+.container-fluid,
+.row,
+.col,
+[class*="col-"] {
+  background: transparent !important;
+  color: var(--text-light) !important;
+}
+
+/* Override any remaining problematic elements */
+body * {
+  color: var(--text-light) !important;
+}
+
+/* Specific overrides for recipient studio */
+.studio-container,
+.studio-container *:not(.btn):not(.badge):not(.progress):not(.status-badge) {
+  background: transparent !important;
+  background-color: transparent !important;
+}
+
+/* Specific overrides for transactions */
+.transactions-container,
+.transactions-container *:not(.btn):not(.badge):not(.progress):not(.transaction-type):not(.refund-badge) {
+  background: transparent !important;
+  background-color: transparent !important;
+}
+
+/* Final catch-all for any missed white backgrounds */
+[style*="background"][style*="white"],
+[style*="background"][style*="#fff"],
+[style*="background"][style*="#ffffff"] {
+  background: var(--bg-glass) !important;
+}
+
+/* Ensure text visibility on all elements */
+h1, h2, h3, h4, h5, h6,
+p, span, div, a, label,
+strong, em, b, i,
+small, mark, del, ins,
+sub, sup {
+  color: var(--text-light) !important;
+}
+
+/* Link color overrides */
+a {
+  color: var(--accent-color) !important;
+}
+
+a:hover {
+  color: var(--accent-light) !important;
+}
+
+/* Final safety net - remove any white/light backgrounds */
+* {
+  background-image: none !important;
+}
+
+*:not(.btn):not(.badge):not(.progress):not(.status-badge):not(.transaction-type):not(.refund-badge):not(.summary-item) {
+  background-color: transparent !important;
+}
