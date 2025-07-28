@@ -1,5 +1,5 @@
-import eventlet
-eventlet.monkey_patch()
+from gevent import monkey
+monkey.patch_all()
 
 from flask import Flask, render_template, redirect, url_for, flash, request, session, abort, make_response
 from flask_login import LoginManager, current_user, login_user, logout_user, login_required
@@ -18,7 +18,7 @@ from flask_socketio import SocketIO, emit
 
 # 初始化应用
 app = Flask(__name__)
-socketio = SocketIO(app, async_mode='threading')
+socketio = SocketIO(app, async_mode='gevent')
 
 app.config['SECRET_KEY'] = 'your-secret-key-here'
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///transfers.db'
