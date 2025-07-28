@@ -1,0 +1,407 @@
+/* ===== Navbar Functionality Fix CSS ===== */
+
+/* Ensure navbar is always interactive */
+.navbar,
+.navbar * {
+  pointer-events: auto !important;
+  z-index: 1000 !important;
+}
+
+/* Brand and navigation links must be clickable */
+.brand-link,
+.nav-link,
+.navbar-brand,
+.navbar-brand *,
+.nav-links,
+.nav-links *,
+.user-info-link,
+.user-menu,
+.user-menu * {
+  pointer-events: auto !important;
+  cursor: pointer !important;
+  z-index: 1001 !important;
+}
+
+/* Ensure proper navbar styling and positioning */
+.navbar {
+  position: fixed !important;
+  top: 0 !important;
+  left: 0 !important;
+  right: 0 !important;
+  width: 100% !important;
+  height: var(--navbar-height, 80px) !important;
+  background: rgba(13, 13, 26, 0.95) !important;
+  backdrop-filter: blur(25px) !important;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1) !important;
+  z-index: 1000 !important;
+  display: flex !important;
+  align-items: center !important;
+}
+
+/* Navbar container */
+.navbar-container {
+  display: flex !important;
+  justify-content: space-between !important;
+  align-items: center !important;
+  height: 100% !important;
+  width: 100% !important;
+  max-width: 1400px !important;
+  margin: 0 auto !important;
+  padding: 0 2rem !important;
+  pointer-events: auto !important;
+}
+
+/* Brand section */
+.navbar-brand {
+  display: flex !important;
+  align-items: center !important;
+  pointer-events: auto !important;
+  z-index: 1002 !important;
+}
+
+.brand-link {
+  display: flex !important;
+  align-items: center !important;
+  gap: 1rem !important;
+  text-decoration: none !important;
+  color: var(--text-light) !important;
+  transition: var(--transition) !important;
+  pointer-events: auto !important;
+  cursor: pointer !important;
+}
+
+.brand-link:hover {
+  transform: translateY(-2px) !important;
+  color: var(--text-light) !important;
+}
+
+.brand-icon {
+  width: 45px !important;
+  height: 45px !important;
+  background: var(--gradient-primary) !important;
+  border-radius: var(--radius-lg) !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  font-size: 1.4rem !important;
+  color: white !important;
+  box-shadow: var(--glow-primary) !important;
+  transition: var(--transition) !important;
+  pointer-events: auto !important;
+}
+
+.brand-text {
+  display: flex !important;
+  flex-direction: column !important;
+  line-height: 1.1 !important;
+}
+
+.brand-main {
+  font-size: 1.2rem !important;
+  font-weight: 700 !important;
+  color: var(--text-light) !important;
+}
+
+.brand-sub {
+  font-size: 0.8rem !important;
+  color: var(--text-muted) !important;
+  font-weight: 400 !important;
+}
+
+/* Navigation menu */
+.navbar-menu {
+  display: flex !important;
+  align-items: center !important;
+  pointer-events: auto !important;
+  z-index: 1002 !important;
+}
+
+.nav-links {
+  display: flex !important;
+  align-items: center !important;
+  gap: 0.5rem !important;
+  pointer-events: auto !important;
+}
+
+.nav-link {
+  display: flex !important;
+  align-items: center !important;
+  gap: 0.5rem !important;
+  padding: 0.75rem 1rem !important;
+  color: var(--text-light) !important;
+  text-decoration: none !important;
+  border-radius: var(--radius-md) !important;
+  transition: var(--transition) !important;
+  font-weight: 500 !important;
+  font-size: 0.95rem !important;
+  white-space: nowrap !important;
+  pointer-events: auto !important;
+  cursor: pointer !important;
+  z-index: 1003 !important;
+}
+
+.nav-link:hover {
+  color: var(--accent-color) !important;
+  background: rgba(76, 201, 240, 0.1) !important;
+  transform: translateY(-2px) !important;
+}
+
+.nav-link.active {
+  color: var(--accent-color) !important;
+  background: rgba(76, 201, 240, 0.15) !important;
+}
+
+.nav-icon {
+  font-size: 0.9rem !important;
+  color: inherit !important;
+}
+
+/* User section */
+.navbar-end {
+  display: flex !important;
+  align-items: center !important;
+  gap: 1rem !important;
+  pointer-events: auto !important;
+  z-index: 1002 !important;
+}
+
+.user-menu {
+  display: flex !important;
+  align-items: center !important;
+  gap: 1rem !important;
+  pointer-events: auto !important;
+}
+
+.user-info-link {
+  display: flex !important;
+  align-items: center !important;
+  text-decoration: none !important;
+  color: var(--text-light) !important;
+  transition: var(--transition) !important;
+  pointer-events: auto !important;
+  cursor: pointer !important;
+}
+
+.user-info-link:hover {
+  transform: translateY(-2px) !important;
+}
+
+.user-info {
+  display: flex !important;
+  align-items: center !important;
+  gap: 0.75rem !important;
+  pointer-events: auto !important;
+}
+
+.user-avatar {
+  width: 40px !important;
+  height: 40px !important;
+  background: var(--gradient-secondary) !important;
+  border-radius: 50% !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  font-weight: 600 !important;
+  color: white !important;
+  font-size: 0.9rem !important;
+  box-shadow: var(--glow-accent) !important;
+  pointer-events: auto !important;
+}
+
+.user-details {
+  display: flex !important;
+  flex-direction: column !important;
+  line-height: 1.2 !important;
+  pointer-events: auto !important;
+}
+
+.user-name {
+  font-weight: 600 !important;
+  color: var(--text-light) !important;
+  font-size: 0.95rem !important;
+}
+
+.user-status {
+  font-size: 0.8rem !important;
+  color: var(--text-muted) !important;
+}
+
+/* Auth buttons for non-authenticated users */
+.auth-buttons {
+  display: flex !important;
+  align-items: center !important;
+  gap: 1rem !important;
+  pointer-events: auto !important;
+}
+
+.auth-link {
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 0.5rem !important;
+  padding: 0.75rem 1.5rem !important;
+  text-decoration: none !important;
+  border-radius: var(--radius-md) !important;
+  font-weight: 600 !important;
+  font-size: 0.9rem !important;
+  transition: var(--transition) !important;
+  pointer-events: auto !important;
+  cursor: pointer !important;
+  z-index: 1003 !important;
+}
+
+.auth-link.login {
+  color: var(--text-light) !important;
+  border: var(--border-light) !important;
+  background: var(--bg-glass) !important;
+}
+
+.auth-link.login:hover {
+  background: rgba(255, 255, 255, 0.1) !important;
+  border-color: var(--accent-color) !important;
+  transform: translateY(-2px) !important;
+}
+
+.auth-link.register {
+  background: var(--gradient-primary) !important;
+  color: white !important;
+  border: none !important;
+}
+
+.auth-link.register:hover {
+  transform: translateY(-2px) !important;
+  box-shadow: var(--shadow-lg) !important;
+}
+
+/* Logout button */
+.logout-link {
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 0.5rem !important;
+  padding: 0.5rem 1rem !important;
+  color: var(--text-muted) !important;
+  text-decoration: none !important;
+  border-radius: var(--radius-md) !important;
+  transition: var(--transition) !important;
+  font-size: 0.9rem !important;
+  pointer-events: auto !important;
+  cursor: pointer !important;
+}
+
+.logout-link:hover {
+  color: var(--danger-color) !important;
+  background: rgba(247, 37, 133, 0.1) !important;
+}
+
+/* Mobile responsiveness */
+@media (max-width: 768px) {
+  .navbar {
+    height: 70px !important;
+    --navbar-height: 70px !important;
+  }
+  
+  .navbar-container {
+    padding: 0 1rem !important;
+  }
+  
+  .brand-icon {
+    width: 35px !important;
+    height: 35px !important;
+    font-size: 1.1rem !important;
+  }
+  
+  .brand-main {
+    font-size: 1rem !important;
+  }
+  
+  .brand-sub {
+    font-size: 0.7rem !important;
+  }
+  
+  .nav-links {
+    gap: 0.25rem !important;
+  }
+  
+  .nav-link {
+    padding: 0.5rem 0.75rem !important;
+    font-size: 0.85rem !important;
+  }
+  
+  .nav-link span {
+    display: none !important;
+  }
+  
+  .user-avatar {
+    width: 35px !important;
+    height: 35px !important;
+    font-size: 0.8rem !important;
+  }
+  
+  .user-details {
+    display: none !important;
+  }
+  
+  .auth-link {
+    padding: 0.5rem 1rem !important;
+    font-size: 0.8rem !important;
+  }
+}
+
+/* Desktop enhancements */
+@media (min-width: 1024px) {
+  .navbar {
+    height: 90px !important;
+    --navbar-height: 90px !important;
+  }
+  
+  .navbar-container {
+    padding: 0 3rem !important;
+  }
+  
+  .brand-icon {
+    width: 50px !important;
+    height: 50px !important;
+    font-size: 1.5rem !important;
+  }
+  
+  .nav-link {
+    font-size: 1rem !important;
+    padding: 0.75rem 1.25rem !important;
+  }
+  
+  .user-avatar {
+    width: 45px !important;
+    height: 45px !important;
+    font-size: 1rem !important;
+  }
+}
+
+/* Ensure body has proper top padding for fixed navbar */
+body {
+  padding-top: var(--navbar-height, 80px) !important;
+}
+
+@media (max-width: 768px) {
+  body {
+    padding-top: 70px !important;
+  }
+}
+
+@media (min-width: 1024px) {
+  body {
+    padding-top: 90px !important;
+  }
+}
+
+/* Override any conflicting styles */
+.navbar *:not(.floating-particles):not(.particle) {
+  pointer-events: auto !important;
+}
+
+/* Ensure no overlays block the navbar */
+.navbar-container > *,
+.navbar-brand > *,
+.navbar-menu > *,
+.navbar-end > * {
+  pointer-events: auto !important;
+  z-index: inherit !important;
+}
