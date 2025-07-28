@@ -1,0 +1,306 @@
+{% extends "base.html" %}
+
+{% block title %}帮助中心 - 数字金融服务{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/help_center.css') }}">
+{% endblock %}
+
+{% block content %}
+<div class="help-center-container">
+    <!-- 背景粒子效果 -->
+    <div class="bg-particles">
+        <div class="particle" style="width: 15px; height: 15px; top: 10%; left: 20%; animation-duration: 25s;"></div>
+        <div class="particle" style="width: 20px; height: 20px; top: 70%; left: 80%; animation-duration: 20s;"></div>
+        <div class="particle" style="width: 12px; height: 12px; top: 40%; left: 50%; animation-duration: 30s;"></div>
+        <div class="particle" style="width: 18px; height: 18px; top: 20%; left: 70%; animation-duration: 22s;"></div>
+        <div class="particle" style="width: 10px; height: 10px; top: 85%; left: 30%; animation-duration: 28s;"></div>
+    </div>
+
+    <!-- 头部区域 -->
+    <div class="help-header">
+        <h1 class="help-title">帮助中心</h1>
+        <p class="help-subtitle">在这里找到您需要的所有帮助信息。常见问题解答、操作指南以及技术支持</p>
+        
+        <!-- 搜索框 -->
+        <div class="search-container">
+            <input type="text" class="search-box" placeholder="搜索帮助内容...">
+            <i class="fas fa-search search-icon"></i>
+        </div>
+        
+        <!-- 分类导航 -->
+        <div class="category-nav">
+            <div class="category-btn active">
+                <i class="fas fa-user-circle"></i>
+                <span>账户问题</span>
+            </div>
+            <div class="category-btn">
+                <i class="fas fa-money-bill-wave"></i>
+                <span>支付与收款</span>
+            </div>
+            <div class="category-btn">
+                <i class="fas fa-users"></i>
+                <span>群组管理</span>
+            </div>
+            <div class="category-btn">
+                <i class="fas fa-shield-alt"></i>
+                <span>安全与隐私</span>
+            </div>
+            <div class="category-btn">
+                <i class="fas fa-cog"></i>
+                <span>设置与偏好</span>
+            </div>
+            <div class="category-btn">
+                <i class="fas fa-file-alt"></i>
+                <span>条款与政策</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- 账户问题部分 -->
+    <div class="faq-section">
+        <div class="section-header">
+            <div class="section-icon">
+                <i class="fas fa-user-circle"></i>
+            </div>
+            <h2 class="section-title">账户问题</h2>
+        </div>
+        
+        <div class="faq-item active">
+            <div class="faq-question">
+                <span>如何注册数字金融服务账户？</span>
+                <i class="fas fa-chevron-down faq-toggle"></i>
+            </div>
+            <div class="faq-answer">
+                <p>注册数字金融服务账户非常简单：</p>
+                <ol>
+                    <li>访问我们的网站或打开移动应用</li>
+                    <li>点击"注册"按钮</li>
+                    <li>提供您的用户名、电子邮箱和设置安全密码</li>
+                    <li>选择账户类型（普通用户或收款方账户）</li>
+                    <li>阅读并同意服务条款</li>
+                </ol>
+                <p>注册成功后，您将可以立即开始使用我们的服务。</p>
+            </div>
+        </div>
+        
+        <div class="faq-item">
+            <div class="faq-question">
+                <span>我忘记了密码，如何重置？</span>
+                <i class="fas fa-chevron-down faq-toggle"></i>
+            </div>
+            <div class="faq-answer">
+                <p>如果您忘记了密码，可以通过以下步骤重置：</p>
+                <ol>
+                    <li>在登录页面点击"忘记密码"链接</li>
+                    <li>输入您注册时使用的电子邮箱</li>
+                    <li>检查您的邮箱，点击我们发送的重置链接</li>
+                    <li>设置一个新的安全密码</li>
+                    <li>使用新密码重新登录您的账户</li>
+                </ol>
+                <p>如果您无法访问注册邮箱，请通过填写表格联系我们的客服团队获取进一步帮助。</p>
+            </div>
+        </div>
+        
+        <div class="faq-item">
+            <div class="faq-question">
+                <span>如何升级为收款方账户？</span>
+                <i class="fas fa-chevron-down faq-toggle"></i>
+            </div>
+            <div class="faq-answer">
+                <p>要将普通账户升级为收款方账户：</p>
+                <ol>
+                    <li>登录您的账户</li>
+                    <li>导航到"资料"页面</li>
+                    <li>找到"账户类型"部分</li>
+                    <li>点击"升级为收款方账户"按钮</li>
+                    <li>设置您的收款工作室信息</li>
+                </ol>
+                <p>此功能将在未来开通。升级成功后，您将能够创建收款项目和管理群组。</p>
+            </div>
+        </div>
+    </div>
+    
+    <!-- 支付与收款部分 -->
+    <div class="faq-section">
+        <div class="section-header">
+            <div class="section-icon">
+                <i class="fas fa-money-bill-wave"></i>
+            </div>
+            <h2 class="section-title">支付与收款</h2>
+        </div>
+        
+        <div class="faq-item">
+            <div class="faq-question">
+                <span>如何创建收款项目？</span>
+                <i class="fas fa-chevron-down faq-toggle"></i>
+            </div>
+            <div class="faq-answer">
+                <p>作为收款方，您可以按照以下步骤创建收款项目：</p>
+                <ol>
+                    <li>登录您的收款工作室</li>
+                    <li>点击"创建收款项目"按钮</li>
+                    <li>填写项目标题、描述和总金额</li>
+                    <li>选择分摊模式（平均分摊、指定金额或群组分摊）</li>
+                    <li>上传相关图片（可选）</li>
+                    <li>设置收款方式</li>
+                    <li>发布项目或者公告</li>
+                </ol>
+                <p>项目创建后，系统会自动通知相关参与者。您可以随时在工作室查看收款进度。</p>
+            </div>
+        </div>
+        
+        <div class="faq-item">
+            <div class="faq-question">
+                <span>支付方式有哪些？</span>
+                <i class="fas fa-chevron-down faq-toggle"></i>
+            </div>
+            <div class="faq-answer">
+                <p>我们支持多种安全支付方式：</p>
+                <ul>
+                    <li><strong>DuitNow</strong> - 马来西亚即时转账服务</li>
+                    <li><strong>银行转账</strong> - 支持所有主要马来西亚银行</li>
+                </ul>
+                <p>您可以在"收款工作室" > "收款方式"中添加和管理您的支付方式。</p>
+            </div>
+        </div>
+    </div>
+    
+    <!-- 群组管理部分 -->
+    <div class="faq-section">
+        <div class="section-header">
+            <div class="section-icon">
+                <i class="fas fa-users"></i>
+            </div>
+            <h2 class="section-title">群组管理</h2>
+        </div>
+        
+        <div class="faq-item">
+            <div class="faq-question">
+                <span>如何创建和管理群组？</span>
+                <i class="fas fa-chevron-down faq-toggle"></i>
+            </div>
+            <div class="faq-answer">
+                <p>群组功能让您更方便地管理集体活动：</p>
+                <p><strong>创建群组：</strong></p>
+                <ol>
+                    <li>导航到"群组管理"页面</li>
+                    <li>点击"创建新群组"</li>
+                    <li>输入群组名称</li>
+                    <li>添加成员（可以搜索平台用户）</li>
+                    <li>保存群组设置</li>
+                </ol>
+                <p><strong>管理群组：</strong></p>
+                <ul>
+                    <li>作为群组创建者，您可以添加/移除成员</li>
+                    <li>设置群组专属的收款项目</li>
+                    <li>查看群组交易历史</li>
+                    <li>解散不再需要的群组</li>
+                </ul>
+                <p>群组功能特别适合家庭、朋友团体或项目团队管理共享费用。</p>
+            </div>
+        </div>
+    </div>
+    
+    <!-- 技术支持部分 -->
+    <div class="support-section">
+        <h2 class="support-title">需要更多帮助？</h2>
+        <p>我们的支持团队随时准备为您解答问题</p>
+        
+        <div class="support-options">
+            <div class="support-card">
+                <div class="support-icon">
+                    <i class="fas fa-comments"></i>
+                </div>
+                <h3 class="support-card-title">在线聊天</h3>
+                <p class="support-card-text">实时与客服专员交流，快速解决问题</p>
+                <button class="contact-btn">即将开通</button>
+            </div>
+            
+            <div class="support-card">
+                <div class="support-icon">
+                    <i class="fas fa-envelope"></i>
+                </div>
+                <h3 class="support-card-title">电子邮件</h3>
+                <p class="support-card-text">24小时内回复您的查询</p>
+                <button class="contact-btn">即将开通</button>
+            </div>
+            
+            <div class="support-card">
+                <div class="support-icon">
+                    <i class="fas fa-phone-alt"></i>
+                </div>
+                <h3 class="support-card-title">电话支持</h3>
+                <p class="support-card-text">工作日 9:00-18:00 提供电话服务</p>
+                <button class="contact-btn">即将开通</button>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+{{ super() }}
+<script>
+    // FAQ折叠功能
+    document.addEventListener('DOMContentLoaded', function() {
+        const faqQuestions = document.querySelectorAll('.faq-question');
+        
+        faqQuestions.forEach(question => {
+            question.addEventListener('click', () => {
+                const faqItem = question.parentElement;
+                
+                // 如果点击的是已激活的项目，则关闭它
+                if (faqItem.classList.contains('active')) {
+                    faqItem.classList.remove('active');
+                } else {
+                    // 关闭所有其他项目
+                    document.querySelectorAll('.faq-item').forEach(item => {
+                        item.classList.remove('active');
+                    });
+                    // 打开当前项目
+                    faqItem.classList.add('active');
+                }
+            });
+        });
+        
+        // 分类导航点击事件
+        const categoryBtns = document.querySelectorAll('.category-btn');
+        categoryBtns.forEach(btn => {
+            btn.addEventListener('click', () => {
+                categoryBtns.forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                
+                // 滚动到对应部分
+                const category = btn.textContent.trim();
+                const sections = document.querySelectorAll('.faq-section');
+                
+                sections.forEach(section => {
+                    const sectionTitle = section.querySelector('.section-title').textContent;
+                    if (sectionTitle.includes(category)) {
+                        section.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                    }
+                });
+            });
+        });
+        
+        // 搜索功能
+        const searchBox = document.querySelector('.search-box');
+        searchBox.addEventListener('keyup', function(e) {
+            const searchTerm = e.target.value.toLowerCase();
+            const faqItems = document.querySelectorAll('.faq-item');
+            
+            faqItems.forEach(item => {
+                const question = item.querySelector('.faq-question span').textContent.toLowerCase();
+                const answer = item.querySelector('.faq-answer').textContent.toLowerCase();
+                
+                if (question.includes(searchTerm) || answer.includes(searchTerm)) {
+                    item.style.display = 'block';
+                } else {
+                    item.style.display = 'none';
+                }
+            });
+        });
+    });
+</script>
+{% endblock %}

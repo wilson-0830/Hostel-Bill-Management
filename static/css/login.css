@@ -6,10 +6,7 @@
     min-height: calc(100vh - var(--navbar-height));
     padding: 2rem 1rem;
     position: relative;
-<<<<<<< HEAD
     font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Microsoft YaHei', sans-serif;
-=======
->>>>>>> 864f9e05d2c679b129da682b03737eca09b71b2c
 }
 
 .auth-wrapper {
@@ -285,13 +282,14 @@
     content: '';
     position: absolute;
     display: none;
-    left: 7px;
-    top: 3px;
+    left: 6px;
+    top: 2px;
     width: 5px;
     height: 10px;
     border: solid white;
     border-width: 0 2px 2px 0;
     transform: rotate(45deg);
+    z-index: 2;
 }
 
 .custom-checkbox input:checked ~ .checkmark::after {
@@ -383,7 +381,6 @@
     border-color: var(--danger-color);
     color: var(--danger-color);
     box-shadow: 0 0 20px rgba(247, 37, 133, 0.2);
-<<<<<<< HEAD
     animation: errorShake 0.5s ease-out;
 }
 
@@ -392,8 +389,6 @@
     0%, 100% { transform: translateX(0); }
     25% { transform: translateX(-5px); }
     75% { transform: translateX(5px); }
-=======
->>>>>>> 864f9e05d2c679b129da682b03737eca09b71b2c
 }
 
 .message-warning {
@@ -570,6 +565,29 @@
     opacity: 0.3;
 }
 
+.terms-group {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.75rem;
+    margin-bottom: 1.5rem;
+    font-size: 0.9rem;
+    color: var(--text-secondary);
+    line-height: 1.6;
+}
+
+.terms-label a {
+    color: var(--accent-color);
+    font-weight: 500;
+    text-decoration: underline;
+    transition: color 0.3s ease;
+}
+
+.terms-label a:hover {
+    color: var(--accent-light);
+    text-shadow: var(--glow-accent);
+}
+
+
 @keyframes float {
     0%, 100% {
         transform: translateY(0) rotate(0deg);
@@ -594,3 +612,48 @@
 .particle:nth-child(7) { animation-delay: 1.5s; left: 70%; }
 .particle:nth-child(8) { animation-delay: 3.5s; left: 80%; }
 .particle:nth-child(9) { animation-delay: 2.5s; left: 90%; }
+
+/* 添加在复选框样式部分 */
+.custom-checkbox {
+    position: relative;
+    width: 20px;
+    height: 20px;
+    /* 添加以下内容 */
+    z-index: 1;
+}
+
+.custom-checkbox input {
+    position: absolute;
+    opacity: 0;
+    cursor: pointer;
+    /* 添加以下内容 */
+    width: 100%;
+    height: 100%;
+    z-index: 2;
+}
+
+/* 确保对勾图标可见 */
+.checkmark::after {
+    content: '';
+    position: absolute;
+    display: none;
+    left: 6px;
+    top: 2px;
+    width: 5px;
+    height: 10px;
+    border: solid white;
+    border-width: 0 2px 2px 0;
+    transform: rotate(45deg);
+    /* 添加以下内容 */
+    z-index: 3;
+}
+
+/* 修复选择器问题 */
+.custom-checkbox input:checked + .checkmark::after {
+    display: block;
+}
+
+/* 添加聚焦样式 */
+.custom-checkbox input:focus ~ .checkmark {
+    box-shadow: 0 0 0 3px rgba(76, 201, 240, 0.3);
+}

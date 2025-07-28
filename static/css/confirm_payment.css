@@ -1,27 +1,38 @@
 .payment-confirmation {
     max-width: 600px;
     margin: 2rem auto;
-    background: white;
-    border-radius: var(--radius-md);
+    background: var(--bg-glass);
+    backdrop-filter: blur(20px);
+    border-radius: var(--radius-xl);
+    border: var(--border-light);
     padding: 2rem;
-    box-shadow: var(--shadow-md);
+    box-shadow: var(--shadow-xl);
+    color: var(--text-light);
 }
 
 .payment-details {
     margin-bottom: 2rem;
     padding-bottom: 1.5rem;
-    border-bottom: 1px solid var(--border-color);
+    border-bottom: var(--border-light);
 }
 
 .payment-details h3 {
     margin-bottom: 0.5rem;
+    color: var(--accent-light);
 }
 
+.payment-details p {
+    color: var(--text-secondary);
+    margin-bottom: 0.5rem;
+}
+
+/* 支付方式选项 */
 .payment-method-option {
     margin-bottom: 1rem;
     padding: 1rem;
-    border: 1px solid var(--border-color);
-    border-radius: var(--radius-sm);
+    background: var(--bg-glass);
+    border: var(--border-light);
+    border-radius: var(--radius-lg);
     transition: var(--transition);
     display: flex;
     align-items: flex-start;
@@ -30,19 +41,25 @@
 
 .payment-method-option:hover {
     border-color: var(--primary-color);
-    background-color: #f8f9fa;
+    background: var(--bg-glass-hover);
 }
 
-.payment-method-option input[type="radio"] {
-    margin-top: 0.25rem;
+.payment-method-option label {
+    color: var(--text-light);
+    flex: 1;
+}
+
+.account-info {
+    color: var(--text-secondary);
+    margin-top: 0.5rem;
 }
 
 .qr-code-preview {
     margin: 0.5rem 0;
     padding: 0.5rem;
-    background: white;
-    border: 1px solid var(--border-color);
-    border-radius: var(--radius-sm);
+    background: var(--bg-glass);
+    border: var(--border-light);
+    border-radius: var(--radius-md);
     display: inline-block;
 }
 
@@ -52,11 +69,26 @@
     object-fit: contain;
 }
 
+.qr-code-preview p {
+    text-align: center;
+    margin-top: 0.5rem;
+    color: var(--text-light);
+}
+
+/* 按钮 */
+.btn-confirm {
+    background: var(--gradient-primary);
+    color: white;
+    padding: 0.75rem 2rem;
+}
+
 .btn-cancel {
-    background-color: var(--text-muted);
-    margin-left: 1rem;
+    background: var(--bg-glass);
+    color: var(--text-light);
+    border: var(--border-light);
+    padding: 0.75rem 2rem;
 }
 
 .btn-cancel:hover {
-    background-color: #5a6268;
+    background: var(--bg-glass-hover);
 }

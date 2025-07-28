@@ -122,6 +122,40 @@ def not_found(e):
 def static_files(filename):
     return send_from_directory(os.path.join(app.root_path, 'static'), filename)
 
+# 添加在app.py中的适当位置
+def calculate_pending_payments(user):
+    """计算用户当前的应付金额"""
+    pending_amount = Decimal('0.00')
+    
+    # 获取用户需要支付的所有活跃项目
+    active_items = PaymentItem.query.filter_by(status='active').all()
+    
+    for item in active_items:
+        # 检查用户是否已支付该项目
+        paid = Transaction.query.filter_by(
+            payer_id=user.id,
+            payment_item_id=item.id,
+            is_personal_payment=True
+        ).first()
+        
+        if not paid:
+            # 根据分摊模式计算应付金额
+            if item.split_mode == 'average':
+                count = item.participant_count if item.participant_count > 0 else 1
+                pending_amount += item.amount / Decimal(count)
+            elif item.split_mode == 'individual' and item.assigned_users:
+                pending_amount += item.assigned_users.get(user.id, Decimal('0.00'))
+            elif item.split_mode == 'group' and item.group and user in item.group.members:
+                member_count = len(item.group.members)
+                pending_amount += item.amount / Decimal(member_count)
+    
+    return pending_amount
+
+# 将函数添加到Jinja环境
+@app.context_processor
+def utility_processor():
+    return dict(calculate_pending_payments=calculate_pending_payments)
+
 # 路由定义
 @app.route('/')
 @login_required
@@ -323,9 +357,9 @@ def gallery():
     # 获取活动数据（公告和项目创建）
     if current_user.is_authenticated:
         # 获取最新5条公告
-        announcements = Announcement.query.order_by(Announcement.created_at.desc()).limit(4).all()
+        announcements = Announcement.query.order_by(Announcement.created_at.desc()).limit(7).all()
         # 获取最新5个项目
-        projects = PaymentItem.query.order_by(PaymentItem.created_at.desc()).limit(4).all()
+        projects = PaymentItem.query.order_by(PaymentItem.created_at.desc()).limit(7).all()
         
         # 组合数据并格式化时间
         for ann in announcements:
@@ -1019,7 +1053,6 @@ def profile():
 def update_profile():
     username = request.form.get('username')
     email = request.form.get('email')
-    bio = request.form.get('bio')
     
     # 检查用户名是否已被使用（排除当前用户）
     if User.query.filter(User.username == username, User.id != current_user.id).first():
@@ -1033,7 +1066,6 @@ def update_profile():
     
     current_user.username = username
     current_user.email = email
-    current_user.bio = bio
     
     db.session.commit()
     flash('个人信息已更新', 'success')
@@ -1123,6 +1155,10 @@ def get_activities():
 @app.route('/terms')
 def terms():
     return render_template('terms.html')
+
+@app.route('/help_center')
+def help_center():
+    return render_template('help_center.html')
 
 if __name__ == '__main__':
     # 确保上传文件夹存在

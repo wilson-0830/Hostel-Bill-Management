@@ -527,3 +527,28 @@ textarea {
     background: rgba(255, 255, 255, 0.1); /* 半透明背景 */
     color: #f8f9fa;
 }
+
+/* 修复图片上传部分的文字颜色问题 */
+.studio-container .form-group label,
+.studio-container .form-group input,
+.studio-container .form-group select,
+.studio-container .form-group textarea,
+.studio-container .form-group .text-muted,
+.studio-container .form-group .text-muted a {
+    color: #333; /* 确保深色文字在白色背景上可见 */
+}
+
+/* 修复图片上传部分的提示文字颜色 */
+.studio-container .form-group .text-muted {
+    color: #666 !important;
+}
+
+/* 修复图片上传按钮的文字颜色 */
+.studio-container .btn {
+    color: white !important; /* 按钮文字保持白色 */
+}
+
+/* 修复付款方式二维码描述文字颜色 */
+.qr-code-container p {
+    color: #333;
+}

@@ -52,18 +52,18 @@
                     <div class="custom-checkbox">
                         <input type="checkbox" id="is_recipient" name="is_recipient">
                         <span class="checkmark"></span>
+                        <label for="is_recipient" class="checkbox-label">我是收款方</label>
                     </div>
-                    <label for="is_recipient" class="checkbox-label">我是收款方</label>
                 </div>
 
                 <div class="terms-group">
                     <div class="custom-checkbox">
                         <input type="checkbox" id="terms" name="terms" required>
                         <span class="checkmark"></span>
+                        <label for="terms" class="terms-label">
+                            我同意此 <a href="{{ url_for('terms') }}" target="_blank">条件与条款</a>
+                        </label>
                     </div>
-                    <label for="terms" class="terms-label">
-                        我同意此 <a href="{{ url_for('terms') }}" target="_blank">条件与条款</a>
-                    </label>
                 </div>
                 
                 <button type="submit" class="btn-auth">
