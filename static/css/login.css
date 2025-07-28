@@ -368,12 +368,19 @@
 .terms-checkbox .checkmark {
     width: 24px;
     height: 24px;
-    border: 2px solid var(--border-medium);
+    border: 2px solid rgba(255, 255, 255, 0.3);
     border-radius: var(--radius-md);
     cursor: pointer;
     z-index: 14;
     display: block;
-    background: var(--bg-glass);
+    background: rgba(255, 255, 255, 0.05);
+    transition: all 0.3s ease;
+}
+
+.terms-checkbox .custom-checkbox input:checked ~ .checkmark {
+    background: var(--gradient-primary);
+    border-color: var(--accent-color);
+    box-shadow: 0 0 15px rgba(76, 201, 240, 0.4);
 }
 
 .terms-checkbox .checkmark::after {
