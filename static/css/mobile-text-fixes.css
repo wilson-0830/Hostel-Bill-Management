@@ -1,0 +1,275 @@
+/* ===== Mobile Text Visibility and Readability Fixes ===== */
+
+/* Ensure all text is visible and readable on mobile */
+@media (max-width: 768px) {
+    /* Global text improvements */
+    body {
+        -webkit-text-size-adjust: none;
+        text-size-adjust: none;
+    }
+    
+    /* Transaction records and tables */
+    .transaction-item,
+    .transaction-row,
+    .transaction-details {
+        font-size: 0.9rem;
+        line-height: 1.5;
+        padding: 1rem;
+        margin-bottom: 0.75rem;
+    }
+    
+    .transaction-amount,
+    .amount {
+        font-size: 1.1rem;
+        font-weight: 600;
+        color: var(--accent-color);
+    }
+    
+    .transaction-date,
+    .date {
+        font-size: 0.85rem;
+        color: var(--text-muted);
+    }
+    
+    /* Card content */
+    .card,
+    .stats-card,
+    .action-card {
+        padding: 1.25rem;
+        border-radius: var(--radius-lg);
+    }
+    
+    .card-title,
+    .stat-label {
+        font-size: 0.9rem;
+        font-weight: 500;
+        margin-bottom: 0.5rem;
+    }
+    
+    .card-content,
+    .stat-value {
+        font-size: 1rem;
+        line-height: 1.4;
+    }
+    
+    /* Forms and inputs */
+    input,
+    textarea,
+    select {
+        font-size: 16px !important; /* Prevents zoom on iOS */
+        padding: 0.875rem 1rem;
+        line-height: 1.4;
+    }
+    
+    label {
+        font-size: 0.9rem;
+        font-weight: 500;
+        margin-bottom: 0.5rem;
+        display: block;
+    }
+    
+    /* Buttons */
+    .btn,
+    button {
+        font-size: 0.95rem;
+        padding: 0.875rem 1.5rem;
+        min-height: 48px;
+        line-height: 1.2;
+    }
+    
+    /* Navigation */
+    .nav-link {
+        font-size: 0.9rem;
+        padding: 0.75rem 1rem;
+    }
+    
+    /* Headers and titles */
+    h1 {
+        font-size: 1.75rem;
+        line-height: 1.2;
+        margin-bottom: 1rem;
+    }
+    
+    h2 {
+        font-size: 1.5rem;
+        line-height: 1.3;
+        margin-bottom: 0.875rem;
+    }
+    
+    h3 {
+        font-size: 1.25rem;
+        line-height: 1.3;
+        margin-bottom: 0.75rem;
+    }
+    
+    /* Paragraphs and body text */
+    p {
+        font-size: 0.95rem;
+        line-height: 1.5;
+        margin-bottom: 1rem;
+    }
+    
+    /* Lists */
+    ul,
+    ol {
+        padding-left: 1.25rem;
+    }
+    
+    li {
+        font-size: 0.9rem;
+        line-height: 1.5;
+        margin-bottom: 0.5rem;
+    }
+    
+    /* Gallery and image containers */
+    .gallery-item,
+    .image-container {
+        margin-bottom: 1rem;
+    }
+    
+    .gallery-title,
+    .image-title {
+        font-size: 1rem;
+        font-weight: 600;
+        margin-bottom: 0.5rem;
+    }
+    
+    /* Status badges and labels */
+    .badge,
+    .status-badge,
+    .label {
+        font-size: 0.8rem;
+        padding: 0.25rem 0.5rem;
+        font-weight: 500;
+    }
+    
+    /* Error and success messages */
+    .alert,
+    .message {
+        font-size: 0.9rem;
+        padding: 1rem;
+        margin-bottom: 1rem;
+        border-radius: var(--radius-lg);
+    }
+    
+    /* Tables */
+    table {
+        font-size: 0.85rem;
+        width: 100%;
+        overflow-x: auto;
+        display: block;
+        white-space: nowrap;
+    }
+    
+    th,
+    td {
+        padding: 0.75rem 0.5rem;
+        text-align: left;
+    }
+    
+    th {
+        font-weight: 600;
+        font-size: 0.8rem;
+        text-transform: uppercase;
+    }
+    
+    /* Sidebar and menu items */
+    .sidebar-item,
+    .menu-item {
+        padding: 0.75rem 1rem;
+        font-size: 0.9rem;
+    }
+    
+    /* Footer */
+    .footer {
+        font-size: 0.85rem;
+        padding: 1.5rem 1rem;
+    }
+    
+    /* Tooltips and help text */
+    .tooltip,
+    .help-text {
+        font-size: 0.8rem;
+        line-height: 1.4;
+    }
+    
+    /* Code and pre */
+    code,
+    pre {
+        font-size: 0.85rem;
+        line-height: 1.4;
+    }
+}
+
+/* Very small mobile devices */
+@media (max-width: 480px) {
+    h1 {
+        font-size: 1.5rem;
+    }
+    
+    h2 {
+        font-size: 1.3rem;
+    }
+    
+    h3 {
+        font-size: 1.1rem;
+    }
+    
+    p {
+        font-size: 0.9rem;
+    }
+    
+    .transaction-item,
+    .card {
+        padding: 1rem;
+    }
+    
+    input,
+    textarea,
+    select {
+        padding: 0.75rem;
+    }
+    
+    .btn {
+        padding: 0.75rem 1.25rem;
+    }
+}
+
+/* High contrast mode for better readability */
+@media (prefers-contrast: high) {
+    body {
+        color: #ffffff;
+        background: #000000;
+    }
+    
+    .card,
+    .stats-card {
+        border: 2px solid #ffffff;
+        background: #1a1a1a;
+    }
+    
+    input,
+    textarea,
+    select {
+        border: 2px solid #ffffff;
+        background: #1a1a1a;
+        color: #ffffff;
+    }
+}
+
+/* Improved focus states for accessibility */
+@media (max-width: 768px) {
+    button:focus,
+    input:focus,
+    textarea:focus,
+    select:focus,
+    a:focus {
+        outline: 3px solid var(--accent-color);
+        outline-offset: 2px;
+    }
+    
+    .custom-checkbox input:focus + .checkmark {
+        outline: 3px solid var(--accent-color);
+        outline-offset: 2px;
+    }
+}
