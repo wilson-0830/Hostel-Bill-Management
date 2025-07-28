@@ -1,78 +1,361 @@
-/* ======= Base Container ======= */
+/* ===== Complete Dark Theme Recipient Studio CSS ===== */
+
+/* Studio Container - Dark Theme */
 .studio-container {
   max-width: 1200px;
   margin: 2rem auto;
-  padding: 2rem;
-  background: var(--bg-glass);
-  border-radius: var(--radius-xl);
-  border: var(--border-light);
-  box-shadow: var(--shadow-xl);
-  backdrop-filter: blur(20px);
+  padding: 0;
+  background: transparent;
   color: var(--text-light);
   font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Microsoft YaHei', sans-serif;
+  min-height: 100vh;
 }
 
-/* ======= Section Headings ======= */
+/* Remove all white backgrounds globally */
+.studio-container,
+.studio-container * {
+  background-color: transparent !important;
+  color: var(--text-light) !important;
+}
+
+/* Override any white backgrounds specifically */
+.studio-container .form-group,
+.studio-container .payment-item,
+.studio-container .payment-method,
+.studio-container .transaction,
+.studio-container .announcement-form,
+.studio-container .item-list,
+.studio-container .method-list,
+.studio-container .transaction-list {
+  background: var(--bg-glass) !important;
+  border: var(--border-light) !important;
+  border-radius: var(--radius-lg) !important;
+}
+
+/* Section Headings - Dark Theme */
 .studio-container h1 {
   font-size: 2.2rem;
-  color: var(--text-light);
+  color: var(--text-light) !important;
   margin-bottom: 2.5rem;
-  padding-bottom: 1rem;
-  border-bottom: 2px solid var(--accent-color);
+  padding: 2rem;
+  background: var(--bg-glass) !important;
+  border: var(--border-light) !important;
+  border-radius: var(--radius-xl) !important;
   display: flex;
   align-items: center;
   gap: 1rem;
-  background: var(--gradient-primary);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
+  text-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
+}
+
+.studio-container h1 i {
+  color: var(--accent-color) !important;
+  font-size: 2rem;
 }
 
 .studio-container h2 {
   font-size: 1.6rem;
-  color: var(--text-light);
+  color: var(--text-light) !important;
   margin-bottom: 1.8rem;
   display: flex;
   align-items: center;
   gap: 0.8rem;
   font-weight: 600;
+  padding: 1rem 0;
 }
 
-/* ======= 分区间距优化 ======= */
-.payment-items {
+.studio-container h2 i {
+  color: var(--accent-color) !important;
+}
+
+/* Section Containers - Dark Glass Theme */
+.payment-items,
+.history-items,
+.payment-methods,
+.transactions,
+.announcements {
   margin-bottom: 3rem;
-  background: var(--bg-glass);
-  padding: 2rem;
-  border-radius: var(--radius-lg);
-  border: var(--border-light);
+  background: var(--bg-glass) !important;
+  padding: 2rem !important;
+  border-radius: var(--radius-xl) !important;
+  border: var(--border-light) !important;
+  backdrop-filter: blur(20px);
+  box-shadow: var(--shadow-xl);
 }
 
-.history-items {
-  margin-top: 3.5rem;
-  padding: 2.5rem 2rem;
-  border-top: 1px solid rgba(255, 255, 255, 0.1);
-  background: var(--bg-glass);
-  border-radius: var(--radius-lg);
-  border: var(--border-light);
+/* Form Styling - Dark Theme */
+.form-group {
+  margin-bottom: 1.5rem;
 }
 
-.payment-methods {
-  margin: 3rem 0;
-  background: var(--bg-glass);
-  padding: 2rem;
-  border-radius: var(--radius-lg);
-  border: var(--border-light);
+.form-group label {
+  display: block;
+  margin-bottom: 0.5rem;
+  color: var(--text-light) !important;
+  font-weight: 600;
+  font-size: 0.95rem;
 }
 
-.transactions {
-  margin-top: 3rem;
-  background: var(--bg-glass);
-  padding: 2rem;
-  border-radius: var(--radius-lg);
-  border: var(--border-light);
+.form-group input,
+.form-group textarea,
+.form-group select {
+  width: 100%;
+  padding: 0.875rem 1rem;
+  background: var(--bg-glass) !important;
+  border: var(--border-light) !important;
+  border-radius: var(--radius-md);
+  color: var(--text-light) !important;
+  font-size: 0.95rem;
+  transition: var(--transition);
 }
 
-/* Fix transaction visibility */
+.form-group input:focus,
+.form-group textarea:focus,
+.form-group select:focus {
+  outline: none;
+  border-color: var(--accent-color) !important;
+  box-shadow: 0 0 0 3px rgba(76, 201, 240, 0.2);
+  background: rgba(255, 255, 255, 0.1) !important;
+}
+
+.form-group input::placeholder,
+.form-group textarea::placeholder {
+  color: var(--text-muted) !important;
+}
+
+/* Button Styling - Dark Theme */
+.btn {
+  background: var(--gradient-primary) !important;
+  color: white !important;
+  border: none !important;
+  padding: 0.875rem 1.5rem;
+  border-radius: var(--radius-md);
+  font-weight: 600;
+  font-size: 0.95rem;
+  cursor: pointer;
+  transition: var(--transition);
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  text-decoration: none;
+}
+
+.btn:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-lg);
+  color: white !important;
+}
+
+.btn-small {
+  padding: 0.5rem 1rem;
+  font-size: 0.85rem;
+}
+
+.btn-success {
+  background: linear-gradient(135deg, var(--success-color), var(--success-hover)) !important;
+}
+
+.btn-danger {
+  background: linear-gradient(135deg, var(--danger-color), var(--danger-hover)) !important;
+}
+
+/* Payment Item Styling - Dark Theme */
+.item-list {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.payment-item {
+  background: rgba(255, 255, 255, 0.05) !important;
+  border: var(--border-light) !important;
+  border-radius: var(--radius-lg) !important;
+  padding: 1.5rem;
+  transition: var(--transition);
+}
+
+.payment-item:hover {
+  background: rgba(255, 255, 255, 0.1) !important;
+  border-color: var(--accent-color) !important;
+  transform: translateY(-2px);
+}
+
+.item-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+
+.item-header h3 {
+  color: var(--text-light) !important;
+  font-size: 1.2rem;
+  font-weight: 600;
+  margin: 0;
+}
+
+/* Status Badges - Dark Theme */
+.status-badge {
+  padding: 0.4rem 0.8rem;
+  border-radius: var(--radius-md);
+  font-size: 0.8rem;
+  font-weight: 600;
+  border: 1px solid;
+}
+
+.status-badge.active {
+  background: rgba(46, 196, 182, 0.2) !important;
+  color: var(--success-color) !important;
+  border-color: rgba(46, 196, 182, 0.5);
+}
+
+.status-badge.completed {
+  background: rgba(76, 201, 240, 0.2) !important;
+  color: var(--accent-color) !important;
+  border-color: rgba(76, 201, 240, 0.5);
+}
+
+.status-badge.cancelled {
+  background: rgba(247, 37, 133, 0.2) !important;
+  color: var(--danger-color) !important;
+  border-color: rgba(247, 37, 133, 0.5);
+}
+
+/* Item Content - Dark Theme */
+.item-description {
+  color: var(--text-muted) !important;
+  margin-bottom: 1rem;
+  line-height: 1.5;
+}
+
+.item-footer {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+/* Progress Bar - Dark Theme */
+.progress-container {
+  margin-bottom: 1rem;
+}
+
+.progress-bar {
+  width: 100%;
+  height: 10px;
+  background: rgba(255, 255, 255, 0.1) !important;
+  border-radius: var(--radius-sm);
+  overflow: hidden;
+  margin-bottom: 0.5rem;
+}
+
+.progress {
+  height: 100%;
+  background: var(--gradient-primary) !important;
+  border-radius: var(--radius-sm);
+  transition: width 0.3s ease;
+}
+
+.progress-text {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.85rem;
+  color: var(--text-muted) !important;
+}
+
+/* Participant Info - Dark Theme */
+.participant-info,
+.own-payment-info {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  font-size: 0.9rem;
+  color: var(--text-muted) !important;
+  margin-bottom: 0.5rem;
+}
+
+.badge {
+  padding: 0.2rem 0.6rem;
+  border-radius: var(--radius-sm);
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+
+.badge-success {
+  background: rgba(46, 196, 182, 0.2) !important;
+  color: var(--success-color) !important;
+}
+
+.badge-warning {
+  background: rgba(255, 159, 28, 0.2) !important;
+  color: var(--warning-color) !important;
+}
+
+/* Item Actions - Dark Theme */
+.item-actions {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+}
+
+/* Payment Methods - Dark Theme */
+.method-list {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.payment-method {
+  background: rgba(255, 255, 255, 0.05) !important;
+  border: var(--border-light) !important;
+  border-radius: var(--radius-lg) !important;
+  padding: 1.5rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  transition: var(--transition);
+}
+
+.payment-method:hover {
+  background: rgba(255, 255, 255, 0.1) !important;
+}
+
+.method-info h3 {
+  color: var(--text-light) !important;
+  margin-bottom: 0.5rem;
+  font-size: 1.1rem;
+}
+
+.account-info {
+  color: var(--text-muted) !important;
+  font-family: monospace;
+  font-size: 0.9rem;
+}
+
+.qr-code-container {
+  text-align: center;
+}
+
+.qr-code-container p {
+  color: var(--text-muted) !important;
+  margin-top: 0.5rem;
+}
+
+.qr-code-image {
+  max-width: 120px;
+  max-height: 120px;
+  border-radius: var(--radius-md);
+  border: 2px solid var(--border-light);
+}
+
+.default-badge {
+  background: var(--gradient-primary) !important;
+  color: white !important;
+  padding: 0.3rem 0.6rem;
+  border-radius: var(--radius-sm);
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+
+/* Transaction List - Dark Theme */
 .transaction-list {
   display: flex;
   flex-direction: column;
@@ -80,37 +363,37 @@
 }
 
 .transaction {
-  background: rgba(255, 255, 255, 0.05);
-  border: var(--border-light);
-  border-radius: var(--radius-lg);
+  background: rgba(255, 255, 255, 0.05) !important;
+  border: var(--border-light) !important;
+  border-radius: var(--radius-lg) !important;
   padding: 1.5rem;
-  transition: var(--transition);
   display: flex;
   align-items: center;
   gap: 1rem;
+  transition: var(--transition);
 }
 
 .transaction:hover {
-  background: rgba(255, 255, 255, 0.1);
-  border-color: var(--accent-color);
+  background: rgba(255, 255, 255, 0.1) !important;
+  border-color: var(--accent-color) !important;
 }
 
 .transaction-icon {
   width: 45px;
   height: 45px;
-  background: var(--gradient-secondary);
+  background: var(--gradient-secondary) !important;
   border-radius: var(--radius-lg);
   display: flex;
   align-items: center;
   justify-content: center;
-  color: white;
+  color: white !important;
   font-size: 1.2rem;
   flex-shrink: 0;
 }
 
 .transaction-details {
   flex: 1;
-  color: var(--text-light);
+  color: var(--text-light) !important;
 }
 
 .transaction-header {
@@ -121,7 +404,7 @@
 }
 
 .transaction-party {
-  color: var(--text-light);
+  color: var(--text-light) !important;
   font-weight: 500;
   font-size: 1rem;
 }
@@ -132,7 +415,7 @@
 }
 
 .transaction-amount.positive {
-  color: var(--success-color);
+  color: var(--success-color) !important;
 }
 
 .transaction-footer {
@@ -140,7 +423,7 @@
   align-items: center;
   gap: 1rem;
   font-size: 0.9rem;
-  color: var(--text-muted);
+  color: var(--text-muted) !important;
 }
 
 .transaction-date,
@@ -148,13 +431,41 @@
   display: flex;
   align-items: center;
   gap: 0.5rem;
+  color: var(--text-muted) !important;
 }
 
+/* Section Headers - Dark Theme */
+.section-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.5rem;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.view-all {
+  color: var(--accent-color) !important;
+  text-decoration: none;
+  font-size: 0.9rem;
+  font-weight: 500;
+  transition: var(--transition);
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.view-all:hover {
+  color: var(--accent-light) !important;
+  transform: translateX(5px);
+}
+
+/* Empty State - Dark Theme */
 .empty-state {
   text-align: center;
   padding: 3rem 2rem;
-  color: var(--text-muted);
-  background: rgba(255, 255, 255, 0.05);
+  color: var(--text-muted) !important;
+  background: rgba(255, 255, 255, 0.05) !important;
   border-radius: var(--radius-lg);
   border: var(--border-light);
 }
@@ -162,462 +473,82 @@
 .empty-state i {
   font-size: 3rem;
   margin-bottom: 1rem;
-  color: var(--accent-color);
+  color: var(--accent-color) !important;
 }
 
 .empty-state p {
   font-size: 1.1rem;
-  color: var(--text-light);
+  color: var(--text-light) !important;
 }
 
-/* ======= Form Styling ======= */
-.form-group {
-  margin-bottom: 1.5rem;
-}
-
-.form-group label {
-  margin-bottom: 0.5rem;
-  font-weight: 600;
-  color: #444;
-  font-size: 0.95rem;
-}
-
-.form-group input,
-.form-group select,
-.form-group textarea {
-  padding: 0.85rem;
-  border: 1px solid #ddd;
-  border-radius: 6px;
-  font-size: 1rem;
-  transition: all 0.3s ease;
-}
-
-.form-group input:focus,
-.form-group select:focus,
-.form-group textarea:focus {
-  border-color: #4cc9f0;
-  box-shadow: 0 0 0 3px rgba(76, 201, 240, 0.2);
-  outline: none;
-}
-
-textarea {
-  min-height: 120px;
-}
-
-/* ======= Buttons ======= */
-.btn {
-  background: #4cc9f0;
-  color: white;
-  border: none;
-  padding: 0.8rem 1.5rem;
-  border-radius: 6px;
-  font-size: 1rem;
-  font-weight: 600;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  display: inline-flex;
-  align-items: center;
-  gap: 0.5rem;
-}
-
-.btn:hover {
-  background: #3ab7e0;
-  transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(76, 201, 240, 0.3);
-}
-
-.btn-small {
-  padding: 0.5rem 1rem;
-  font-size: 0.9rem;
-}
-
-.btn-danger {
-  background: #ff6b6b;
-}
-
-.btn-danger:hover {
-  background: #ff5252;
-}
-
-.btn-success {
-  background: #51cf66;
-}
-
-.btn-success:hover {
-  background: #40c057;
-}
-
-/* ======= 项目卡片 ======= */
-.item-list,
-.method-list {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
-  gap: 1.8rem;
-  margin-top: 2rem;
-}
-
-.payment-item,
-.payment-method {
-  background: white;
-  border-radius: 10px;
-  padding: 1.8rem;
-  border: 1px solid #eee;
-  box-shadow: 0 2px 15px rgba(0,0,0,0.05);
-  transition: all 0.3s ease;
-  position: relative;
-  overflow: hidden;
-}
-
-.payment-item:hover,
-.payment-method:hover {
-  transform: translateY(-5px);
-  box-shadow: 0 8px 25px rgba(0,0,0,0.1);
-}
-
-.payment-item::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 4px;
-  height: 100%;
-  background: #4cc9f0;
-}
-
-.payment-item.completed::before {
-  background: #51cf66;
-}
-
-.payment-item.cancelled::before {
-  background: #ff6b6b;
-}
-
-/* ======= 项目头部 ======= */
-.item-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 1.2rem;
-}
-
-.item-header h3 {
-  font-size: 1.3rem;
-  color: #2c3e50;
-  margin: 0;
-}
-
-.status-badge {
-  padding: 0.4rem 1rem;
-  border-radius: 20px;
-  font-size: 0.8rem;
-  font-weight: 600;
-  color: white;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-}
-
-.status-badge.active { background: #4cc9f0; }
-.status-badge.completed { background: #51cf66; }
-.status-badge.cancelled { background: #ff6b6b; }
-
-/* ======= 项目内容 ======= */
-.item-description {
-  color: #555;
-  line-height: 1.6;
-  margin-bottom: 1.5rem;
-}
-
-/* ======= 进度条 ======= */
-.progress-container {
-  margin: 1.2rem 0;
-}
-
-.progress-bar {
-  height: 10px;
-  background: #f1f3f5;
-  border-radius: 5px;
-  overflow: hidden;
-}
-
-.progress {
-  height: 100%;
-  background: linear-gradient(90deg, #4cc9f0, #4895ef);
-  transition: width 0.6s ease;
-}
-
-.progress-text {
-  display: flex;
-  justify-content: space-between;
-  margin-top: 0.8rem;
-  font-size: 0.9rem;
-  color: #555;
-}
-
-.progress-text span:last-child {
-  font-weight: 600;
-  color: #2c3e50;
-}
-
-/* ======= 参与者信息 ======= */
-.participant-info {
-  display: flex;
-  justify-content: space-between;
-  margin-top: 1rem;
-  font-size: 0.9rem;
-  color: #666;
-}
-
-.participant-info span {
-  display: flex;
-  align-items: center;
-  gap: 0.3rem;
-}
-
-/* ======= 操作按钮 ======= */
-.item-actions {
-  display: flex;
-  gap: 0.8rem;
-  margin-top: 1.5rem;
-}
-
-/* ======= 支付方式 ======= */
-.method-info h3 {
-  font-size: 1.2rem;
-  color: #2c3e50;
-  margin-bottom: 1.2rem;
-  display: flex;
-  align-items: center;
-}
-
-.default-badge {
-  background: #ff922b;
-  color: white;
-  padding: 0.2rem 0.6rem;
-  border-radius: 10px;
-  font-size: 0.7rem;
-  margin-left: 0.5rem;
-}
-
-.qr-code-container {
-  text-align: center;
-  margin: 1.2rem 0;
-}
-
-.qr-code-container img {
-  max-width: 100%;
-  height: auto;
-  max-height: 200px;
-  border: 1px solid #eee;
-  border-radius: 8px;
-  padding: 0.5rem;
-  background: white;
-}
-
-.account-info {
-  font-family: 'Courier New', monospace;
-  background: #f8f9fa;
-  padding: 0.8rem;
-  border-radius: 6px;
-  word-break: break-all;
-}
-
-/* ======= 交易记录 ======= */
-.transaction-list {
-  display: flex;
-  flex-direction: column;
-  gap: 1rem;
-}
-
-.transaction {
-  display: flex;
-  align-items: center;
-  padding: 1.2rem;
-  background: white;
-  border-radius: 8px;
-  box-shadow: 0 2px 10px rgba(0,0,0,0.05);
-  transition: all 0.3s ease;
-}
-
-.transaction:hover {
-  transform: translateX(5px);
-  box-shadow: 0 4px 15px rgba(0,0,0,0.1);
-}
-
-.transaction-icon {
-  font-size: 1.2rem;
-  color: #4cc9f0;
-  margin-right: 1rem;
-}
-
-.transaction-details {
-  flex: 1;
-}
-
-.transaction-header {
-  display: flex;
-  justify-content: space-between;
-  margin-bottom: 0.5rem;
-}
-
-.transaction-party {
-  font-weight: 500;
-}
-
-.transaction-amount.positive {
-  color: #51cf66;
-  font-weight: 600;
-}
-
-.transaction-footer {
-  display: flex;
-  justify-content: space-between;
-  font-size: 0.85rem;
-  color: #666;
-}
-
-.transaction-method {
-  background: #f1f3f5;
-  padding: 0.2rem 0.6rem;
-  border-radius: 4px;
-  font-size: 0.8rem;
-}
-
-/* ======= 空状态 ======= */
-.empty-state {
-  text-align: center;
-  padding: 3rem 2rem;
-  background: #f8f9fa;
-  border-radius: 10px;
-  color: #666;
-}
-
-.empty-state i {
-  font-size: 3rem;
-  color: #adb5bd;
-  margin-bottom: 1.5rem;
-}
-
-.empty-state p {
-  font-size: 1.1rem;
-  margin-bottom: 1.5rem;
-}
-
-/* ======= 响应式设计 ======= */
-@media (max-width: 768px) {
-  .studio-container {
-    padding: 1.5rem;
-    margin: 1rem auto;
-  }
-  
-  .item-list,
-  .method-list {
-    grid-template-columns: 1fr;
-  }
-  
-  .payment-item,
-  .payment-method {
-    padding: 1.5rem;
-  }
-  
-  .history-items {
-    margin-top: 2.5rem;
-    padding-top: 2rem;
-  }
-  
-  .item-actions {
-    flex-direction: column;
-  }
-  
-  .btn {
-    width: 100%;
-    justify-content: center;
-  }
-}
-
-/* 添加分摊模式相关样式 */
-.assigned-user-row {
-    display: flex;
-    gap: 0.5rem;
-    margin-bottom: 0.5rem;
-    align-items: center;
-}
-
-.assigned-user-row select {
-    flex: 2;
-}
-
-.assigned-user-row input {
-    flex: 1;
-}
-
-.split-details {
-    background: #f8f9fa;
-    padding: 1rem;
-    border-radius: 6px;
-    margin: 1rem 0;
-}
-
-.split-details h4 {
-    margin-top: 0;
-    color: #444;
-}
-
-/* Assigned users styling */
-.assigned-user-row {
-    display: flex;
-    gap: 0.8rem;
-    margin-bottom: 0.8rem;
-    align-items: center;
-}
-
-.assigned-user-row select {
-    flex: 2;
-    padding: 0.6rem;
-    border-radius: 4px;
-    border: 1px solid #ddd;
-}
-
-.assigned-user-row input {
-    flex: 1;
-    padding: 0.6rem;
-    border-radius: 4px;
-    border: 1px solid #ddd;
-}
-
-.assigned-user-row button {
-    padding: 0.5rem;
-    border-radius: 4px;
-}
-
-/* Group selection styling */
-#group_field .text-muted {
-    font-size: 0.9rem;
-    margin-top: 0.5rem;
-}
-
-#group_field .text-muted a {
-    color: var(--primary-color);
-    font-weight: 500;
-}
-
-/* recipient_studio.css 添加公告部分样式 */
-
+/* Announcements - Dark Theme */
 .announcements {
-    margin: 2rem 0;
-    padding: 1.5rem;
-    background: #f8f9fa;
-    border-radius: 10px;
-    border-left: 4px solid #4361ee;
-}
-
-.announcements h2 {
-    color: #4361ee;
-    margin-bottom: 1.5rem;
+  background: var(--bg-glass) !important;
 }
 
 .announcements form {
-    background: white;
-    padding: 1.5rem;
-    border-radius: 8px;
-    box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+  background: transparent !important;
+}
+
+/* Character Counter - Dark Theme */
+.text-muted {
+  color: var(--text-muted) !important;
+}
+
+/* Desktop Enhancements */
+@media (min-width: 1024px) {
+  .studio-container {
+    padding: 2rem;
+    max-width: 1400px;
+  }
+  
+  .item-list {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+    gap: 1.5rem;
+  }
+  
+  .method-list {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+    gap: 1.5rem;
+  }
+  
+  .transaction-list {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+    gap: 1rem;
+  }
+}
+
+/* Force dark theme on all elements */
+.studio-container input,
+.studio-container textarea,
+.studio-container select,
+.studio-container button,
+.studio-container form,
+.studio-container div,
+.studio-container span,
+.studio-container p,
+.studio-container li,
+.studio-container ul,
+.studio-container ol {
+  background-color: transparent !important;
+  color: var(--text-light) !important;
+}
+
+.studio-container input,
+.studio-container textarea,
+.studio-container select {
+  background: var(--bg-glass) !important;
+  border: var(--border-light) !important;
+}
+
+/* Override any remaining white backgrounds */
+.studio-container * {
+  background-image: none !important;
+}
+
+.studio-container *:not(.btn):not(.status-badge):not(.badge):not(.progress) {
+  background: transparent !important;
 }
