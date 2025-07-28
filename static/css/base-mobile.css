@@ -1,0 +1,187 @@
+/* ===== Mobile Responsiveness for Base Styles ===== */
+
+/* Tablet and Small Desktop */
+@media (max-width: 1024px) {
+    .navbar {
+        padding: 0 1.5rem;
+    }
+    
+    .navbar-nav {
+        gap: 1.5rem;
+    }
+}
+
+/* Mobile and Tablet */
+@media (max-width: 768px) {
+    :root {
+        --navbar-height: 70px;
+    }
+    
+    html {
+        font-size: 14px;
+    }
+    
+    .navbar {
+        padding: 0 1rem;
+        --navbar-height: 70px;
+        height: 70px;
+    }
+    
+    .navbar-container {
+        height: 70px;
+    }
+    
+    .navbar-brand {
+        font-size: 1.2rem;
+    }
+    
+    .brand-icon {
+        width: 35px;
+        height: 35px;
+        font-size: 1.1rem;
+    }
+    
+    .navbar-nav {
+        gap: 1rem;
+        flex-wrap: wrap;
+    }
+    
+    .nav-link {
+        font-size: 0.9rem;
+        padding: 0.5rem 0.75rem;
+    }
+    
+    .user-avatar {
+        width: 35px;
+        height: 35px;
+        font-size: 0.9rem;
+    }
+    
+    /* Ensure touch targets are at least 44px */
+    .nav-link, .btn, button, input, select, textarea {
+        min-height: 44px;
+        min-width: 44px;
+    }
+    
+    /* Better spacing for mobile */
+    .container, .auth-container {
+        padding-left: 1rem;
+        padding-right: 1rem;
+    }
+}
+
+/* Small Mobile */
+@media (max-width: 480px) {
+    :root {
+        --navbar-height: 60px;
+    }
+    
+    html {
+        font-size: 14px;
+    }
+    
+    .navbar {
+        --navbar-height: 60px;
+        height: 60px;
+        padding: 0 0.75rem;
+    }
+    
+    .navbar-container {
+        height: 60px;
+    }
+    
+    .navbar-brand {
+        font-size: 1.1rem;
+    }
+    
+    .brand-icon {
+        width: 30px;
+        height: 30px;
+        font-size: 1rem;
+    }
+    
+    .navbar-nav {
+        gap: 0.5rem;
+    }
+    
+    .nav-link {
+        font-size: 0.85rem;
+        padding: 0.4rem 0.6rem;
+    }
+    
+    .user-avatar {
+        width: 30px;
+        height: 30px;
+        font-size: 0.8rem;
+    }
+    
+    /* Optimize for very small screens */
+    .container {
+        padding-left: 0.75rem;
+        padding-right: 0.75rem;
+    }
+}
+
+/* Extra Small Mobile (iPhone SE, etc.) */
+@media (max-width: 375px) {
+    .navbar-brand {
+        font-size: 1rem;
+    }
+    
+    .nav-link {
+        font-size: 0.8rem;
+        padding: 0.3rem 0.5rem;
+    }
+    
+    .container {
+        padding-left: 0.5rem;
+        padding-right: 0.5rem;
+    }
+}
+
+/* Landscape Mobile */
+@media (max-width: 768px) and (orientation: landscape) {
+    :root {
+        --navbar-height: 50px;
+    }
+    
+    .navbar {
+        --navbar-height: 50px;
+        height: 50px;
+    }
+    
+    .navbar-container {
+        height: 50px;
+    }
+    
+    .brand-icon {
+        width: 30px;
+        height: 30px;
+    }
+}
+
+/* High DPI displays */
+@media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi) {
+    body {
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+    }
+}
+
+/* Dark mode support for mobile */
+@media (prefers-color-scheme: dark) {
+    :root {
+        --text-color: var(--text-light);
+        --bg-color: var(--bg-darker);
+    }
+}
+
+/* Reduced motion for accessibility */
+@media (prefers-reduced-motion: reduce) {
+    * {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+        scroll-behavior: auto !important;
+    }
+}
