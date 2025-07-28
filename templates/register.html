@@ -145,17 +145,32 @@ document.addEventListener('DOMContentLoaded', function() {
     termsCheckbox.addEventListener('change', updateSubmitButton);
 
     // Enhanced click handling for mobile
-    termsCheckboxGroup.addEventListener('click', function(e) {
+    function handleCheckboxToggle(e) {
         // Only toggle if clicking on the container, not on links
         if (e.target.tagName !== 'A') {
             e.preventDefault();
             termsCheckbox.checked = !termsCheckbox.checked;
             termsCheckbox.dispatchEvent(new Event('change'));
+
+            // Visual feedback
+            const checkmark = termsCheckboxGroup.querySelector('.checkmark');
+            checkmark.style.transform = 'scale(1.1)';
+            setTimeout(() => {
+                checkmark.style.transform = 'scale(1)';
+            }, 150);
         }
-    });
+    }
+
+    // Add both click and touch events for mobile
+    termsCheckboxGroup.addEventListener('click', handleCheckboxToggle);
+    termsCheckboxGroup.addEventListener('touchend', handleCheckboxToggle);
 
     // Prevent double-toggle when clicking directly on checkbox
     termsCheckbox.addEventListener('click', function(e) {
+        e.stopPropagation();
+    });
+
+    termsCheckbox.addEventListener('touchend', function(e) {
         e.stopPropagation();
     });
 
