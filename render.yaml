@@ -1,0 +1,21 @@
+services:
+  - type: web
+    name: digital-finance-app
+    env: python
+    buildCommand: "pip install -r requirements.txt && flask db upgrade"
+    startCommand: "python app.py"
+    envVars:
+      - key: FLASK_ENV
+        value: production
+      - key: SECRET_KEY
+        generateValue: true
+      - key: DATABASE_URL
+        fromDatabase:
+          name: digital-finance-db
+          property: connectionString
+    healthCheckPath: /gallery
+
+databases:
+  - name: digital-finance-db
+    databaseName: digital_finance
+    user: digital_finance_user
