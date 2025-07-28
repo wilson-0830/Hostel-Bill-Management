@@ -247,6 +247,14 @@
     gap: 0.75rem;
     margin-bottom: 1.5rem;
     position: relative;
+    cursor: pointer;
+    padding: 0.5rem;
+    border-radius: var(--radius-md);
+    transition: var(--transition);
+}
+
+.checkbox-group:hover {
+    background: rgba(255, 255, 255, 0.05);
 }
 
 .custom-checkbox {
@@ -254,6 +262,7 @@
     width: 20px;
     height: 20px;
     z-index: 10;
+    cursor: pointer;
 }
 
 .custom-checkbox input {
@@ -263,6 +272,9 @@
     width: 100%;
     height: 100%;
     z-index: 11;
+    margin: 0;
+    left: 0;
+    top: 0;
 }
 
 .checkmark {
@@ -349,6 +361,8 @@
     width: 24px;
     height: 24px;
     z-index: 15;
+    min-width: 24px;
+    flex-shrink: 0;
 }
 
 .terms-checkbox .checkmark {
@@ -358,6 +372,8 @@
     border-radius: var(--radius-md);
     cursor: pointer;
     z-index: 14;
+    display: block;
+    background: var(--bg-glass);
 }
 
 .terms-checkbox .checkmark::after {
