@@ -1,0 +1,120 @@
+{% extends "base.html" %}
+
+{% block title %}交易记录{% endblock %}
+
+{% block extra_css %}
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/transactions.css') }}">
+{% endblock %}
+
+{% block content %}
+<div class="transactions-container">
+    <div class="transactions-header">
+        <h1><i class="fas fa-exchange-alt"></i> 全部交易记录</h1>
+        <div class="summary">
+            <span class="summary-item">
+                <i class="fas fa-arrow-up text-danger"></i>
+                总支出: RM{{ "%.2f"|format(total_sent) }}
+            </span>
+            <span class="summary-item">
+                <i class="fas fa-arrow-down text-success"></i>
+                总收入: RM{{ "%.2f"|format(total_received) }}
+            </span>
+        </div>
+    </div>
+    
+    <div class="transaction-list">
+        {% for trans in transactions %}
+        <div class="transaction {% if trans.payer_id == current_user.id %}outgoing{% else %}incoming{% endif %}">
+            <div class="transaction-icon">
+                {% if trans.payer_id == current_user.id %}
+                <i class="fas fa-arrow-up"></i>
+                {% else %}
+                <i class="fas fa-arrow-down"></i>
+                {% endif %}
+            </div>
+            
+            <div class="transaction-content">
+                <div class="transaction-header">
+                    <div class="transaction-details">
+                        {% if trans.payer_id == current_user.id %}
+                        <span class="transaction-type sent">支出</span>
+                        <span class="transaction-party">收款方: {{ trans.recipient.username if trans.recipient else '未知用户' }}</span>
+                        {% else %}
+                        <span class="transaction-type received">收入</span>
+                        <span class="transaction-party">付款方: {{ trans.payer.username if trans.payer else '未知用户' }}</span>
+                        {% endif %}
+                    </div>
+                    
+                    <span class="transaction-amount {% if trans.payer_id == current_user.id %}negative{% else %}positive{% endif %}">
+                        {% if trans.payer_id == current_user.id %}-{% else %}+{% endif %}RM{{ "%.2f"|format(trans.amount) }}
+                    </span>
+                </div>
+                
+                <div class="transaction-meta">
+                    {% if trans.payment_item and trans.payment_item.title %}
+                    <span class="transaction-project">
+                        <i class="fas fa-project-diagram"></i> {{ trans.payment_item.title }}
+                    </span>
+                    {% endif %}
+                    <span class="transaction-date">
+                        <i class="far fa-clock"></i> 
+                        {% if trans.created_at %}
+                            {{ moment(trans.created_at).format('YYYY-MM-DD HH:mm') }}
+                        {% else %}
+                            未知时间
+                        {% endif %}
+                    </span>
+                    {% if trans.note %}
+                    <span class="transaction-note">
+                        <i class="far fa-comment"></i> {{ trans.note }}
+                    </span>
+                    {% endif %}
+                    {% if trans.payment_method and trans.payment_method.method_type %}
+                    <span class="transaction-method">
+                        <i class="fas fa-wallet"></i> 
+                        {% if trans.payment_method.method_type == 'duitnow' %}DuitNow
+                        {% elif trans.payment_method.method_type == 'bank' %}银行账号
+                        {% else %}支付宝{% endif %}
+                    </span>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        {% else %}
+        <div class="empty-state">
+            <i class="fas fa-receipt"></i>
+            <h3>暂无交易记录</h3>
+            <p>完成首笔交易后，记录将显示在这里</p>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+
+<style>
+.empty-state {
+    text-align: center;
+    padding: 4rem 2rem;
+    color: var(--text-light);
+    background: var(--bg-glass);
+    border-radius: var(--radius-lg);
+    border: var(--border-light);
+}
+
+.empty-state i {
+    font-size: 4rem;
+    margin-bottom: 1.5rem;
+    color: var(--accent-color);
+}
+
+.empty-state h3 {
+    font-size: 1.5rem;
+    margin-bottom: 1rem;
+    color: var(--text-light);
+}
+
+.empty-state p {
+    font-size: 1rem;
+    color: var(--text-muted);
+}
+</style>
+{% endblock %}
