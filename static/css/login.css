@@ -657,3 +657,32 @@
 .custom-checkbox input:focus ~ .checkmark {
     box-shadow: 0 0 0 3px rgba(76, 201, 240, 0.3);
 }
+
+/* 修复复选框标签垂直对齐问题 */
+.checkbox-label, .terms-label {
+    display: flex;
+    align-items: center; /* 确保垂直居中 */
+    vertical-align: middle;
+    line-height: 1.2; /* 优化行高 */
+    transform: translateY(0); /* 重置任何可能的偏移 */
+}
+
+/* 确保复选框容器正确对齐 */
+.custom-checkbox {
+    position: relative;
+    width: 20px;
+    height: 20px;
+    margin-right: 10px; /* 添加右边距 */
+    flex-shrink: 0; /* 防止压缩 */
+    top: 0; /* 确保没有偏移 */
+    align-self: center; /* 自身垂直居中 */
+}
+
+/* 修复条款文本对齐 */
+.terms-label {
+    align-items: flex-start; /* 多行文本顶部对齐 */
+}
+
+.terms-label a {
+    vertical-align: baseline; /* 链接元素基线对齐 */
+}

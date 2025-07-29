@@ -201,6 +201,116 @@
             </div>
         </div>
     </div>
+
+    <div class="faq-section">
+        <div class="section-header">
+            <div class="section-icon">
+                <i class="fas fa-file-alt"></i>
+            </div>
+            <h2 class="section-title">条款与政策</h2>
+        </div>
+        
+        <div class="faq-item">
+            <div class="faq-question">
+                <span>你们的服务条款包含哪些内容？</span>
+                <i class="fas fa-chevron-down faq-toggle"></i>
+            </div>
+            <div class="faq-answer">
+                <p>我们的服务条款详细说明了您使用数字金融服务时的权利和责任，包括：</p>
+                <ul>
+                    <li>账户注册和使用要求</li>
+                    <li>支付服务的范围和限制</li>
+                    <li>用户义务和行为准则</li>
+                    <li>知识产权归属</li>
+                    <li>隐私保护和数据处理</li>
+                    <li>免责声明和责任限制</li>
+                </ul>
+                <p>建议您仔细阅读完整条款以全面了解我们的服务协议。</p>
+                <a href="{{ url_for('terms') }}" class="terms-link">
+                    <i class="fas fa-external-link-alt"></i>
+                    查看完整服务条款
+                </a>
+            </div>
+        </div>
+        
+        <div class="faq-item">
+            <div class="faq-question">
+                <span>隐私政策是如何保护我的数据的？</span>
+                <i class="fas fa-chevron-down faq-toggle"></i>
+            </div>
+            <div class="faq-answer">
+                <p>我们的隐私政策严格遵循国际数据保护标准，承诺：</p>
+                <ol>
+                    <li>仅收集提供服务必需的最小数据量</li>
+                    <li>使用银行级加密技术保护您的财务信息</li>
+                    <li>未经您明确同意不会与第三方共享个人数据</li>
+                    <li>定期进行安全审计和漏洞扫描</li>
+                    <li>提供数据导出和账户删除工具</li>
+                </ol>
+                <p>隐私政策是服务条款的重要组成部分，详细说明了我们如何处理您的个人信息。</p>
+                <a href="{{ url_for('terms') }}#chinese-terms" class="terms-link">
+                    <i class="fas fa-shield-alt"></i>
+                    查看隐私政策详情
+                </a>
+            </div>
+        </div>
+        
+        <div class="faq-item">
+            <div class="faq-question">
+                <span>如何查看最新的条款更新？</span>
+                <i class="fas fa-chevron-down faq-toggle"></i>
+            </div>
+            <div class="faq-answer">
+                <p>我们会通过以下方式通知条款更新：</p>
+                <ul>
+                    <li>重大变更提前30天通过应用内通知和邮件告知</li>
+                    <li>登录时展示更新摘要并要求确认</li>
+                    <li>在帮助中心保留历史版本供查阅</li>
+                </ul>
+                <p>您可以在任何时候查看最新版本的服务条款：</p>
+                <a href="{{ url_for('terms') }}" class="terms-link">
+                    <i class="fas fa-sync-alt"></i>
+                    查看最新条款版本
+                </a>
+                <p class="note">注：继续使用服务即表示接受更新后的条款</p>
+            </div>
+        </div>
+        
+        <div class="faq-item">
+            <div class="faq-question">
+                <span>使用服务前必须同意哪些政策？</span>
+                <i class="fas fa-chevron-down faq-toggle"></i>
+            </div>
+            <div class="faq-answer">
+                <p>注册账户时您需要明确同意：</p>
+                <div class="policy-grid">
+                    <div class="policy-card">
+                        <i class="fas fa-file-contract"></i>
+                        <h4>服务协议</h4>
+                        <p>使用平台的基本规则和责任</p>
+                    </div>
+                    <div class="policy-card">
+                        <i class="fas fa-user-lock"></i>
+                        <h4>隐私政策</h4>
+                        <p>个人数据收集和处理方式</p>
+                    </div>
+                    <div class="policy-card">
+                        <i class="fas fa-credit-card"></i>
+                        <h4>支付条款</h4>
+                        <p>交易规则和费用说明</p>
+                    </div>
+                    <div class="policy-card">
+                        <i class="fas fa-ban"></i>
+                        <h4>可接受使用政策</h4>
+                        <p>禁止行为和内容规范</p>
+                    </div>
+                </div>
+                <a href="{{ url_for('terms') }}" class="terms-link">
+                    <i class="fas fa-book"></i>
+                    完整阅读所有政策文件
+                </a>
+            </div>
+        </div>
     
     <!-- 技术支持部分 -->
     <div class="support-section">
@@ -300,6 +410,19 @@
                     item.style.display = 'none';
                 }
             });
+        });
+    });
+
+    // 新增：条款链接悬停效果
+    document.querySelectorAll('.terms-link').forEach(link => {
+        link.addEventListener('mouseenter', function() {
+            this.style.transform = 'translateX(5px)';
+            this.style.color = '#4cc9f0';
+        });
+        
+        link.addEventListener('mouseleave', function() {
+            this.style.transform = 'translateX(0)';
+            this.style.color = '#a0e7ff';
         });
     });
 </script>
