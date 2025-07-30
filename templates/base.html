@@ -288,9 +288,22 @@
         }
         
         // 点击导航链接时关闭菜单
-        document.querySelectorAll('.nav-link').forEach(link => {
+        // 修改这部分代码 - 确保品牌链接不被阻止
+        document.querySelectorAll('.nav-link:not(.brand-link)').forEach(link => {
             link.addEventListener('click', closeMenu);
         });
+
+        // 单独为品牌链接添加处理
+        const brandLink = document.querySelector('.brand-link');
+        if (brandLink) {
+            brandLink.addEventListener('click', function(e) {
+                // 如果菜单是打开的，先关闭菜单
+                if (navbarMenu.classList.contains('active')) {
+                    closeMenu();
+                }
+                // 允许默认导航行为
+            });
+        }
         
         // 点击菜单外区域关闭菜单
         document.addEventListener('click', function(event) {
