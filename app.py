@@ -1161,36 +1161,16 @@ def help_center():
     return render_template('help_center.html')
 
 if __name__ == '__main__':
-    # 确保上传文件夹存在
-    upload_folders = [
-        app.config['UPLOAD_FOLDER'],
-        app.config['GALLERY_UPLOAD_FOLDER'],
-        'static/uploads/gallery'
-    ]
-
-    for folder in upload_folders:
-        try:
-            os.makedirs(folder, exist_ok=True)
-        except Exception as e:
-            print(f"无法创建目录 {folder}: {e}")
-
-    # 打印所有注册路由
-    print("\n已注册路由：")
-    for rule in app.url_map.iter_rules():
-        print(f"{rule.endpoint}: {rule}")
-
-# 添加日志配置
-if not app.debug:
     import logging
     from logging.handlers import RotatingFileHandler
-    file_handler = RotatingFileHandler('app.log', maxBytes=10240)
-    file_handler.setFormatter(logging.Formatter(
-        '%(asctime)s %(levelname)s: %(message)s'))
-    app.logger.addHandler(file_handler)
-    app.logger.setLevel(logging.INFO)
 
-    
-    # 获取本地IP地址
+    if not os.environ.get('PYTHONANYWHERE_DOMAIN'):
+        file_handler = RotatingFileHandler('app.log', maxBytes=10240)
+        file_handler.setFormatter(logging.Formatter(
+            '%(asctime)s %(levelname)s: %(message)s'))
+        app.logger.addHandler(file_handler)
+        app.logger.setLevel(logging.INFO)
+
     import socket
     from contextlib import suppress
 
@@ -1199,12 +1179,9 @@ if not app.debug:
     local_ip = 'localhost'
 
     try:
-        # Try multiple methods to get local IP
         hostname = socket.gethostname()
         with suppress(Exception):
             local_ip = socket.gethostbyname(hostname)
-
-        # Alternative method using network connections
         if local_ip == 'localhost':
             with suppress(Exception):
                 s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
@@ -1218,6 +1195,12 @@ if not app.debug:
     print(f"\n服务器将在 {host}:{port} 运行")
     print(f"在本地访问: http://localhost:{port}")
     print(f"在局域网内其他设备访问: http://{local_ip}:{port}\n")
-    
-    # 最后启动服务器
-    socketio.run(app, host=host, port=port)
+
+    # ✅ 正确地只在直接运行时启动服务
+    socketio.run(
+        app,
+        host=host,
+        port=port,
+        debug=True,
+        use_reloader=True
+    )
