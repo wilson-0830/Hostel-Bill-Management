@@ -1201,6 +1201,6 @@ if __name__ == '__main__':
         app,
         host=host,
         port=port,
-        debug=True,
+        debug=False,
         use_reloader=True
     )
