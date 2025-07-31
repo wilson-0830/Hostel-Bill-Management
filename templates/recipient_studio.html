@@ -162,31 +162,99 @@
         </div>
     </section>
     
+    <!-- 更新公告部分 -->
     <section class="announcements">
-        <h2><i class="fas fa-bullhorn"></i> 发布公告</h2>
-        <form method="POST" action="{{ url_for('post_announcement') }}">
-            <div class="form-group">
-                <label for="announcement_title">公告标题 (最多23字)</label>
-                <input type="text" id="announcement_title" name="title" maxlength="23" required
-                    oninput="countCharacters(this, 'charCount')">
-                <small id="charCount" class="text-muted">0/23</small>
-            </div>
-            <div class="form-group">
-                <label for="announcement_content">公告内容 (可选)</label>
-                <textarea id="announcement_content" name="content"></textarea>
-            </div>
-            <button type="submit" class="btn">发布公告</button>
-        </form>
+        <h2><i class="fas fa-bullhorn"></i> 公告管理</h2>
         
+        <!-- 文字公告表单（用于系统通知） -->
+        <div class="announcement-form">
+            <h3>发布文字公告（系统通知）</h3>
+            <form method="POST" action="{{ url_for('post_text_announcement') }}">
+            <div class="form-group">
+                <label for="text_announcement_title">公告标题 (最多23字)</label>
+                <input type="text" id="text_announcement_title" name="title" maxlength="23" required
+                    oninput="countCharacters(this, 'textCharCount')">
+                <small id="textCharCount" class="text-muted">0/23</small>
+            </div>
+            <div class="form-group">
+                <label for="text_announcement_content">公告内容</label>
+                <textarea id="text_announcement_content" name="content" required></textarea>
+            </div>
+            <button type="submit" class="btn">发布文字公告</button>
+            </form>
+        </div>
+        
+        <!-- 图片公告表单（用于首页轮播图） -->
+        <div class="announcement-form">
+            <h3>发布图片公告（首页轮播）</h3>
+            <form method="POST" action="{{ url_for('post_image_announcement') }}" enctype="multipart/form-data">
+            <div class="form-group">
+                <label for="image_announcement_title">公告标题 (可选)</label>
+                <input type="text" id="image_announcement_title" name="title" maxlength="23"
+                    oninput="countCharacters(this, 'imageCharCount')">
+                <small id="imageCharCount" class="text-muted">0/23</small>
+            </div>
+            <div class="form-group">
+                <label for="image_announcement_content">公告内容 (可选)</label>
+                <textarea id="image_announcement_content" name="content"></textarea>
+            </div>
+            <div class="form-group">
+                <label for="announcement_image">公告图片 (4:3比例)</label>
+                <div class="image-preview-container">
+                <img id="announcement-preview" src="#" alt="预览图" style="max-width: 100%; max-height: 200px; display: none; border: 1px solid #ddd; border-radius: 8px;"/>
+                </div>
+                <input type="file" id="announcement_image" name="image" accept="image/*" onchange="previewImage(event)" required>
+                <small class="text-muted">支持 JPG/PNG 格式，推荐尺寸 800×600px</small>
+            </div>
+            <button type="submit" class="btn">发布图片公告</button>
+            </form>
+        </div>
+
+        <!-- 在recipient_studio.html的announcements部分添加以下内容 -->
+        <div class="announcement-grid">
+            {% for announcement in current_user.announcements %}
+            <div class="announcement-card">
+                <div class="announcement-image">
+                    {% if announcement.image_url %}
+                    <img src="{{ announcement.image_url }}" alt="{{ announcement.title }}">
+                    {% else %}
+                    <div class="announcement-image empty">
+                        <i class="fas fa-image"></i>
+                        <span>无图片</span>
+                    </div>
+                    {% endif %}
+                </div>
+                <div class="announcement-content">
+                    <h4>{{ announcement.title }}</h4>
+                    <p>{{ announcement.content|default("暂无描述", true) }}</p>
+                    <div class="announcement-meta">
+                        <span>{{ announcement.created_at.strftime('%Y-%m-%d') }}</span>
+                        <form method="POST" action="{{ url_for('delete_announcement', announcement_id=announcement.id) }}" 
+                            onsubmit="return confirm('确定要删除此公告吗？');">
+                            <button type="submit" class="btn btn-small btn-danger">
+                                <i class="fas fa-trash"></i> 删除
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+            {% else %}
+            <div class="empty-state">
+                <i class="fas fa-bullhorn"></i>
+                <p>暂无公告</p>
+            </div>
+            {% endfor %}
+        </div>
+
         <script>
-        function countCharacters(input, counterId) {
-            const counter = document.getElementById(counterId);
-            counter.textContent = `${input.value.length}/23`;
-            
-            if (input.value.length > 23) {
-                input.value = input.value.substring(0, 23);
-                counter.textContent = "23/23";
+        function previewImage(event) {
+            const reader = new FileReader();
+            reader.onload = function() {
+            const preview = document.getElementById('announcement-preview');
+            preview.src = reader.result;
+            preview.style.display = 'block';
             }
+            reader.readAsDataURL(event.target.files[0]);
         }
         </script>
     </section>

@@ -1617,3 +1617,31 @@ body.menu-open {
 .navbar {
     z-index: 1000;
 }
+
+/* 确保公告在所有页面都显示 */
+.announcement-section {
+    margin: 2rem 0;
+    padding: 1rem;
+    background: var(--bg-glass);
+    border-radius: var(--radius-xl);
+    border: var(--border-light);
+}
+
+/* 响应式调整 */
+@media (max-width: 768px) {
+    .announcement-carousel {
+        border-radius: 8px;
+    }
+    
+    .carousel-caption {
+        padding: 1rem;
+    }
+    
+    .carousel-caption h3 {
+        font-size: 1.2rem;
+    }
+    
+    .carousel-caption p {
+        font-size: 0.9rem;
+    }
+}

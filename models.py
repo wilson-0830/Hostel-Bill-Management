@@ -173,6 +173,7 @@ class Announcement(db.Model):
     content = db.Column(db.Text)
     creator_id = db.Column(db.Integer, db.ForeignKey('users.id'))
     created_at = db.Column(db.DateTime, default=lambda: datetime.now(timezone.utc))
+    image_url = db.Column(db.String(255))
     
     creator = db.relationship('User', backref='announcements')
 

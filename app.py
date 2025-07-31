@@ -157,9 +157,9 @@ def utility_processor():
     return dict(calculate_pending_payments=calculate_pending_payments)
 
 # 路由定义
-@app.route('/')
+@app.route('/control')
 @login_required
-def index():
+def console():
     # 获取收款项目
     if current_user.is_recipient:
         payment_items = PaymentItem.query.filter(
@@ -204,7 +204,7 @@ def index():
     for trans in transactions:
         trans.created_at = to_local_time(trans.created_at)
 
-    return render_template('index.html',
+    return render_template('control.html',
                          payment_items=payment_items,
                          user_payments=user_payments,
                          pending_payments=pending_payments,
@@ -215,7 +215,7 @@ def index():
 def login():
     if current_user.is_authenticated:
         next_page = request.args.get('next')
-        return redirect(next_page or url_for('gallery'))
+        return redirect(next_page or url_for('home'))
 
     if request.method == 'POST':
         username = request.form.get('username')
@@ -225,7 +225,7 @@ def login():
         if user and user.check_password(password):
             login_user(user)
             next_page = request.args.get('next')
-            return redirect(next_page or url_for('gallery'))
+            return redirect(next_page or url_for('home'))
         flash('用户名或密码错误', 'error')
 
     return render_template('login.html')
@@ -234,7 +234,7 @@ def login():
 def register():
     if current_user.is_authenticated:
         next_page = request.args.get('next')
-        return redirect(next_page or url_for('gallery'))
+        return redirect(next_page or url_for('home'))
 
     if request.method == 'POST':
         username = request.form.get('username')
@@ -264,7 +264,7 @@ def register():
             login_user(user)
             next_page = request.args.get('next')
             flash('注册成功', 'success')
-            return redirect(next_page or url_for('gallery'))
+            return redirect(next_page or url_for('home'))
 
     return render_template('register.html')
 
@@ -272,7 +272,7 @@ def register():
 @login_required
 def logout():
     logout_user()
-    return redirect(url_for('index'))
+    return redirect(url_for('home'))
 
 @app.route('/change_password', methods=['GET', 'POST'])
 def change_password():
@@ -332,8 +332,13 @@ def change_password():
                          username=username)
 
 # app.py 中 gallery 路由优化
-@app.route('/gallery')
-def gallery():
+@app.route('/')
+def home():
+    # 获取轮播图公告（图片公告）
+    carousel_announcements = Announcement.query.filter(
+        Announcement.image_url != None
+    ).order_by(Announcement.created_at.desc()).limit(5).all()
+
     # 定义默认图片路径
     default_image = url_for('static', filename='images/default-hero.jpg')
     
@@ -357,7 +362,7 @@ def gallery():
     # 获取活动数据（公告和项目创建）
     if current_user.is_authenticated:
         # 获取最新5条公告
-        announcements = Announcement.query.order_by(Announcement.created_at.desc()).limit(7).all()
+        announcements = Announcement.query.order_by(Announcement.created_at.desc()).limit(5).all()
         # 获取最新5个项目
         projects = PaymentItem.query.order_by(PaymentItem.created_at.desc()).limit(7).all()
         
@@ -405,7 +410,8 @@ def gallery():
 
     # 确保正确编码
     html = render_template(
-        'gallery.html',
+        'index.html',
+        carousel_announcements=carousel_announcements,
         activities=activities,
         hero_image=hero_image,
         is_authenticated=current_user.is_authenticated,
@@ -419,6 +425,76 @@ def gallery():
     response = make_response(html)
     response.headers['Content-Type'] = 'text/html; charset=utf-8'
     return response
+
+# 添加文字公告路由
+@app.route('/post_text_announcement', methods=['POST'])
+@login_required
+def post_text_announcement():
+    if not current_user.is_recipient:
+        flash('只有收款者可以发布公告', 'error')
+        return redirect(url_for('recipient_studio'))
+    
+    title = request.form.get('title')
+    content = request.form.get('content')
+    
+    # 创建公告（文字公告）
+    announcement = Announcement(
+        title=title,
+        content=content,
+        creator_id=current_user.id
+    )
+    
+    db.session.add(announcement)
+    db.session.commit()
+    
+    flash('文字公告发布成功', 'success')
+    return redirect(url_for('recipient_studio'))
+
+# 添加图片公告路由
+@app.route('/post_image_announcement', methods=['POST'])
+@login_required
+def post_image_announcement():
+    if not current_user.is_recipient:
+        flash('只有收款者可以发布公告', 'error')
+        return redirect(url_for('recipient_studio'))
+    
+    # 处理图片上传
+    image_url = None
+    if 'image' in request.files:
+        file = request.files['image']
+        if file and allowed_file(file.filename, app.config['ALLOWED_EXTENSIONS']):
+            # 确保上传目录存在
+            os.makedirs(app.config['UPLOAD_FOLDER'], exist_ok=True)
+            
+            # 生成唯一文件名
+            filename = secure_filename(f"{current_user.id}_{datetime.now().timestamp()}_{file.filename}")
+            file_path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
+            file.save(file_path)
+            
+            # 使用url_for生成正确的URL
+            image_url = url_for('static', filename=f'uploads/{filename}')
+    
+    # 如果没有上传图片则返回错误
+    if not image_url:
+        flash('请上传公告图片', 'error')
+        return redirect(url_for('recipient_studio'))
+    
+    # 创建公告（图片公告）
+    title = request.form.get('title', f"{current_user.username}的图片公告")
+    content = request.form.get('content', '')
+    
+    announcement = Announcement(
+        title=title,
+        content=content,
+        image_url=image_url,
+        creator_id=current_user.id
+    )
+    
+    db.session.add(announcement)
+    db.session.commit()
+    
+    flash('图片公告发布成功', 'success')
+    return redirect(url_for('recipient_studio'))
 
 # 转账功能
 # app.py 中修改 transfer 路由
@@ -1091,6 +1167,7 @@ def delete_account():
     flash('您的账号已成功删除', 'success')
     return redirect(url_for('index'))
 
+# 修改公告发布路由
 @app.route('/post_announcement', methods=['POST'])
 @login_required
 def post_announcement():
@@ -1098,27 +1175,60 @@ def post_announcement():
         flash('只有收款者可以发布公告', 'error')
         return redirect(url_for('recipient_studio'))
     
-    title = request.form.get('title', '')
-    content = request.form.get('content', '')
+    # 处理图片上传
+    image_url = None
+    if 'image' in request.files:
+        file = request.files['image']
+        if file and allowed_file(file.filename, app.config['ALLOWED_EXTENSIONS']):
+            # 确保上传目录存在
+            os.makedirs(app.config['UPLOAD_FOLDER'], exist_ok=True)
+            
+            # 生成唯一文件名
+            filename = secure_filename(f"{current_user.id}_{datetime.now().timestamp()}_{file.filename}")
+            file_path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
+            file.save(file_path)
+            
+            # 使用url_for生成正确的URL
+            image_url = url_for('static', filename=f'uploads/{filename}')
     
-    if not title:
-        flash('公告标题不能为空', 'error')
+    # 如果没有上传图片则返回错误
+    if not image_url:
+        flash('请上传公告图片', 'error')
         return redirect(url_for('recipient_studio'))
     
-    # 限制标题长度（约23个中文字）
-    if len(title) > 80:
-        title = title[:80]
-    
+    # 创建公告（使用默认标题）
     announcement = Announcement(
-        title=title,
-        content=content,
+        title=f"{current_user.username}的公告",  # 默认标题
+        image_url=image_url,  # 保存图片URL
         creator_id=current_user.id
     )
     
     db.session.add(announcement)
     db.session.commit()
     
-    flash('公告发布成功', 'success')
+    flash('公告图片发布成功', 'success')
+    return redirect(url_for('recipient_studio'))
+
+@app.route('/delete_announcement/<int:announcement_id>', methods=['POST'])
+@login_required
+def delete_announcement(announcement_id):
+    announcement = Announcement.query.get_or_404(announcement_id)
+    if announcement.creator_id != current_user.id:
+        abort(403)
+    
+    # 删除关联的图片
+    if announcement.image_url:
+        try:
+            image_path = os.path.join(app.config['UPLOAD_FOLDER'], 
+                                    announcement.image_url.split('/')[-1])
+            if os.path.exists(image_path):
+                os.remove(image_path)
+        except Exception as e:
+            app.logger.error(f"删除公告图片失败: {e}")
+    
+    db.session.delete(announcement)
+    db.session.commit()
+    flash('公告已删除', 'success')
     return redirect(url_for('recipient_studio'))
 
 @app.route('/get_activities')
