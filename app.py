@@ -15,6 +15,7 @@ from sqlalchemy import or_
 from flask_session import Session
 from flask_socketio import SocketIO, emit
 import re
+from pytz import timezone as tz
 
 
 # 初始化应用
@@ -57,10 +58,15 @@ def get_id(self):
 
 def to_local_time(utc_time):
     """将UTC时间转换为UTC+8时区时间"""
-    if utc_time is None:
+    if not utc_time:
         return None
-    return utc_time.replace(tzinfo=timezone.utc).astimezone(timezone(timedelta(hours=12)))
+    if not utc_time.tzinfo:
+        utc_time = utc_time.replace(tzinfo=tz('UTC'))
+    return utc_time.astimezone(tz('Asia/Singapore'))
 
+def allowed_file(filename, allowed_extensions):
+    return '.' in filename and \
+           filename.rsplit('.', 1)[1].lower() in allowed_extensions
 
 def save_gallery_image(file):
     if file and allowed_file(file.filename, app.config['ALLOWED_GALLERY_EXTENSIONS']):
@@ -118,18 +124,14 @@ def inject_now():
 def not_found(e):
     return render_template('404.html'), 404
 
-@app.route('/static/<path:filename>')
-def static_files(filename):
-    return send_from_directory(os.path.join(app.root_path, 'static'), filename)
-
 # 添加在app.py中的适当位置
 def calculate_pending_payments(user):
     """计算用户当前的应付金额"""
     pending_amount = Decimal('0.00')
-    
+
     # 获取用户需要支付的所有活跃项目
     active_items = PaymentItem.query.filter_by(status='active').all()
-    
+
     for item in active_items:
         # 检查用户是否已支付该项目
         paid = Transaction.query.filter_by(
@@ -137,7 +139,7 @@ def calculate_pending_payments(user):
             payment_item_id=item.id,
             is_personal_payment=True
         ).first()
-        
+
         if not paid:
             # 根据分摊模式计算应付金额
             if item.split_mode == 'average':
@@ -148,7 +150,7 @@ def calculate_pending_payments(user):
             elif item.split_mode == 'group' and item.group and user in item.group.members:
                 member_count = len(item.group.members)
                 pending_amount += item.amount / Decimal(member_count)
-    
+
     return pending_amount
 
 # 将函数添加到Jinja环境
@@ -157,9 +159,9 @@ def utility_processor():
     return dict(calculate_pending_payments=calculate_pending_payments)
 
 # 路由定义
-@app.route('/')
+@app.route('/tools')
 @login_required
-def index():
+def console():
     # 获取收款项目
     if current_user.is_recipient:
         payment_items = PaymentItem.query.filter(
@@ -204,7 +206,7 @@ def index():
     for trans in transactions:
         trans.created_at = to_local_time(trans.created_at)
 
-    return render_template('index.html',
+    return render_template('console.html',
                          payment_items=payment_items,
                          user_payments=user_payments,
                          pending_payments=pending_payments,
@@ -215,7 +217,7 @@ def index():
 def login():
     if current_user.is_authenticated:
         next_page = request.args.get('next')
-        return redirect(next_page or url_for('gallery'))
+        return redirect(next_page or url_for('index'))
 
     if request.method == 'POST':
         username = request.form.get('username')
@@ -225,7 +227,7 @@ def login():
         if user and user.check_password(password):
             login_user(user)
             next_page = request.args.get('next')
-            return redirect(next_page or url_for('gallery'))
+            return redirect(next_page or url_for('index'))
         flash('用户名或密码错误', 'error')
 
     return render_template('login.html')
@@ -234,7 +236,7 @@ def login():
 def register():
     if current_user.is_authenticated:
         next_page = request.args.get('next')
-        return redirect(next_page or url_for('gallery'))
+        return redirect(next_page or url_for('index'))
 
     if request.method == 'POST':
         username = request.form.get('username')
@@ -264,7 +266,7 @@ def register():
             login_user(user)
             next_page = request.args.get('next')
             flash('注册成功', 'success')
-            return redirect(next_page or url_for('gallery'))
+            return redirect(next_page or url_for('index'))
 
     return render_template('register.html')
 
@@ -332,27 +334,27 @@ def change_password():
                          username=username)
 
 # app.py 中 gallery 路由优化
-@app.route('/gallery')
-def gallery():
+@app.route('/')
+def index():
     # 定义默认图片路径
     default_image = url_for('static', filename='images/default-hero.jpg')
-    
+
     # 检查自定义图片是否存在
     hero_image_path = os.path.join(app.static_folder, 'uploads/gallery/hero_image.jpg')
     hero_image = url_for('static', filename='uploads/gallery/hero_image.jpg') if os.path.exists(hero_image_path) else default_image
-    
+
     # 添加更多上下文信息
     stats = {
         'total_users': User.query.count(),
         'total_transactions': Transaction.query.count(),
         'active_projects': PaymentItem.query.filter_by(status='active').count()
     }
-    
+
     # 计算当前用户的累计转账金额（如果已登录）
     total_transfer = Decimal('0.00')
     recent_transactions = []
     activities = []
-    
+
     # 获取活动数据（公告和项目创建）
     # 获取活动数据（公告和项目创建）
     if current_user.is_authenticated:
@@ -360,7 +362,7 @@ def gallery():
         announcements = Announcement.query.order_by(Announcement.created_at.desc()).limit(7).all()
         # 获取最新5个项目
         projects = PaymentItem.query.order_by(PaymentItem.created_at.desc()).limit(7).all()
-        
+
         # 组合数据并格式化时间
         for ann in announcements:
             # 转换时间为本地时区
@@ -371,7 +373,7 @@ def gallery():
                 'time': local_time.strftime('%Y-%m-%d'),  # 直接使用datetime对象格式化
                 'creator': ann.creator.username
             })
-        
+
         for proj in projects:
             local_time = to_local_time(proj.created_at)
             activities.append({
@@ -380,11 +382,11 @@ def gallery():
                 'time': local_time.strftime('%Y-%m-%d'),  # 直接使用datetime对象格式化
                 'creator': proj.recipient.username
             })
-        
+
         # 按时间排序并取最新5个
         activities.sort(key=lambda x: x['time'], reverse=True)
         activities = activities[:4]
-        
+
         # 计算累计转账金额
         total_transfer = db.session.query(
             db.func.sum(Transaction.amount)
@@ -392,20 +394,20 @@ def gallery():
             Transaction.payer_id == current_user.id,
             Transaction.status == 'completed'
         ).scalar() or Decimal('0.00')
-        
+
         # 获取最近5条交易记录
         recent_transactions = Transaction.query.filter(
             (Transaction.payer_id == current_user.id) |
             (Transaction.recipient_id == current_user.id)
         ).order_by(Transaction.created_at.desc()).limit(5).all()
-    
+
         # 添加时区转换
         for trans in recent_transactions:
             trans.created_at = to_local_time(trans.created_at)
 
     # 确保正确编码
     html = render_template(
-        'gallery.html',
+        'index.html',
         activities=activities,
         hero_image=hero_image,
         is_authenticated=current_user.is_authenticated,
@@ -414,7 +416,7 @@ def gallery():
         total_transfer=total_transfer,
         recent_transactions=recent_transactions
     )
-    
+
     # 确保正确编码
     response = make_response(html)
     response.headers['Content-Type'] = 'text/html; charset=utf-8'
@@ -497,7 +499,7 @@ def confirm_payment():
     # 新增验证逻辑
     if payment_item.amount_received >= payment_item.amount:
         flash('该项目已完成，无需再支付', 'error')
-        return redirect(url_for('index'))
+        return redirect(url_for('console'))
 
     if Transaction.query.filter_by(
         payer_id=current_user.id,
@@ -505,7 +507,7 @@ def confirm_payment():
         is_personal_payment=True
     ).first():
         flash('您已经支付过该款项', 'error')
-        return redirect(url_for('index'))
+        return redirect(url_for('console'))
     recipient = payment_item.recipient
     payment_methods = recipient.payment_methods
 
@@ -682,33 +684,43 @@ def add_payment_item():
         # 传统AA：获取参与者数量（包括自己）
         participant_count = User.query.count()
 
+    # 在 app.py 中修改 add_payment_item 路由的 individual 模式处理部分
     elif split_mode == 'individual':
         # 处理指定用户
         user_ids = request.form.getlist('assigned_user_id')
         amounts = request.form.getlist('assigned_amount')
         assigned_users = {}
+        other_users_total = Decimal('0.00')
 
         try:
             # 确保金额是 Decimal 类型
             for uid, amt in zip(user_ids, amounts):
-                assigned_users[int(uid)] = Decimal(amt)  # Convert to Decimal here
+                if not uid:  # 跳过空用户选择
+                    continue
+                    
+                # 转换金额为Decimal
+                amount_decimal = Decimal(amt) if not isinstance(amt, Decimal) else amt
+                assigned_users[int(uid)] = amount_decimal
+                other_users_total += amount_decimal
 
-                # 计算自己的金额
-                other_users_total = sum(assigned_users.values())
-                own_amount = amount - other_users_total
+            # 计算自己的金额（总金额减去其他用户指定金额）
+            own_amount = amount - other_users_total
 
-                if own_amount < 0:
-                    flash("其他用户金额总和不能超过总金额", "error")
-                    return redirect(url_for('recipient_studio'))
+            if own_amount < 0:
+                flash("其他用户金额总和不能超过总金额", "error")
+                return redirect(url_for('recipient_studio'))
 
-                # 添加当前用户（收款者）的应付金额
-                assigned_users[current_user.id] = own_amount
-                participant_count = len(assigned_users)
+            if own_amount < Decimal('0.00'):
+                flash("金额不能为负数", "error")
+                return redirect(url_for('recipient_studio'))
+
+            # 添加当前用户（收款者）的应付金额
+            assigned_users[current_user.id] = own_amount
+            participant_count = len(assigned_users)
 
         except (ValueError, InvalidOperation) as e:
             flash(f"金额格式错误: {str(e)}", "error")
             return redirect(url_for('recipient_studio'))
-
 
     elif split_mode == 'group':
         group_id = request.form.get('group_id')
@@ -1053,20 +1065,20 @@ def profile():
 def update_profile():
     username = request.form.get('username')
     email = request.form.get('email')
-    
+
     # 检查用户名是否已被使用（排除当前用户）
     if User.query.filter(User.username == username, User.id != current_user.id).first():
         flash('该用户名已被使用', 'error')
         return redirect(url_for('profile'))
-    
+
     # 检查邮箱是否已被使用（排除当前用户）
     if User.query.filter(User.email == email, User.id != current_user.id).first():
         flash('该邮箱已被注册', 'error')
         return redirect(url_for('profile'))
-    
+
     current_user.username = username
     current_user.email = email
-    
+
     db.session.commit()
     flash('个人信息已更新', 'success')
     return redirect(url_for('profile'))
@@ -1079,13 +1091,13 @@ def delete_account():
     current_user.is_deleted = True
     current_user.username = f"deleted_{current_user.id}"
     current_user.email = f"deleted_{current_user.id}@example.com"
-    
+
     # 保留其他信息但清除敏感数据
     current_user.password_hash = "deleted"
     current_user.bio = "此账号已删除"
-    
+
     db.session.commit()
-    
+
     # 退出登录
     logout_user()
     flash('您的账号已成功删除', 'success')
@@ -1097,27 +1109,27 @@ def post_announcement():
     if not current_user.is_recipient:
         flash('只有收款者可以发布公告', 'error')
         return redirect(url_for('recipient_studio'))
-    
+
     title = request.form.get('title', '')
     content = request.form.get('content', '')
-    
+
     if not title:
         flash('公告标题不能为空', 'error')
         return redirect(url_for('recipient_studio'))
-    
+
     # 限制标题长度（约23个中文字）
     if len(title) > 80:
         title = title[:80]
-    
+
     announcement = Announcement(
         title=title,
         content=content,
         creator_id=current_user.id
     )
-    
+
     db.session.add(announcement)
     db.session.commit()
-    
+
     flash('公告发布成功', 'success')
     return redirect(url_for('recipient_studio'))
 
@@ -1128,7 +1140,7 @@ def get_activities():
     announcements = Announcement.query.order_by(Announcement.created_at.desc()).limit(5).all()
     # 获取当前用户创建的最新5个项目
     projects = PaymentItem.query.filter_by(recipient_id=current_user.id).order_by(PaymentItem.created_at.desc()).limit(5).all()
-    
+
     # 组合数据
     activities = []
     for ann in announcements:
@@ -1138,7 +1150,7 @@ def get_activities():
             'time': to_local_time(ann.created_at),
             'creator': ann.creator.username
         })
-    
+
     for proj in projects:
         activities.append({
             'type': 'project',
@@ -1146,10 +1158,10 @@ def get_activities():
             'time': to_local_time(proj.created_at),
             'creator': proj.recipient.username
         })
-    
+
     # 按时间排序并取最新5个
     activities_sorted = sorted(activities, key=lambda x: x['time'], reverse=True)[:4]
-    
+
     return jsonify(activities_sorted)
 
 @app.route('/terms')
@@ -1160,47 +1172,59 @@ def terms():
 def help_center():
     return render_template('help_center.html')
 
+# 添加在文件末尾
 if __name__ == '__main__':
-    import logging
-    from logging.handlers import RotatingFileHandler
+    # 确保上传文件夹存在
+    upload_folders = [
+        app.config['UPLOAD_FOLDER'],
+        app.config['GALLERY_UPLOAD_FOLDER'],
+        'static/uploads/gallery'
+    ]
 
+    for folder in upload_folders:
+        try:
+            os.makedirs(folder, exist_ok=True)
+        except Exception as e:
+            print(f"无法创建目录 {folder}: {e}")
+
+    # 仅当不在PythonAnywhere时启动本地服务器
     if not os.environ.get('PYTHONANYWHERE_DOMAIN'):
+        import logging
+        from logging.handlers import RotatingFileHandler
         file_handler = RotatingFileHandler('app.log', maxBytes=10240)
         file_handler.setFormatter(logging.Formatter(
             '%(asctime)s %(levelname)s: %(message)s'))
         app.logger.addHandler(file_handler)
         app.logger.setLevel(logging.INFO)
 
-    import socket
-    from contextlib import suppress
+        # 获取本地IP地址
+        import socket
+        from contextlib import suppress
 
-    host = '0.0.0.0'
-    port = 8080
-    local_ip = 'localhost'
-
-    try:
-        hostname = socket.gethostname()
-        with suppress(Exception):
-            local_ip = socket.gethostbyname(hostname)
-        if local_ip == 'localhost':
-            with suppress(Exception):
-                s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-                s.connect(("8.8.8.8", 80))
-                local_ip = s.getsockname()[0]
-                s.close()
-    except Exception as e:
-        print(f"Could not determine local IP: {e}")
+        host = '0.0.0.0'
+        port = 8080
         local_ip = 'localhost'
 
-    print(f"\n服务器将在 {host}:{port} 运行")
-    print(f"在本地访问: http://localhost:{port}")
-    print(f"在局域网内其他设备访问: http://{local_ip}:{port}\n")
+        try:
+            # 尝试多种方法获取本地IP
+            hostname = socket.gethostname()
+            with suppress(Exception):
+                local_ip = socket.gethostbyname(hostname)
 
-    # ✅ 正确地只在直接运行时启动服务
-    socketio.run(
-        app,
-        host=host,
-        port=port,
-        debug=False,
-        use_reloader=True
-    )
+            # 使用网络连接的替代方法
+            if local_ip == 'localhost':
+                with suppress(Exception):
+                    s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+                    s.connect(("8.8.8.8", 80))
+                    local_ip = s.getsockname()[0]
+                    s.close()
+        except Exception as e:
+            print(f"无法确定本地IP: {e}")
+            local_ip = 'localhost'
+
+        print(f"\n服务器将在 {host}:{port} 运行")
+        print(f"在本地访问: http://localhost:{port}")
+        print(f"在局域网内其他设备访问: http://{local_ip}:{port}\n")
+
+        # 最后启动服务器
+        socketio.run(app, host=host, port=port)

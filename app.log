@@ -494,3 +494,258 @@ FROM users
 WHERE users.id = ?]
 [parameters: (1,)]
 (Background on this error at: https://sqlalche.me/e/20/e3q8)
+2025-08-13 20:41:35,085 ERROR: Exception on / [GET]
+Traceback (most recent call last):
+  File "C:\Users\ongju\AppData\Local\Programs\Python\Python310\lib\site-packages\flask\app.py", line 1511, in wsgi_app
+    response = self.full_dispatch_request()
+  File "C:\Users\ongju\AppData\Local\Programs\Python\Python310\lib\site-packages\flask\app.py", line 919, in full_dispatch_request
+    rv = self.handle_user_exception(e)
+  File "C:\Users\ongju\AppData\Local\Programs\Python\Python310\lib\site-packages\flask\app.py", line 917, in full_dispatch_request
+    rv = self.dispatch_request()
+  File "C:\Users\ongju\AppData\Local\Programs\Python\Python310\lib\site-packages\flask\app.py", line 902, in dispatch_request
+    return self.ensure_sync(self.view_functions[rule.endpoint])(**view_args)  # type: ignore[no-any-return]
+  File "C:\Users\ongju\jombeta\Test\app.py", line 407, in gallery
+    html = render_template(
+  File "C:\Users\ongju\AppData\Local\Programs\Python\Python310\lib\site-packages\flask\templating.py", line 150, in render_template
+    return _render(app, template, context)
+  File "C:\Users\ongju\AppData\Local\Programs\Python\Python310\lib\site-packages\flask\templating.py", line 131, in _render
+    rv = template.render(context)
+  File "C:\Users\ongju\AppData\Local\Programs\Python\Python310\lib\site-packages\jinja2\environment.py", line 1295, in render
+    self.environment.handle_exception()
+  File "C:\Users\ongju\AppData\Local\Programs\Python\Python310\lib\site-packages\jinja2\environment.py", line 942, in handle_exception
+    raise rewrite_traceback_stack(source=source)
+  File "C:\Users\ongju\jombeta\Test\templates\index.html", line 1, in top-level template code
+    {% extends "base.html" %}
+  File "C:\Users\ongju\jombeta\Test\templates\base.html", line 57, in top-level template code
+    <a href="{{ url_for('console') }}" class="nav-link {% if request.endpoint == 'index' %}active{% endif %}">
+  File "C:\Users\ongju\AppData\Local\Programs\Python\Python310\lib\site-packages\flask\app.py", line 1121, in url_for
+    return self.handle_url_build_error(error, endpoint, values)
+  File "C:\Users\ongju\AppData\Local\Programs\Python\Python310\lib\site-packages\flask\app.py", line 1110, in url_for
+    rv = url_adapter.build(  # type: ignore[union-attr]
+  File "C:\Users\ongju\AppData\Local\Programs\Python\Python310\lib\site-packages\werkzeug\routing\map.py", line 924, in build
+    raise BuildError(endpoint, values, method, self)
+werkzeug.routing.exceptions.BuildError: Could not build url for endpoint 'console'. Did you mean 'profile' instead?
+2025-08-13 20:41:41,183 ERROR: Exception on / [GET]
+Traceback (most recent call last):
+  File "C:\Users\ongju\AppData\Local\Programs\Python\Python310\lib\site-packages\flask\app.py", line 1511, in wsgi_app
+    response = self.full_dispatch_request()
+  File "C:\Users\ongju\AppData\Local\Programs\Python\Python310\lib\site-packages\flask\app.py", line 919, in full_dispatch_request
+    rv = self.handle_user_exception(e)
+  File "C:\Users\ongju\AppData\Local\Programs\Python\Python310\lib\site-packages\flask\app.py", line 917, in full_dispatch_request
+    rv = self.dispatch_request()
+  File "C:\Users\ongju\AppData\Local\Programs\Python\Python310\lib\site-packages\flask\app.py", line 902, in dispatch_request
+    return self.ensure_sync(self.view_functions[rule.endpoint])(**view_args)  # type: ignore[no-any-return]
+  File "C:\Users\ongju\jombeta\Test\app.py", line 407, in gallery
+    html = render_template(
+  File "C:\Users\ongju\AppData\Local\Programs\Python\Python310\lib\site-packages\flask\templating.py", line 150, in render_template
+    return _render(app, template, context)
+  File "C:\Users\ongju\AppData\Local\Programs\Python\Python310\lib\site-packages\flask\templating.py", line 131, in _render
+    rv = template.render(context)
+  File "C:\Users\ongju\AppData\Local\Programs\Python\Python310\lib\site-packages\jinja2\environment.py", line 1295, in render
+    self.environment.handle_exception()
+  File "C:\Users\ongju\AppData\Local\Programs\Python\Python310\lib\site-packages\jinja2\environment.py", line 942, in handle_exception
+    raise rewrite_traceback_stack(source=source)
+  File "C:\Users\ongju\jombeta\Test\templates\index.html", line 1, in top-level template code
+    {% extends "base.html" %}
+  File "C:\Users\ongju\jombeta\Test\templates\base.html", line 57, in top-level template code
+    <a href="{{ url_for('console') }}" class="nav-link {% if request.endpoint == 'index' %}active{% endif %}">
+  File "C:\Users\ongju\AppData\Local\Programs\Python\Python310\lib\site-packages\flask\app.py", line 1121, in url_for
+    return self.handle_url_build_error(error, endpoint, values)
+  File "C:\Users\ongju\AppData\Local\Programs\Python\Python310\lib\site-packages\flask\app.py", line 1110, in url_for
+    rv = url_adapter.build(  # type: ignore[union-attr]
+  File "C:\Users\ongju\AppData\Local\Programs\Python\Python310\lib\site-packages\werkzeug\routing\map.py", line 924, in build
+    raise BuildError(endpoint, values, method, self)
+werkzeug.routing.exceptions.BuildError: Could not build url for endpoint 'console'. Did you mean 'profile' instead?
+2025-08-13 20:42:47,158 ERROR: Exception on /console [GET]
+Traceback (most recent call last):
+  File "C:\Users\ongju\AppData\Local\Programs\Python\Python310\lib\site-packages\flask\app.py", line 1511, in wsgi_app
+    response = self.full_dispatch_request()
+  File "C:\Users\ongju\AppData\Local\Programs\Python\Python310\lib\site-packages\flask\app.py", line 919, in full_dispatch_request
+    rv = self.handle_user_exception(e)
+  File "C:\Users\ongju\AppData\Local\Programs\Python\Python310\lib\site-packages\flask\app.py", line 917, in full_dispatch_request
+    rv = self.dispatch_request()
+  File "C:\Users\ongju\AppData\Local\Programs\Python\Python310\lib\site-packages\flask\app.py", line 902, in dispatch_request
+    return self.ensure_sync(self.view_functions[rule.endpoint])(**view_args)  # type: ignore[no-any-return]
+  File "C:\Users\ongju\AppData\Local\Programs\Python\Python310\lib\site-packages\flask_login\utils.py", line 290, in decorated_view
+    return current_app.ensure_sync(func)(*args, **kwargs)
+  File "C:\Users\ongju\jombeta\Test\app.py", line 207, in index
+    return render_template('console.html',
+  File "C:\Users\ongju\AppData\Local\Programs\Python\Python310\lib\site-packages\flask\templating.py", line 150, in render_template
+    return _render(app, template, context)
+  File "C:\Users\ongju\AppData\Local\Programs\Python\Python310\lib\site-packages\flask\templating.py", line 131, in _render
+    rv = template.render(context)
+  File "C:\Users\ongju\AppData\Local\Programs\Python\Python310\lib\site-packages\jinja2\environment.py", line 1295, in render
+    self.environment.handle_exception()
+  File "C:\Users\ongju\AppData\Local\Programs\Python\Python310\lib\site-packages\jinja2\environment.py", line 942, in handle_exception
+    raise rewrite_traceback_stack(source=source)
+  File "C:\Users\ongju\jombeta\Test\templates\console.html", line 1, in top-level template code
+    {% extends "base.html" %}
+  File "C:\Users\ongju\jombeta\Test\templates\base.html", line 57, in top-level template code
+    <a href="{{ url_for('console') }}" class="nav-link {% if request.endpoint == 'index' %}active{% endif %}">
+  File "C:\Users\ongju\AppData\Local\Programs\Python\Python310\lib\site-packages\flask\app.py", line 1121, in url_for
+    return self.handle_url_build_error(error, endpoint, values)
+  File "C:\Users\ongju\AppData\Local\Programs\Python\Python310\lib\site-packages\flask\app.py", line 1110, in url_for
+    rv = url_adapter.build(  # type: ignore[union-attr]
+  File "C:\Users\ongju\AppData\Local\Programs\Python\Python310\lib\site-packages\werkzeug\routing\map.py", line 924, in build
+    raise BuildError(endpoint, values, method, self)
+werkzeug.routing.exceptions.BuildError: Could not build url for endpoint 'console'. Did you mean 'profile' instead?
+2025-08-13 20:45:32,464 ERROR: Exception on /register [POST]
+Traceback (most recent call last):
+  File "C:\Users\ongju\AppData\Local\Programs\Python\Python310\lib\site-packages\flask\app.py", line 1511, in wsgi_app
+    response = self.full_dispatch_request()
+  File "C:\Users\ongju\AppData\Local\Programs\Python\Python310\lib\site-packages\flask\app.py", line 919, in full_dispatch_request
+    rv = self.handle_user_exception(e)
+  File "C:\Users\ongju\AppData\Local\Programs\Python\Python310\lib\site-packages\flask\app.py", line 917, in full_dispatch_request
+    rv = self.dispatch_request()
+  File "C:\Users\ongju\AppData\Local\Programs\Python\Python310\lib\site-packages\flask\app.py", line 902, in dispatch_request
+    return self.ensure_sync(self.view_functions[rule.endpoint])(**view_args)  # type: ignore[no-any-return]
+  File "C:\Users\ongju\jombeta\Test\app.py", line 267, in register
+    return redirect(next_page or url_for('gallery'))
+  File "C:\Users\ongju\AppData\Local\Programs\Python\Python310\lib\site-packages\flask\helpers.py", line 232, in url_for
+    return current_app.url_for(
+  File "C:\Users\ongju\AppData\Local\Programs\Python\Python310\lib\site-packages\flask\app.py", line 1121, in url_for
+    return self.handle_url_build_error(error, endpoint, values)
+  File "C:\Users\ongju\AppData\Local\Programs\Python\Python310\lib\site-packages\flask\app.py", line 1110, in url_for
+    rv = url_adapter.build(  # type: ignore[union-attr]
+  File "C:\Users\ongju\AppData\Local\Programs\Python\Python310\lib\site-packages\werkzeug\routing\map.py", line 924, in build
+    raise BuildError(endpoint, values, method, self)
+werkzeug.routing.exceptions.BuildError: Could not build url for endpoint 'gallery'. Did you mean 'register' instead?
+2025-08-13 20:57:44,543 INFO: Emitting refresh_page event for item 1
+2025-08-13 21:09:44,072 INFO: Emitting refresh_page event for item 2
+2025-08-13 21:10:22,949 INFO: Emitting refresh_page event for item 3
+2025-08-17 20:32:23,976 INFO: Emitting refresh_page event for item 4
+2025-08-17 20:44:14,234 ERROR: Exception on /recipient_studio [GET]
+Traceback (most recent call last):
+  File "C:\Users\ongju\AppData\Local\Programs\Python\Python310\lib\site-packages\flask\app.py", line 1511, in wsgi_app
+    response = self.full_dispatch_request()
+  File "C:\Users\ongju\AppData\Local\Programs\Python\Python310\lib\site-packages\flask\app.py", line 919, in full_dispatch_request
+    rv = self.handle_user_exception(e)
+  File "C:\Users\ongju\AppData\Local\Programs\Python\Python310\lib\site-packages\flask\app.py", line 917, in full_dispatch_request
+    rv = self.dispatch_request()
+  File "C:\Users\ongju\AppData\Local\Programs\Python\Python310\lib\site-packages\flask\app.py", line 902, in dispatch_request
+    return self.ensure_sync(self.view_functions[rule.endpoint])(**view_args)  # type: ignore[no-any-return]
+  File "C:\Users\ongju\AppData\Local\Programs\Python\Python310\lib\site-packages\flask_login\utils.py", line 290, in decorated_view
+    return current_app.ensure_sync(func)(*args, **kwargs)
+  File "C:\Users\ongju\jombeta\Test\app.py", line 564, in recipient_studio
+    return render_template('recipient_studio.html',
+  File "C:\Users\ongju\AppData\Local\Programs\Python\Python310\lib\site-packages\flask\templating.py", line 150, in render_template
+    return _render(app, template, context)
+  File "C:\Users\ongju\AppData\Local\Programs\Python\Python310\lib\site-packages\flask\templating.py", line 131, in _render
+    rv = template.render(context)
+  File "C:\Users\ongju\AppData\Local\Programs\Python\Python310\lib\site-packages\jinja2\environment.py", line 1295, in render
+    self.environment.handle_exception()
+  File "C:\Users\ongju\AppData\Local\Programs\Python\Python310\lib\site-packages\jinja2\environment.py", line 942, in handle_exception
+    raise rewrite_traceback_stack(source=source)
+  File "C:\Users\ongju\jombeta\Test\templates\recipient_studio.html", line 1, in top-level template code
+    {% extends "base.html" %}
+  File "C:\Users\ongju\jombeta\Test\templates\base.html", line 57, in top-level template code
+    <a href="{{ url_for('console') }}" class="nav-link {% if request.endpoint == 'index' %}active{% endif %}">
+  File "C:\Users\ongju\AppData\Local\Programs\Python\Python310\lib\site-packages\flask\app.py", line 1121, in url_for
+    return self.handle_url_build_error(error, endpoint, values)
+  File "C:\Users\ongju\AppData\Local\Programs\Python\Python310\lib\site-packages\flask\app.py", line 1110, in url_for
+    rv = url_adapter.build(  # type: ignore[union-attr]
+  File "C:\Users\ongju\AppData\Local\Programs\Python\Python310\lib\site-packages\werkzeug\routing\map.py", line 924, in build
+    raise BuildError(endpoint, values, method, self)
+werkzeug.routing.exceptions.BuildError: Could not build url for endpoint 'console'. Did you mean 'profile' instead?
+2025-08-17 20:45:43,107 ERROR: Exception on / [GET]
+Traceback (most recent call last):
+  File "C:\Users\ongju\AppData\Local\Programs\Python\Python310\lib\site-packages\flask\app.py", line 1511, in wsgi_app
+    response = self.full_dispatch_request()
+  File "C:\Users\ongju\AppData\Local\Programs\Python\Python310\lib\site-packages\flask\app.py", line 919, in full_dispatch_request
+    rv = self.handle_user_exception(e)
+  File "C:\Users\ongju\AppData\Local\Programs\Python\Python310\lib\site-packages\flask\app.py", line 917, in full_dispatch_request
+    rv = self.dispatch_request()
+  File "C:\Users\ongju\AppData\Local\Programs\Python\Python310\lib\site-packages\flask\app.py", line 902, in dispatch_request
+    return self.ensure_sync(self.view_functions[rule.endpoint])(**view_args)  # type: ignore[no-any-return]
+  File "C:\Users\ongju\AppData\Local\Programs\Python\Python310\lib\site-packages\flask_login\utils.py", line 290, in decorated_view
+    return current_app.ensure_sync(func)(*args, **kwargs)
+  File "C:\Users\ongju\jombeta\Test\app.py", line 211, in index
+    trans.created_at = to_local_time(trans.created_at)
+  File "C:\Users\ongju\jombeta\Test\app.py", line 69, in to_local_time
+    return utc_time.astimezone(pytz.timezone('Asia/Singapore'))
+NameError: name 'pytz' is not defined
+2025-08-17 20:47:20,404 ERROR: Exception on /transactions [GET]
+Traceback (most recent call last):
+  File "C:\Users\ongju\AppData\Local\Programs\Python\Python310\lib\site-packages\flask\app.py", line 1511, in wsgi_app
+    response = self.full_dispatch_request()
+  File "C:\Users\ongju\AppData\Local\Programs\Python\Python310\lib\site-packages\flask\app.py", line 919, in full_dispatch_request
+    rv = self.handle_user_exception(e)
+  File "C:\Users\ongju\AppData\Local\Programs\Python\Python310\lib\site-packages\flask\app.py", line 917, in full_dispatch_request
+    rv = self.dispatch_request()
+  File "C:\Users\ongju\AppData\Local\Programs\Python\Python310\lib\site-packages\flask\app.py", line 902, in dispatch_request
+    return self.ensure_sync(self.view_functions[rule.endpoint])(**view_args)  # type: ignore[no-any-return]
+  File "C:\Users\ongju\AppData\Local\Programs\Python\Python310\lib\site-packages\flask_login\utils.py", line 290, in decorated_view
+    return current_app.ensure_sync(func)(*args, **kwargs)
+  File "C:\Users\ongju\jombeta\Test\app.py", line 979, in transactions
+    trans.created_at = to_local_time(trans.created_at)
+  File "C:\Users\ongju\jombeta\Test\app.py", line 69, in to_local_time
+    return utc_time.astimezone(pytz.timezone('Asia/Singapore'))
+NameError: name 'pytz' is not defined
+2025-08-17 20:48:32,101 ERROR: Exception on /index [GET]
+Traceback (most recent call last):
+  File "C:\Users\ongju\AppData\Local\Programs\Python\Python310\lib\site-packages\flask\app.py", line 1511, in wsgi_app
+    response = self.full_dispatch_request()
+  File "C:\Users\ongju\AppData\Local\Programs\Python\Python310\lib\site-packages\flask\app.py", line 919, in full_dispatch_request
+    rv = self.handle_user_exception(e)
+  File "C:\Users\ongju\AppData\Local\Programs\Python\Python310\lib\site-packages\flask\app.py", line 917, in full_dispatch_request
+    rv = self.dispatch_request()
+  File "C:\Users\ongju\AppData\Local\Programs\Python\Python310\lib\site-packages\flask\app.py", line 902, in dispatch_request
+    return self.ensure_sync(self.view_functions[rule.endpoint])(**view_args)  # type: ignore[no-any-return]
+  File "C:\Users\ongju\jombeta\Test\app.py", line 382, in index
+    local_time = to_local_time(proj.created_at)
+  File "C:\Users\ongju\jombeta\Test\app.py", line 69, in to_local_time
+    return utc_time.astimezone(pytz.timezone('Asia/Singapore'))
+NameError: name 'pytz' is not defined
+2025-08-17 20:48:32,836 ERROR: Exception on /console [GET]
+Traceback (most recent call last):
+  File "C:\Users\ongju\AppData\Local\Programs\Python\Python310\lib\site-packages\flask\app.py", line 1511, in wsgi_app
+    response = self.full_dispatch_request()
+  File "C:\Users\ongju\AppData\Local\Programs\Python\Python310\lib\site-packages\flask\app.py", line 919, in full_dispatch_request
+    rv = self.handle_user_exception(e)
+  File "C:\Users\ongju\AppData\Local\Programs\Python\Python310\lib\site-packages\flask\app.py", line 917, in full_dispatch_request
+    rv = self.dispatch_request()
+  File "C:\Users\ongju\AppData\Local\Programs\Python\Python310\lib\site-packages\flask\app.py", line 902, in dispatch_request
+    return self.ensure_sync(self.view_functions[rule.endpoint])(**view_args)  # type: ignore[no-any-return]
+  File "C:\Users\ongju\AppData\Local\Programs\Python\Python310\lib\site-packages\flask_login\utils.py", line 290, in decorated_view
+    return current_app.ensure_sync(func)(*args, **kwargs)
+  File "C:\Users\ongju\jombeta\Test\app.py", line 211, in console
+    trans.created_at = to_local_time(trans.created_at)
+  File "C:\Users\ongju\jombeta\Test\app.py", line 69, in to_local_time
+    return utc_time.astimezone(pytz.timezone('Asia/Singapore'))
+NameError: name 'pytz' is not defined
+2025-08-17 20:48:33,812 ERROR: Exception on /console [GET]
+Traceback (most recent call last):
+  File "C:\Users\ongju\AppData\Local\Programs\Python\Python310\lib\site-packages\flask\app.py", line 1511, in wsgi_app
+    response = self.full_dispatch_request()
+  File "C:\Users\ongju\AppData\Local\Programs\Python\Python310\lib\site-packages\flask\app.py", line 919, in full_dispatch_request
+    rv = self.handle_user_exception(e)
+  File "C:\Users\ongju\AppData\Local\Programs\Python\Python310\lib\site-packages\flask\app.py", line 917, in full_dispatch_request
+    rv = self.dispatch_request()
+  File "C:\Users\ongju\AppData\Local\Programs\Python\Python310\lib\site-packages\flask\app.py", line 902, in dispatch_request
+    return self.ensure_sync(self.view_functions[rule.endpoint])(**view_args)  # type: ignore[no-any-return]
+  File "C:\Users\ongju\AppData\Local\Programs\Python\Python310\lib\site-packages\flask_login\utils.py", line 290, in decorated_view
+    return current_app.ensure_sync(func)(*args, **kwargs)
+  File "C:\Users\ongju\jombeta\Test\app.py", line 211, in console
+    trans.created_at = to_local_time(trans.created_at)
+  File "C:\Users\ongju\jombeta\Test\app.py", line 69, in to_local_time
+    return utc_time.astimezone(pytz.timezone('Asia/Singapore'))
+NameError: name 'pytz' is not defined
+2025-08-17 20:48:36,258 ERROR: Exception on /console [GET]
+Traceback (most recent call last):
+  File "C:\Users\ongju\AppData\Local\Programs\Python\Python310\lib\site-packages\flask\app.py", line 1511, in wsgi_app
+    response = self.full_dispatch_request()
+  File "C:\Users\ongju\AppData\Local\Programs\Python\Python310\lib\site-packages\flask\app.py", line 919, in full_dispatch_request
+    rv = self.handle_user_exception(e)
+  File "C:\Users\ongju\AppData\Local\Programs\Python\Python310\lib\site-packages\flask\app.py", line 917, in full_dispatch_request
+    rv = self.dispatch_request()
+  File "C:\Users\ongju\AppData\Local\Programs\Python\Python310\lib\site-packages\flask\app.py", line 902, in dispatch_request
+    return self.ensure_sync(self.view_functions[rule.endpoint])(**view_args)  # type: ignore[no-any-return]
+  File "C:\Users\ongju\AppData\Local\Programs\Python\Python310\lib\site-packages\flask_login\utils.py", line 290, in decorated_view
+    return current_app.ensure_sync(func)(*args, **kwargs)
+  File "C:\Users\ongju\jombeta\Test\app.py", line 211, in console
+    trans.created_at = to_local_time(trans.created_at)
+  File "C:\Users\ongju\jombeta\Test\app.py", line 69, in to_local_time
+    return utc_time.astimezone(pytz.timezone('Asia/Singapore'))
+NameError: name 'pytz' is not defined
+2025-08-17 20:54:20,483 INFO: Emitting refresh_page event for item 5
+2025-08-22 17:00:02,933 INFO: Emitting refresh_page event for item 6

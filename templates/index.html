@@ -1,197 +1,233 @@
 {% extends "base.html" %}
 
 {% block extra_css %}
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/index.css') }}">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/gallery.css') }}">
+<!-- 字体已在base.html中优化加载，无需重复 -->
 {% endblock %}
 
 {% block content %}
-    <div class="dashboard-header">
-        <h1><i class="fas fa-wallet"></i> 我的账单</h1>
-        {% if current_user.is_recipient %}
-        <div class="header-actions">
-            <a href="{{ url_for('recipient_studio') }}" class="btn btn-outline">
-                <i class="fas fa-plus"></i> 创建收款项目
-            </a>
-        </div>
+<section class="gallery-hero {% if is_authenticated %}authenticated{% endif %}">
+  <div class="hero-content">
+    <div class="hero-text">
+      {% if is_authenticated %}
+        <h1>
+          <span class="welcome-back">欢迎回来，</span>
+          <span class="username">{{ current_user.username }}</span>
+        </h1>
+        {% if user_summary %}
+        <p class="subtitle">
+          您的账户余额：<span class="highlight">RM {{ user_summary.balance|default('0.00', true) }}</span><br>
+          累计发送：<span class="highlight">RM {{ user_summary.total_sent|default('0.00', true) }}</span> |
+          累计收到：<span class="highlight">RM {{ user_summary.total_received|default('0.00', true) }}</span>
+          {% if user_summary.is_recipient %}<br><span class="status-badge">收款方账户</span>{% endif %}
+        </p>
+        {% else %}
+        <p class="subtitle">您已成功登录，可以访问所有高级功能。</p>
         {% endif %}
+      {% else %}
+      <h1><span class="main-title">新一代数字金融服务</span></h1>
+      <p class="subtitle">加入 <span class="highlight">{{ stats.total_users|default('1000+', true) }}</span> 用户的行列，体验安全便捷的资产管理。</p>
+      {% endif %}
+
+      <div class="cta-buttons">
+        {% if is_authenticated %}
+        <a href="{{ url_for('console') }}" class="btn btn-primary">
+          <i class="fas fa-arrow-right"></i> 进入控制台
+        </a>
+        <a href="{{ url_for('transactions') }}" class="btn btn-outline">
+          <i class="fas fa-chart-bar"></i> 财务分析
+        </a>
+        {% else %}
+        <a href="{{ url_for('login') }}" class="btn btn-primary">
+          <i class="fas fa-fingerprint"></i> 安全登录
+        </a>
+        <a href="{{ url_for('register') }}" class="btn btn-gradient">
+          <i class="fas fa-rocket"></i> 立即注册
+        </a>
+        {% endif %}
+      </div>
     </div>
+  </div>
 
-    <section class="balance-section card">
-        <div class="section-header">
-            <h2><i class="fas fa-money-bill-wave"></i> 账单概览</h2>
-        </div>
-        <div class="balance-cards">
-            <div class="balance-card pending">
-                <div class="balance-icon">
-                    <i class="fas fa-clock"></i>
-                </div>
-                <div class="balance-info">
-                    <span class="balance-label">待支付</span>
-                    <span class="balance-amount">RM{{ "%.2f"|format(pending_payments) }}</span>
-                </div>
-            </div>
-            <div class="balance-card paid">
-                <div class="balance-icon">
-                    <i class="fas fa-check-circle"></i>
-                </div>
-                <div class="balance-info">
-                    <span class="balance-label">已支付</span>
-                    <span class="balance-amount">RM{{ "%.2f"|format(paid_amount) }}</span>
-                </div>
-            </div>
-        </div>
-    </section>
+  <div class="hero-visual">
+    <img 
+        src="{{ url_for('static', filename='uploads/gallery.jpg') }}" 
+        alt="THE ARC: B-13-03"
+        class="hero-image"
+        onerror="this.onerror=null; this.src='{{ url_for('static', filename='images/default-hero.svg') }}'"
+    >
+    {% if not is_authenticated %}
+    <div class="stats-overlay">
+      <div class="stat-item">
+        <div class="stat-number">{{ stats.total_users|default('1000+', true) }}</div>
+        <div class="stat-label">注册用户</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-number">{{ stats.total_transactions|default('5000+', true) }}</div>
+        <div class="stat-label">交易次数</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-number">{{ stats.active_projects|default('100+', true) }}</div>
+        <div class="stat-label">活跃项目</div>
+      </div>
+    </div>
+    {% endif %}
+  </div>
+</section>
 
-    <section class="payment-items card">
-        <div class="section-header">
-            <h2><i class="fas fa-list-ul"></i> 待支付项目</h2>
-            <div class="section-actions">
-                <span class="badge">{{ payment_items|length }} 个项目</span>
+<!-- 快速通道部分 -->
+<section class="quick-access">
+  <div class="section-header">
+    <h2>快速通道</h2>
+    <p>一键直达您需要的服务</p>
+  </div>
+  <div class="quick-links">
+    <a href="{% if is_authenticated %}{{ url_for('index') }}{% else %}{{ url_for('login', next=url_for('index')) }}{% endif %}" class="quick-link">
+      <div class="quick-icon"><i class="fas fa-tachometer-alt"></i></div>
+      <h3>控制面板</h3>
+      <p>全面掌控您的账单余额</p>
+    </a>
+    <a href="{% if is_authenticated %}{{ url_for('transactions') }}{% else %}{{ url_for('login', next=url_for('transactions')) }}{% endif %}" class="quick-link">
+      <div class="quick-icon"><i class="fas fa-exchange-alt"></i></div>
+      <h3>交易中心</h3>
+      <p>查看所有转账记录</p>
+    </a>
+    <a href="{% if is_authenticated %}{{ url_for('recipient_studio') }}{% else %}{{ url_for('login', next=url_for('recipient_studio')) }}{% endif %}" class="quick-link">
+      <div class="quick-icon"><i class="fas fa-briefcase"></i></div>
+      <h3>项目管理</h3>
+      <p>方便管理您的所有项目</p>
+    </a>
+  </div>
+</section>
+
+<!-- 统计部分 - 仅对未登录用户显示 -->
+{% if not is_authenticated %}
+<section class="stats-section">
+  <div class="stats-grid">
+    <div class="stat-card">
+      <div class="icon">
+        <i class="fas fa-users"></i>
+      </div>
+      <div class="number">{{ stats.total_users|default('1000+', true) }}</div>
+      <div class="label">注册用户</div>
+    </div>
+    <div class="stat-card">
+      <div class="icon">
+        <i class="fas fa-exchange-alt"></i>
+      </div>
+      <div class="number">{{ stats.total_transactions|default('5000+', true) }}</div>
+      <div class="label">交易次数</div>
+    </div>
+    <div class="stat-card">
+      <div class="icon">
+        <i class="fas fa-project-diagram"></i>
+      </div>
+      <div class="number">{{ stats.active_projects|default('100+', true) }}</div>
+      <div class="label">活跃项目</div>
+    </div>
+    <div class="stat-card">
+      <div class="icon">
+        <i class="fas fa-shield-alt"></i>
+      </div>
+      <div class="number">100%</div>
+      <div class="label">安全交易</div>
+    </div>
+  </div>
+</section>
+{% endif %}
+
+<!-- 活动部分 - 仅对登录用户显示 -->
+{% if is_authenticated %}
+<section class="activity-section">
+  <div class="section-header">
+    <h2>近期活动</h2>
+    <p>查看您账户的最新动态</p>
+  </div>
+  <div class="activity-grid">
+    <div class="activity-card">
+      <h3><i class="fas fa-history"></i> 交易记录</h3>
+      <ul class="activity-list">
+        {% if recent_transactions and recent_transactions|length > 0 %}
+          {% for trans in recent_transactions %}
+          <li class="activity-item">
+            <div class="activity-icon">
+              <i class="fas fa-arrow-{% if trans.payer_id == current_user.id %}up text-danger{% else %}down text-success{% endif %}"></i>
             </div>
-        </div>
-        
-        {% if payment_items %}
-        <div class="item-grid">
-            {% for item in payment_items %}
-            {% if item.status == 'active' %}
-            <div class="payment-item">
-                <div class="item-badge">
-                    {{ "%.0f"|format((item.amount_received/item.amount)*100) }}%
-                </div>
-                
-                {% if item.image_url %}
-                <div class="item-image-container">
-                    <img src="{{ item.image_url }}" class="item-image" alt="{{ item.title }}" loading="lazy">
-                </div>
+            <div class="activity-content">
+              <div class="activity-title">
+                {% if trans.payer_id == current_user.id %}
+                  向 {{ trans.recipient.username }} 转账
+                  <span class="amount-sent">RM {{ trans.amount|default('0.00', true) }}</span>
+                {% else %}
+                  收到 {{ trans.payer.username }} 付款
+                  <span class="amount-received">RM {{ trans.amount|default('0.00', true) }}</span>
                 {% endif %}
-                
-                <div class="item-content">
-                    <div class="item-header">
-                        <h3>{{ item.title }}</h3>
-                        <span class="item-creator">
-                            <i class="fas fa-user"></i> {{ item.recipient.username }}
-                        </span>
-                    </div>
-                    
-                    <p class="item-description">{{ item.description|default("暂无描述", true) }}</p>
-                    
-                    <div class="item-meta">
-                        <div class="meta-item">
-                            <i class="fas fa-users"></i>
-                            <span>{{ item.participant_count }}人</span>
-                        </div>
-                        <!-- 修改点1: 显示当前用户应付金额 -->
-                        <div class="meta-item">
-                            <i class="fas fa-money-bill-alt"></i>
-                            <span>
-                                {% if item.id in user_payments %}
-                                    已支付: RM{{ "%.2f"|format(user_payments[item.id].amount) }}
-                                {% else %}
-                                    应付金额: RM{{ "%.2f"|format(item.calculate_user_amount(current_user.id)) }}
-                                {% endif %}
-                            </span>
-                        </div>
-                    </div>
-                    
-                    <div class="progress-container">
-                        <div class="progress-bar">
-                            <div class="progress" style="width: {{ (item.amount_received/item.amount)*100 }}%"></div>
-                        </div>
-                        <div class="progress-text">
-                            <span>已筹 RM{{ "%.2f"|format(item.amount_received) }}</span>
-                            <span>目标 RM{{ "%.2f"|format(item.amount) }}</span>
-                        </div>
-                    </div>
-                    
-                    <div class="item-actions">
-                        <!-- 修改点2: 使用 calculate_user_amount 计算支付金额 -->
-                        <a href="{{ url_for('confirm_payment', payment_item_id=item.id, amount=item.calculate_user_amount(current_user.id)) }}" 
-                        class="btn-pay 
-                        {% if item.amount_received >= item.amount %}completed
-                        {% elif current_user.id == item.recipient_id %}creator
-                        {% elif item.id in user_payments %}user-paid
-                        {% else %}active{% endif %}"
-                        {% if item.amount_received >= item.amount or item.id in user_payments or current_user.id == item.recipient_id %}
-                            disabled
-                        {% endif %}>
-                        
-                        {% if item.amount_received >= item.amount %}
-                            <i class="fas fa-check-circle"></i> 项目已完成
-                        {% elif current_user.id == item.recipient_id %}
-                            <i class="fas fa-crown"></i> 您是创建者
-                        {% elif item.id in user_payments %}
-                            <i class="fas fa-user-check"></i> 您已支付
-                        {% else %}
-                            <i class="fas fa-money-bill-wave"></i> 支付 RM{{ "%.2f"|format(item.calculate_user_amount(current_user.id)) }}
-                        {% endif %}
-                        </a>
-                    </div>
-                </div>
+              </div>
+              <div class="activity-time">{{ trans.created_at.strftime('%Y-%m-%d %H:%M') if trans.created_at else '时间未知' }}</div>
+              {% if trans.payment_item and trans.payment_item.title %}
+              <div class="activity-desc">项目：{{ trans.payment_item.title }}</div>
+              {% endif %}
             </div>
-            {% endif %}
-            {% endfor %}
-        </div>
+          </li>
+          {% endfor %}
+          {% if recent_transactions|length >= 5 %}
+          <li class="activity-item view-more">
+            <div class="activity-icon"><i class="fas fa-ellipsis-h"></i></div>
+            <div class="activity-content">
+              <a href="{{ url_for('transactions') }}" class="activity-title">查看更多交易记录</a>
+            </div>
+          </li>
+          {% endif %}
         {% else %}
-        <div class="empty-state">
-            <i class="fas fa-box-open"></i>
-            <p>暂无待支付项目</p>
-            {% if current_user.is_recipient %}
-            <a href="{{ url_for('recipient_studio') }}" class="btn">创建第一个项目</a>
-            {% endif %}
-        </div>
+          <li class="activity-item">
+            <div class="activity-icon"><i class="fas fa-info-circle"></i></div>
+            <div class="activity-content">
+              <div class="activity-title">暂无近期交易记录</div>
+              <div class="activity-desc">开始使用我们的服务来查看您的交易历史</div>
+            </div>
+          </li>
         {% endif %}
-    </section>
-
-    <section class="recent-transactions card">
-        <div class="section-header">
-            <h2><i class="fas fa-exchange-alt"></i> 最近交易</h2>
-            <a href="{{ url_for('transactions') }}" class="view-all">查看全部 <i class="fas fa-arrow-right"></i></a>
-        </div>
+      </ul>
+    </div>
+    
+    <!-- 系统通知部分 -->
+    <div class="activity-card">
+      <h3><i class="fas fa-bell"></i> 系统通知</h3>
+      <ul class="activity-list">
+        <!-- 安全提示通知 -->
+        <li class="activity-item">
+          <div class="activity-icon"><i class="fas fa-shield-alt"></i></div>
+          <div class="activity-content">
+            <div class="activity-title">安全提示：您的账户有新的登录活动</div>
+            <div class="activity-time">刚刚</div>
+          </div>
+        </li>
         
-        {% if transactions %}
-        <div class="transaction-list">
-            {% for trans in transactions %}
-            <div class="transaction {% if trans.payer_id == current_user.id %}outgoing{% else %}incoming{% endif %}">
-                <div class="transaction-icon">
-                    {% if trans.payer_id == current_user.id %}
-                    <i class="fas fa-arrow-up"></i>
-                    {% else %}
-                    <i class="fas fa-arrow-down"></i>
-                    {% endif %}
-                </div>
-                <div class="transaction-details">
-                    <div class="transaction-header">
-                        <span class="transaction-party">
-                            {% if trans.payer_id == current_user.id %}
-                            付款给 {{ trans.recipient.username }}
-                            {% else %}
-                            来自 {{ trans.payer.username }}
-                            {% endif %}
-                        </span>
-                        <span class="transaction-amount {% if trans.payer_id == current_user.id %}negative{% else %}positive{% endif %}">
-                            {{ "-RM" if trans.payer_id == current_user.id else "+RM" }}{{ "%.2f"|format(trans.amount) }}
-                        </span>
-                    </div>
-                    <div class="transaction-footer">
-                        <span class="transaction-date">
-                            <i class="far fa-clock"></i> {{ moment(trans.created_at).format('YYYY-MM-DD HH:mm') }}
-                        </span>
-                        {% if trans.note %}
-                        <span class="transaction-note">
-                            <i class="far fa-comment"></i> {{ trans.note }}
-                        </span>
-                        {% endif %}
-                    </div>
-                </div>
+        <!-- 动态通知 - 公告和项目创建 -->
+        {% for activity in activities %}
+        <li class="activity-item">
+          <div class="activity-icon">
+            <i class="fas fa-{{ 'bullhorn' if activity.type == 'announcement' else 'file-invoice-dollar' }}"></i>
+          </div>
+          <div class="activity-content">
+            <div class="activity-title">
+              {{ activity.creator }} {{ activity.title }}
             </div>
-            {% endfor %}
-        </div>
+            <div class="activity-time">{{ activity.time }}</div> <!-- 注意：这里已经是字符串 -->
+          </div>
+        </li>
         {% else %}
-        <div class="empty-state">
-            <i class="fas fa-receipt"></i>
-            <p>暂无交易记录</p>
-        </div>
-        {% endif %}
-    </section>
+        <!-- 没有活动时的备用通知 -->
+        <li class="activity-item">
+          <div class="activity-icon"><i class="fas fa-info-circle"></i></div>
+          <div class="activity-content">
+            <div class="activity-title">暂无最新通知</div>
+          </div>
+        </li>
+        {% endfor %}
+      </ul>
+    </div>
+  </div>
+</section>
+{% endif %}
 {% endblock %}

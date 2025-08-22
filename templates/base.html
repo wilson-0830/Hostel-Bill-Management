@@ -26,7 +26,7 @@
         <div class="navbar-container">
             <!-- 左侧品牌 -->
             <div class="navbar-brand">
-                <a href="{{ url_for('gallery') }}" class="brand-link">
+                <a href="{{ url_for('index') }}" class="brand-link">
                     <div class="brand-icon">
                         <i class="fas fa-bolt"></i>
                     </div>
@@ -54,7 +54,7 @@
                 
                 <div class="nav-links">
                     {% if current_user.is_authenticated %}
-                        <a href="{{ url_for('index') }}" class="nav-link {% if request.endpoint == 'index' %}active{% endif %}">
+                        <a href="{{ url_for('console') }}" class="nav-link {% if request.endpoint == 'console' %}active{% endif %}">
                             <i class="fas fa-tachometer-alt nav-icon"></i>
                             <span>控制台</span>
                         </a>
@@ -77,7 +77,7 @@
                             <span>资料</span>
                         </a>
                     {% else %}
-                        <a href="{{ url_for('gallery') }}" class="nav-link {% if request.endpoint == 'gallery' %}active{% endif %}">
+                        <a href="{{ url_for('index') }}" class="nav-link {% if request.endpoint == 'index' %}active{% endif %}">
                             <i class="fas fa-home nav-icon"></i>
                             <span>首页</span>
                         </a>
@@ -171,7 +171,7 @@
                 <div class="footer-links">
                     <div class="footer-section">
                         <h5>服务</h5>
-                        <a href="{{ url_for('gallery') }}">首页</a>
+                        <a href="{{ url_for('index') }}">首页</a>
                         <a href="{{ url_for('login') }}">登录</a>
                         <a href="{{ url_for('register') }}">注册</a>
                     </div>

@@ -379,5 +379,36 @@ document.addEventListener('DOMContentLoaded', function() {
         addUserField();
     }
 });
+
+// 在 recipient_studio.html 的脚本部分添加
+function validateIndividualMode() {
+    const mode = document.getElementById('split_mode').value;
+    if (mode !== 'individual') return true;
+    
+    const userRows = document.querySelectorAll('.assigned-user-row');
+    let total = 0;
+    
+    for (const row of userRows) {
+        const amountInput = row.querySelector('input[name="assigned_amount"]');
+        if (amountInput && amountInput.value) {
+            total += parseFloat(amountInput.value) || 0;
+        }
+    }
+    
+    const totalAmount = parseFloat(document.getElementById('amount').value);
+    if (total > totalAmount) {
+        alert('指定用户的金额总和不能超过总金额');
+        return false;
+    }
+    
+    return true;
+}
+
+// 修改表单提交事件
+document.querySelector('form').addEventListener('submit', function(e) {
+    if (!validateIndividualMode()) {
+        e.preventDefault();
+    }
+});
 </script>
 {% endblock %}
