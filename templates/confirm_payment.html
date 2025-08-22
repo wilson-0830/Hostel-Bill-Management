@@ -2,6 +2,34 @@
 
 {% block extra_css %}
     <link rel="stylesheet" href="{{ url_for('static', filename='css/confirm_payment.css') }}">
+    <style>
+        .proof-upload-container {
+            margin: 1.5rem 0;
+            padding: 1.5rem;
+            background: var(--bg-glass);
+            border-radius: var(--radius-md);
+            border: var(--border-light);
+        }
+        
+        .proof-preview {
+            margin-top: 1rem;
+            text-align: center;
+            display: none;
+        }
+        
+        .proof-preview img {
+            max-width: 100%;
+            max-height: 300px;
+            border-radius: var(--radius-md);
+            border: 1px solid var(--border-light);
+        }
+        
+        .upload-requirements {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            margin-top: 0.5rem;
+        }
+    </style>
 {% endblock %}
 
 {% block content %}
@@ -35,11 +63,11 @@
         {% endif %}
     </div>
     
-    <form method="POST" action="{{ url_for('transfer') }}">
+    <form method="POST" action="{{ url_for('transfer') }}" enctype="multipart/form-data" id="payment-form">
         <input type="hidden" name="payment_item_id" value="{{ payment_item.id }}">
         <input type="hidden" name="recipient_id" value="{{ payment_item.recipient.id }}">
         <input type="hidden" name="amount" value="{{ amount }}">
-        <input type="hidden" name="payment_method_id" value="{{ request.form.payment_method_id }}">
+        <input type="hidden" name="payment_method_id" id="selected_payment_method" value="">
         
         <div class="form-group">
             <label>选择支付方式</label>
@@ -67,6 +95,22 @@
             {% endfor %}
         </div>
         
+        <!-- 添加付款凭证上传区域 -->
+        <div class="proof-upload-container">
+            <div class="form-group">
+                <label for="proof_image">上传付款凭证 <span class="required">*</span></label>
+                <input type="file" id="proof_image" name="proof_image" accept="image/*" required>
+                <div class="upload-requirements">
+                    请上传清晰的付款截图或照片，支持 JPG、PNG 格式，最大 5MB
+                </div>
+            </div>
+            
+            <div class="proof-preview" id="proof-preview">
+                <img id="preview-image" src="" alt="凭证预览">
+                <p>预览</p>
+            </div>
+        </div>
+        
         <div class="form-actions">
             <button type="submit" class="btn btn-confirm">
                 <i class="fas fa-check-circle"></i> 确认支付
@@ -75,9 +119,51 @@
                 <i class="fas fa-times-circle"></i> 取消支付
             </a>
         </div>
-        <input type="hidden" name="payment_item_id" value="{{ payment_item.id }}">
-        <input type="hidden" name="recipient_id" value="{{ payment_item.recipient.id }}">
-        <input type="hidden" name="amount" value="{{ amount }}">
     </form>
 </section>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // 设置选中的支付方式
+    const selectedMethod = document.querySelector('input[name="payment_method_id"]:checked');
+    if (selectedMethod) {
+        document.getElementById('selected_payment_method').value = selectedMethod.value;
+    }
+    
+    // 预览上传的图片
+    const proofImageInput = document.getElementById('proof_image');
+    const previewContainer = document.getElementById('proof-preview');
+    const previewImage = document.getElementById('preview-image');
+    
+    proofImageInput.addEventListener('change', function() {
+        if (this.files && this.files[0]) {
+            const file = this.files[0];
+            
+            // 检查文件大小 (最大5MB)
+            if (file.size > 5 * 1024 * 1024) {
+                alert('文件大小不能超过5MB');
+                this.value = '';
+                return;
+            }
+            
+            const reader = new FileReader();
+            
+            reader.onload = function(e) {
+                previewImage.src = e.target.result;
+                previewContainer.style.display = 'block';
+            }
+            
+            reader.readAsDataURL(file);
+        }
+    });
+    
+    // 支付方式选择
+    const methodOptions = document.querySelectorAll('input[name="payment_method_id"]');
+    methodOptions.forEach(option => {
+        option.addEventListener('change', function() {
+            document.getElementById('selected_payment_method').value = this.value;
+        });
+    });
+});
+</script>
 {% endblock %}

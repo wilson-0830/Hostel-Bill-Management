@@ -92,3 +92,183 @@
 .btn-cancel:hover {
     background: var(--bg-glass-hover);
 }
+
+/* confirm_payment.css */
+.payment-confirmation {
+    max-width: 600px;
+    margin: 2rem auto;
+    padding: 2rem;
+    background: var(--bg-glass);
+    backdrop-filter: blur(20px);
+    border-radius: var(--radius-xl);
+    border: var(--border-light);
+    box-shadow: var(--shadow-lg);
+}
+
+.payment-confirmation h2 {
+    text-align: center;
+    margin-bottom: 2rem;
+    color: var(--text-light);
+    font-size: 1.8rem;
+}
+
+.payment-details {
+    background: var(--bg-glass-hover);
+    padding: 1.5rem;
+    border-radius: var(--radius-lg);
+    margin-bottom: 2rem;
+    border: var(--border-light);
+}
+
+.payment-details h3 {
+    color: var(--text-light);
+    margin-bottom: 1rem;
+    font-size: 1.3rem;
+}
+
+.payment-details p {
+    margin-bottom: 0.5rem;
+    color: var(--text-secondary);
+}
+
+.progress-container {
+    margin: 1.5rem 0;
+}
+
+.progress-bar {
+    height: 10px;
+    background: var(--bg-darker);
+    border-radius: 5px;
+    overflow: hidden;
+}
+
+.progress {
+    height: 100%;
+    background: var(--gradient-primary);
+    transition: width 0.6s ease;
+}
+
+.progress-text {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 0.5rem;
+    font-size: 0.9rem;
+    color: var(--text-muted);
+}
+
+.payment-method-option {
+    margin-bottom: 1rem;
+    padding: 1rem;
+    background: var(--bg-glass);
+    border-radius: var(--radius-md);
+    border: var(--border-light);
+    transition: var(--transition);
+}
+
+.payment-method-option:hover {
+    background: var(--bg-glass-hover);
+    transform: translateY(-2px);
+}
+
+.payment-method-option input[type="radio"] {
+    margin-right: 0.5rem;
+}
+
+.payment-method-option label {
+    display: flex;
+    flex-direction: column;
+    cursor: pointer;
+}
+
+.payment-method-option strong {
+    color: var(--text-light);
+    margin-bottom: 0.5rem;
+}
+
+.qr-code-preview {
+    text-align: center;
+    margin-top: 1rem;
+}
+
+.qr-code-preview img {
+    max-width: 200px;
+    border-radius: var(--radius-md);
+    border: 1px solid var(--border-light);
+}
+
+.account-info {
+    background: var(--bg-darker);
+    padding: 0.5rem;
+    border-radius: var(--radius-sm);
+    font-family: monospace;
+    word-break: break-all;
+}
+
+.form-actions {
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+    margin-top: 2rem;
+}
+
+.btn-confirm {
+    background: var(--success-color);
+    color: white;
+    padding: 0.8rem 2rem;
+    border-radius: var(--radius-lg);
+    font-weight: 600;
+    transition: var(--transition);
+}
+
+.btn-confirm:hover {
+    background: var(--success-hover);
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-md);
+}
+
+.btn-cancel {
+    background: var(--bg-glass);
+    color: var(--text-secondary);
+    padding: 0.8rem 2rem;
+    border-radius: var(--radius-lg);
+    border: var(--border-light);
+    transition: var(--transition);
+}
+
+.btn-cancel:hover {
+    background: var(--bg-glass-hover);
+    color: var(--text-light);
+}
+
+.alert {
+    padding: 1rem;
+    border-radius: var(--radius-md);
+    margin: 1rem 0;
+    text-align: center;
+}
+
+.alert-warning {
+    background: rgba(255, 193, 7, 0.2);
+    color: #ffc107;
+    border: 1px solid rgba(255, 193, 7, 0.3);
+}
+
+.required {
+    color: var(--danger-color);
+}
+
+/* 响应式设计 */
+@media (max-width: 768px) {
+    .payment-confirmation {
+        margin: 1rem;
+        padding: 1.5rem;
+    }
+    
+    .form-actions {
+        flex-direction: column;
+    }
+    
+    .btn-confirm, .btn-cancel {
+        width: 100%;
+    }
+}

@@ -431,6 +431,28 @@ def transfer():
     payment_item_id = request.form.get('payment_item_id')
     amount_str = request.form.get('amount')
     payment_method_id = request.form.get('payment_method_id')
+    
+    # 检查凭证文件
+    if 'proof_image' not in request.files:
+        flash("请上传付款凭证", "error")
+        return redirect(url_for('confirm_payment', 
+                               payment_item_id=payment_item_id, 
+                               amount=amount_str))
+    
+    proof_file = request.files['proof_image']
+    
+    # 验证文件
+    if proof_file.filename == '':
+        flash("请选择有效的凭证文件", "error")
+        return redirect(url_for('confirm_payment', 
+                               payment_item_id=payment_item_id, 
+                               amount=amount_str))
+    
+    if not allowed_file(proof_file.filename, app.config['ALLOWED_EXTENSIONS']):
+        flash("只支持 JPG、PNG 格式的图片", "error")
+        return redirect(url_for('confirm_payment', 
+                               payment_item_id=payment_item_id, 
+                               amount=amount_str))
 
     try:
         amount = Decimal(amount_str)
@@ -460,6 +482,20 @@ def transfer():
     if payment_item.status != 'active':
         flash('该项目已结束，无法支付', 'error')
         return redirect(url_for('index'))
+    
+    # 保存凭证文件
+    proof_image_url = None
+    if proof_file and allowed_file(proof_file.filename, app.config['ALLOWED_EXTENSIONS']):
+        # 确保上传目录存在
+        os.makedirs(app.config['UPLOAD_FOLDER'], exist_ok=True)
+
+        # 生成唯一文件名
+        filename = secure_filename(f"proof_{current_user.id}_{datetime.now().timestamp()}_{proof_file.filename}")
+        file_path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
+        proof_file.save(file_path)
+
+        # 使用url_for生成正确的URL
+        proof_image_url = url_for('static', filename=f'uploads/{filename}')
 
     # 创建交易记录
     transaction = Transaction(
@@ -468,8 +504,9 @@ def transfer():
         recipient_id=recipient.id,
         amount=amount,
         status='completed',
-        payment_method_id=payment_method_id,  # 现在这个字段是有效的
-        is_personal_payment=True
+        payment_method_id=payment_method_id,
+        is_personal_payment=True,
+        proof_image=proof_image_url  # 保存凭证图片URL
     )
 
     # 更新收款项目的已收金额

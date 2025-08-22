@@ -3,6 +3,68 @@
 {% block extra_css %}
     <link rel="stylesheet" href="{{ url_for('static', filename='css/index.css') }}">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        /* 添加与transactions.html相同的凭证查看样式 */
+        .view-proof-btn {
+            background: var(--accent-color);
+            color: white;
+            border: none;
+            padding: 0.4rem 0.8rem;
+            border-radius: var(--radius-sm);
+            font-size: 0.85rem;
+            cursor: pointer;
+            transition: var(--transition);
+            margin-top: 0.5rem;
+        }
+        
+        .view-proof-btn:hover {
+            background: var(--accent-dark);
+        }
+        
+        .proof-modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.9);
+            overflow: auto;
+        }
+        
+        .proof-modal-content {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100%;
+            padding: 20px;
+        }
+        
+        .proof-image {
+            max-width: 90%;
+            max-height: 90%;
+            object-fit: contain;
+            border-radius: var(--radius-md);
+        }
+        
+        .close-modal {
+            position: absolute;
+            top: 20px;
+            right: 30px;
+            color: white;
+            font-size: 40px;
+            font-weight: bold;
+            cursor: pointer;
+            z-index: 1001;
+        }
+        
+        .no-proof {
+            color: var(--text-muted);
+            font-style: italic;
+            font-size: 0.85rem;
+        }
+    </style>
 {% endblock %}
 
 {% block content %}
@@ -177,6 +239,18 @@
                         <span class="transaction-date">
                             <i class="far fa-clock"></i> {{ moment(trans.created_at).format('YYYY-MM-DD HH:mm') }}
                         </span>
+                        
+                        <!-- 添加查看凭证按钮 -->
+                        <span class="transaction-proof">
+                            {% if trans.proof_image %}
+                            <button class="view-proof-btn" data-proof-image="{{ trans.proof_image }}">
+                                <i class="fas fa-receipt"></i> 查看凭证
+                            </button>
+                            {% else %}
+                            <span class="no-proof">无凭证</span>
+                            {% endif %}
+                        </span>
+                        
                         {% if trans.note %}
                         <span class="transaction-note">
                             <i class="far fa-comment"></i> {{ trans.note }}
@@ -194,4 +268,50 @@
         </div>
         {% endif %}
     </section>
+    
+    <!-- 凭证查看模态框 -->
+    <div id="proof-modal" class="proof-modal">
+        <span class="close-modal">&times;</span>
+        <div class="proof-modal-content">
+            <img id="modal-proof-image" class="proof-image" src="">
+        </div>
+    </div>
+    
+    <script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // 获取模态框元素
+        const modal = document.getElementById('proof-modal');
+        const modalImg = document.getElementById('modal-proof-image');
+        const closeBtn = document.querySelector('.close-modal');
+        
+        // 为所有查看凭证按钮添加点击事件
+        const viewProofButtons = document.querySelectorAll('.view-proof-btn');
+        viewProofButtons.forEach(button => {
+            button.addEventListener('click', function() {
+                const proofImage = this.getAttribute('data-proof-image');
+                modal.style.display = 'block';
+                modalImg.src = proofImage;
+            });
+        });
+        
+        // 关闭模态框
+        closeBtn.addEventListener('click', function() {
+            modal.style.display = 'none';
+        });
+        
+        // 点击模态框背景也可关闭
+        modal.addEventListener('click', function(e) {
+            if (e.target === modal) {
+                modal.style.display = 'none';
+            }
+        });
+        
+        // 支持ESC键关闭
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape' && modal.style.display === 'block') {
+                modal.style.display = 'none';
+            }
+        });
+    });
+    </script>
 {% endblock %}
